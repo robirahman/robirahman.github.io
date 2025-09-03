@@ -4,7 +4,6 @@ title: About
 permalink: /
 subtitle: This is my website. Content coming soon.
 
-
 profile:
   align: right
   image: "/assets/img/avatar.jpg"
