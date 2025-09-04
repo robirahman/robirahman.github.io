@@ -2,17 +2,19 @@
 layout: about
 title: About
 permalink: /
-subtitle: This is my website. Content coming soon.
+subtitle: This is my website.
 
 profile:
   align: right
   image: "/assets/img/avatar.jpg"
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>I should think of something to write here</p>
+    <p>(photo updated 2023)</p>
 
 news: true # includes a list of news items
 social: true # includes social icons at the bottom of the page
 ---
 
-Faucibus sed lobortis aliquam lorem blandit. Lorem eu nunc metus col. Commodo id in arcu ante lorem ipsum sed accumsan erat praesent faucibus commodo ac mi lacus. Adipiscing mi ac commodo. Vis aliquet tortor ultricies non ante erat nunc integer eu ante ornare amet commetus vestibulum blandit integer in curae ac faucibus integer non. Adipiscing cubilia elementum.
+Hi, I'm Robi Rahman. The best way to reach me is by email at [robirahman94@gmail.com](mailto:robirahman94@gmail.com). You can also contact me anonymously [here](https://admonymous.co/robirahman).
+
+Featured work: (coming soon)
