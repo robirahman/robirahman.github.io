@@ -8,6 +8,10 @@ nav_order: 3
 
 <ul class="timeline">
   <li>
+    <span class="badge badge-toc">2005-2012</span>
+    Middle/high school student at <a href="https://hbwoodlawn.apsva.us/">H-B Woodlawn Secondary Program</a>
+  </li>
+  <li>
     <span class="badge badge-toc">2013–2016</span>
     Undergraduate student at <a href="https://www.wm.edu/">College of William and Mary</a>
   </li>
