@@ -3,6 +3,8 @@ layout: page
 title: Travel
 permalink: /travel/
 description: Password-protected travel maps
+nav: true
+nav_order: 6
 ---
 
 <style>
@@ -159,11 +161,11 @@ description: Password-protected travel maps
   <p>This is a quick look at where I've been so far. These maps use placeholder outlines and will be updated with highlights in a follow-up commit.</p>
   <div class="travel-map-grid">
     <figure class="travel-map-card">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Blank_US_Map_%28states_only%29.svg" alt="Blank map of the United States with states outlined." loading="lazy" />
+      <img src="{{ '/assets/Highlighted US states map.svg' | relative_url }}" alt="Highlighted map of the United States showing visited states." loading="lazy" />
       <figcaption>Where I've been across the United States.</figcaption>
     </figure>
     <figure class="travel-map-card">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/BlankMap-World-with-Circles.svg" alt="Blank world map with countries outlined and highlighted circles." loading="lazy" />
+      <img src="{{ '/assets/Highlighted world countries map.svg' | relative_url }}" alt="Highlighted world map showing visited countries." loading="lazy" />
       <figcaption>Countries I've visited around the world.</figcaption>
     </figure>
   </div>
