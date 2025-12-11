@@ -47,6 +47,11 @@ jobs:
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
         env:
           REPO_BRANCH: ${{ env.REPO_BRANCH }}
+      - name: Set up Git authentication
+        run: |
+          git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
           repository: ${{ env.REPOSITORY }}
