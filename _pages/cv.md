@@ -27,6 +27,10 @@ nav_order: 3
     <span class="badge badge-toc">2023–2025</span>
     Data Scientist at <a href="https://epoch.ai/">Epoch AI</a>
   </li>
+  <li>
+    <span class="badge badge-toc">2025–present</span>
+    AI Governance at <a href="https://techgov.intelligence.org/">MIRI TGT</a>
+  </li>
 </ul>
 
 ---
