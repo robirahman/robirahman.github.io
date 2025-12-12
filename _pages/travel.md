@@ -158,7 +158,7 @@ nav_order: 6
 </div>
 
 <div id="travel-content" class="travel-content travel-hidden">
-  <p>This is a quick look at where I've been so far. These maps use placeholder outlines and will be updated with highlights in a follow-up commit.</p>
+  <p>This is a quick look at where I've been.</p>
   <div class="travel-map-grid">
     <figure class="travel-map-card">
       <img src="{{ '/assets/Highlighted US states map.svg' | relative_url }}" alt="Highlighted map of the United States showing visited states." loading="lazy" />
