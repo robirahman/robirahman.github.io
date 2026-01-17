@@ -50,6 +50,11 @@ permalink: /tournaments/
           <span class="tournaments__label">Number of players</span>
           <input id="tournament-size" type="number" min="2" max="64" value="8" required />
         </label>
+
+        <label class="tournaments__field" id="tournament-rounds-field" hidden>
+          <span class="tournaments__label">Number of rounds</span>
+          <input id="tournament-rounds" type="number" min="1" max="16" value="3" required />
+        </label>
       </div>
 
       <div>
