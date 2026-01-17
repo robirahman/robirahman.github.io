@@ -14,6 +14,7 @@
   const formError = document.querySelector('#tournament-error');
   const detailName = document.querySelector('#detail-name');
   const detailMeta = document.querySelector('#detail-meta');
+  const bracketView = document.querySelector('#bracket-view');
   const standingsTable = document.querySelector('#standings-table');
   const upcomingMatches = document.querySelector('#upcoming-matches');
   const completedMatches = document.querySelector('#completed-matches');
@@ -139,6 +140,54 @@
     return matches;
   };
 
+  const getWinner = (match) => {
+    if (match.player2 === 'Bye') {
+      return match.player1;
+    }
+    const score1 = Number(match.score1);
+    const score2 = Number(match.score2);
+    if (Number.isNaN(score1) || Number.isNaN(score2)) {
+      return null;
+    }
+    if (score1 === score2) {
+      return null;
+    }
+    return score1 > score2 ? match.player1 : match.player2;
+  };
+
+  const ensureNextRound = (tournament) => {
+    if (tournament.type === 'round robin') {
+      return;
+    }
+    const rounds = tournament.matches.reduce((acc, match) => {
+      acc.add(match.round);
+      return acc;
+    }, new Set());
+    const latestRound = Math.max(...Array.from(rounds));
+    const latestMatches = tournament.matches.filter((match) => match.round === latestRound);
+    if (latestMatches.length === 0) {
+      return;
+    }
+    const allComplete = latestMatches.every((match) => match.status === 'complete');
+    if (!allComplete) {
+      return;
+    }
+    const nextRound = latestRound + 1;
+    const alreadyExists = tournament.matches.some((match) => match.round === nextRound);
+    if (alreadyExists) {
+      return;
+    }
+    const winners = latestMatches.map(getWinner).filter(Boolean);
+    if (winners.length < 2) {
+      return;
+    }
+    const nextMatches = createMatches('single elimination', winners).map((match) => ({
+      ...match,
+      round: nextRound,
+    }));
+    tournament.matches.push(...nextMatches);
+  };
+
   const computeStandings = (tournament) => {
     const standings = tournament.players.reduce((acc, player) => {
       acc[player] = { player, wins: 0, losses: 0, draws: 0, points: 0 };
@@ -217,6 +266,48 @@
     `;
   };
 
+  const renderBracket = (tournament) => {
+    if (!bracketView) {
+      return;
+    }
+    if (tournament.type === 'round robin') {
+      bracketView.innerHTML = '<p class="tournaments__bracket-empty">Bracket view is available for elimination formats.</p>';
+      return;
+    }
+    const rounds = tournament.matches.reduce((acc, match) => {
+      acc[match.round] = acc[match.round] || [];
+      acc[match.round].push(match);
+      return acc;
+    }, {});
+    const roundNumbers = Object.keys(rounds)
+      .map(Number)
+      .sort((a, b) => a - b);
+    if (roundNumbers.length === 0) {
+      bracketView.innerHTML = '<p class="tournaments__bracket-empty">Bracket will appear once matches are created.</p>';
+      return;
+    }
+    bracketView.innerHTML = roundNumbers
+      .map((round) => {
+        const matchesHtml = rounds[round]
+          .map(
+            (match) => `
+            <div class="tournaments__bracket-match">
+              <span>${match.player1}<strong>${match.score1 ?? '-'}</strong></span>
+              <span>${match.player2}<strong>${match.score2 ?? '-'}</strong></span>
+            </div>
+          `,
+          )
+          .join('');
+        return `
+          <div class="tournaments__bracket-round">
+            <h4>Round ${round}</h4>
+            ${matchesHtml}
+          </div>
+        `;
+      })
+      .join('');
+  };
+
   const renderMatches = (tournament) => {
     const upcoming = tournament.matches.filter((match) => match.status === 'pending');
     const completed = tournament.matches.filter((match) => match.status === 'complete');
@@ -253,6 +344,7 @@
         match.score1 = scoreValue1;
         match.score2 = scoreValue2;
         match.status = 'complete';
+        ensureNextRound(tournament);
         persistTournament(tournament);
         renderTournament(tournament.slug);
       });
@@ -324,6 +416,7 @@
     }
     detailName.textContent = tournament.name;
     detailMeta.textContent = `${tournament.type} · ${tournament.players.length} players`;
+    renderBracket(tournament);
     renderStandings(tournament);
     renderMatches(tournament);
   };
@@ -368,6 +461,7 @@
         matches: createMatches(type, players),
         createdAt: new Date().toISOString(),
       };
+      ensureNextRound(tournament);
       persistTournament(tournament);
       window.location.href = `${basePath}/#${slug}`;
     });

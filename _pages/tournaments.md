@@ -75,6 +75,11 @@ permalink: /tournaments/
     </header>
 
     <section class="tournaments__section">
+      <h3>Bracket overview</h3>
+      <div id="bracket-view" class="tournaments__bracket"></div>
+    </section>
+
+    <section class="tournaments__section">
       <h3>Current standings</h3>
       <div class="tournaments__table" id="standings-table"></div>
     </section>

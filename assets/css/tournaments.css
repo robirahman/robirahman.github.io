@@ -147,6 +147,46 @@
   gap: 1rem;
 }
 
+.tournaments__bracket {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.tournaments__bracket-round {
+  min-width: 200px;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tournaments__bracket-round h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #445;
+}
+
+.tournaments__bracket-match {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  border: 1px dashed rgba(31, 111, 235, 0.3);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.tournaments__bracket-match span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.tournaments__bracket-empty {
+  font-style: italic;
+  color: #667;
+}
+
 .tournaments__match {
   padding: 1rem 1.25rem;
   border-radius: 0.75rem;
