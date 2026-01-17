@@ -79,44 +79,71 @@
     }
   };
 
-  const createMatches = (type, players) => {
+  const getSeedMap = (tournament) => {
+    if (tournament.seeds) {
+      return tournament.seeds;
+    }
+    return tournament.players.reduce((acc, player, index) => {
+      acc[player] = index + 1;
+      return acc;
+    }, {});
+  };
+
+  const sortBySeed = (players, seedMap) =>
+    [...players].sort((a, b) => {
+      const seedDiff = seedMap[a] - seedMap[b];
+      if (seedDiff !== 0) {
+        return seedDiff;
+      }
+      return a.localeCompare(b);
+    });
+
+  const createSeededPairs = (players, seedMap) => {
+    const ordered = sortBySeed(players, seedMap);
+    if (ordered.length % 2 !== 0) {
+      ordered.push('Bye');
+    }
+    const pairs = [];
+    for (let i = 0; i < ordered.length / 2; i += 1) {
+      pairs.push([ordered[i], ordered[ordered.length - 1 - i]]);
+    }
+    return pairs;
+  };
+
+  const buildMatchesFromPairs = (pairs, round, startingId = 1) => {
     const matches = [];
-    let matchId = 1;
-
-    const createPairings = (pairPlayers, round) => {
-      const pairs = [...pairPlayers];
-      if (pairs.length % 2 !== 0) {
-        pairs.push('Bye');
+    let matchId = startingId;
+    pairs.forEach(([player1, player2]) => {
+      if (player2 === 'Bye') {
+        matches.push({
+          id: matchId,
+          round,
+          player1,
+          player2: 'Bye',
+          score1: 1,
+          score2: 0,
+          status: 'complete',
+        });
+      } else {
+        matches.push({
+          id: matchId,
+          round,
+          player1,
+          player2,
+          score1: null,
+          score2: null,
+          status: 'pending',
+        });
       }
-      for (let i = 0; i < pairs.length; i += 2) {
-        const player1 = pairs[i];
-        const player2 = pairs[i + 1];
-        if (player2 === 'Bye') {
-          matches.push({
-            id: matchId,
-            round,
-            player1,
-            player2: 'Bye',
-            score1: 1,
-            score2: 0,
-            status: 'complete',
-          });
-        } else {
-          matches.push({
-            id: matchId,
-            round,
-            player1,
-            player2,
-            score1: null,
-            score2: null,
-            status: 'pending',
-          });
-        }
-        matchId += 1;
-      }
-    };
+      matchId += 1;
+    });
+    return { matches, nextMatchId: matchId };
+  };
 
+  const createMatches = (type, players, seedMap) => {
     if (type === 'round robin') {
+      const matches = [];
+      let matchId = 1;
       let round = 1;
       for (let i = 0; i < players.length; i += 1) {
         for (let j = i + 1; j < players.length; j += 1) {
@@ -136,8 +163,70 @@
       return matches;
     }
 
-    createPairings(players, 1);
-    return matches;
+    const pairs = createSeededPairs(players, seedMap);
+    return buildMatchesFromPairs(pairs, 1).matches;
+  };
+
+  const createSwissPairs = (tournament) => {
+    const seedMap = getSeedMap(tournament);
+    const opponents = tournament.matches.reduce((acc, match) => {
+      if (match.player2 === 'Bye') {
+        return acc;
+      }
+      acc[match.player1] = acc[match.player1] || new Set();
+      acc[match.player2] = acc[match.player2] || new Set();
+      acc[match.player1].add(match.player2);
+      acc[match.player2].add(match.player1);
+      return acc;
+    }, {});
+
+    const standings = computeStandings(tournament);
+    const groups = standings.reduce((acc, row) => {
+      const key = row.points;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(row.player);
+      return acc;
+    }, {});
+
+    const pointBuckets = Object.keys(groups)
+      .map(Number)
+      .sort((a, b) => b - a);
+
+    const pairs = [];
+    let carryOver = null;
+
+    pointBuckets.forEach((points) => {
+      const group = groups[points] || [];
+      if (carryOver) {
+        group.push(carryOver);
+        carryOver = null;
+      }
+      const ordered = sortBySeed(group, seedMap);
+      while (ordered.length > 1) {
+        const player = ordered.shift();
+        const opponentSet = opponents[player] || new Set();
+        let opponentIndex = ordered.length - 1;
+        while (opponentIndex >= 0 && opponentSet.has(ordered[opponentIndex])) {
+          opponentIndex -= 1;
+        }
+        if (opponentIndex < 0) {
+          opponentIndex = ordered.length - 1;
+        }
+        const opponent = ordered.splice(opponentIndex, 1)[0];
+        pairs.push([player, opponent]);
+      }
+      if (ordered.length === 1) {
+        carryOver = ordered.pop();
+      }
+    });
+
+    if (carryOver) {
+      pairs.push([carryOver, 'Bye']);
+    }
+
+    return pairs;
   };
 
   const getWinner = (match) => {
@@ -177,15 +266,21 @@
     if (alreadyExists) {
       return;
     }
+    const nextMatchId = Math.max(0, ...tournament.matches.map((match) => match.id)) + 1;
+    if (tournament.type === 'swiss') {
+      const pairs = createSwissPairs(tournament);
+      const { matches } = buildMatchesFromPairs(pairs, nextRound, nextMatchId);
+      tournament.matches.push(...matches);
+      return;
+    }
     const winners = latestMatches.map(getWinner).filter(Boolean);
     if (winners.length < 2) {
       return;
     }
-    const nextMatches = createMatches('single elimination', winners).map((match) => ({
-      ...match,
-      round: nextRound,
-    }));
-    tournament.matches.push(...nextMatches);
+    const seedMap = getSeedMap(tournament);
+    const pairs = createSeededPairs(winners, seedMap);
+    const { matches } = buildMatchesFromPairs(pairs, nextRound, nextMatchId);
+    tournament.matches.push(...matches);
   };
 
   const computeStandings = (tournament) => {
@@ -453,12 +548,18 @@
         return;
       }
 
+      const seeds = players.reduce((acc, player, index) => {
+        acc[player] = index + 1;
+        return acc;
+      }, {});
+
       const tournament = {
         name,
         slug,
         type,
         players,
-        matches: createMatches(type, players),
+        seeds,
+        matches: createMatches(type, players, seeds),
         createdAt: new Date().toISOString(),
       };
       ensureNextRound(tournament);
