@@ -13,7 +13,7 @@ permalink: /tournaments/
         <h2>Live tournaments</h2>
         <p>Create, manage, and update brackets in real time.</p>
       </div>
-      <a class="tournaments__button" href="/tournaments/new">Create new tournament</a>
+      <a class="tournaments__button" href="/tournaments/#new">Create new tournament</a>
     </header>
 
     <div id="tournament-list" class="tournaments__grid"></div>
@@ -70,7 +70,7 @@ permalink: /tournaments/
       </div>
       <div class="tournaments__actions">
         <a class="tournaments__button tournaments__button--ghost" href="/tournaments/">All tournaments</a>
-        <a class="tournaments__button" href="/tournaments/new">New tournament</a>
+        <a class="tournaments__button" href="/tournaments/#new">New tournament</a>
       </div>
     </header>
 

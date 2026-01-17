@@ -44,15 +44,15 @@
 
   const getRoute = () => {
     const path = window.location.pathname.replace(/\/+$/, '');
-    if (path === basePath || path === `${basePath}/index.html`) {
+    const hash = window.location.hash.replace('#', '').trim();
+    if (path !== basePath && path !== `${basePath}/index.html`) {
       return { view: 'list' };
     }
-    if (path === `${basePath}/new`) {
+    if (hash === 'new') {
       return { view: 'new' };
     }
-    if (path.startsWith(`${basePath}/`)) {
-      const slug = path.slice(basePath.length + 1);
-      return { view: 'detail', slug };
+    if (hash) {
+      return { view: 'detail', slug: hash };
     }
     return { view: 'list' };
   };
@@ -305,7 +305,7 @@
           <span>${tournament.players.length} players</span>
           <span>Created ${new Date(tournament.createdAt).toLocaleDateString()}</span>
         </div>
-        <a class="tournaments__button tournaments__button--ghost" href="${basePath}/${tournament.slug}">View tournament</a>
+        <a class="tournaments__button tournaments__button--ghost" href="${basePath}/#${tournament.slug}">View tournament</a>
       `;
       listContainer.appendChild(card);
     });
@@ -369,19 +369,24 @@
         createdAt: new Date().toISOString(),
       };
       persistTournament(tournament);
-      window.location.href = `${basePath}/${slug}`;
+      window.location.href = `${basePath}/#${slug}`;
     });
   };
 
-  const route = getRoute();
-  if (route.view === 'list') {
-    showPanel(listPanel);
-    renderList();
-  } else if (route.view === 'new') {
-    showPanel(newPanel);
-    setupForm();
-  } else if (route.view === 'detail') {
-    showPanel(detailPanel);
-    renderTournament(route.slug);
-  }
+  const renderRoute = () => {
+    const route = getRoute();
+    if (route.view === 'list') {
+      showPanel(listPanel);
+      renderList();
+    } else if (route.view === 'new') {
+      showPanel(newPanel);
+      setupForm();
+    } else if (route.view === 'detail') {
+      showPanel(detailPanel);
+      renderTournament(route.slug);
+    }
+  };
+
+  window.addEventListener('hashchange', renderRoute);
+  renderRoute();
 })();
