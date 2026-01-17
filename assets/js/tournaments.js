@@ -140,7 +140,7 @@
     return pairs;
   };
 
-  const buildMatchesFromPairs = (pairs, round, startingId = 1) => {
+  const buildMatchesFromPairs = (pairs, round, startingId = 1, bracket = null) => {
     const matches = [];
     let matchId = startingId;
     pairs.forEach(([player1, player2]) => {
@@ -148,6 +148,7 @@
         matches.push({
           id: matchId,
           round,
+          bracket,
           player1,
           player2: 'Bye',
           score1: 1,
@@ -158,6 +159,7 @@
         matches.push({
           id: matchId,
           round,
+          bracket,
           player1,
           player2,
           score1: null,
@@ -194,7 +196,8 @@
     }
 
     const pairs = createSeededPairs(players, seedMap);
-    return buildMatchesFromPairs(pairs, 1).matches;
+    const bracket = type === 'double elimination' ? 'winners' : null;
+    return buildMatchesFromPairs(pairs, 1, 1, bracket).matches;
   };
 
   const createSwissPairs = (tournament) => {
@@ -277,8 +280,130 @@
     return score1 > score2 ? match.player1 : match.player2;
   };
 
+  const getLoser = (match) => {
+    if (match.player2 === 'Bye') {
+      return null;
+    }
+    const winner = getWinner(match);
+    if (!winner) {
+      return null;
+    }
+    return winner === match.player1 ? match.player2 : match.player1;
+  };
+
+  const getLossCounts = (tournament) =>
+    tournament.players.reduce((acc, player) => {
+      acc[player] = 0;
+      return acc;
+    }, {});
+
+  const computeLossCounts = (tournament) => {
+    const losses = getLossCounts(tournament);
+    tournament.matches
+      .filter((match) => match.status === 'complete')
+      .forEach((match) => {
+        const loser = getLoser(match);
+        if (loser && losses[loser] !== undefined) {
+          losses[loser] += 1;
+        }
+      });
+    return losses;
+  };
+
+  const ensureDoubleEliminationRounds = (tournament) => {
+    const seedMap = getSeedMap(tournament);
+    const getBracket = (match) => match.bracket || 'winners';
+    const winnersMatches = tournament.matches.filter((match) => getBracket(match) === 'winners');
+    const losersMatches = tournament.matches.filter((match) => getBracket(match) === 'losers');
+    const finalsMatches = tournament.matches.filter((match) => getBracket(match) === 'final');
+    const pendingMatches = tournament.matches.filter((match) => match.status === 'pending');
+    const pendingPlayers = new Set(
+      pendingMatches.flatMap((match) => [match.player1, match.player2]).filter(Boolean),
+    );
+    const hasPendingInBracket = (bracket) =>
+      tournament.matches.some(
+        (match) => match.status === 'pending' && getBracket(match) === bracket,
+      );
+    let nextMatchId = Math.max(0, ...tournament.matches.map((match) => match.id)) + 1;
+
+    const addRound = (players, round, bracket) => {
+      if (players.length < 2) {
+        return;
+      }
+      const pairs = createSeededPairs(players, seedMap);
+      const { matches, nextMatchId: updatedId } = buildMatchesFromPairs(
+        pairs,
+        round,
+        nextMatchId,
+        bracket,
+      );
+      tournament.matches.push(...matches);
+      nextMatchId = updatedId;
+    };
+
+    if (winnersMatches.length > 0) {
+      const latestWinnersRound = Math.max(...winnersMatches.map((match) => match.round));
+      const latestWinnersMatches = winnersMatches.filter((match) => match.round === latestWinnersRound);
+      const allComplete = latestWinnersMatches.every((match) => match.status === 'complete');
+      const alreadyExists = winnersMatches.some((match) => match.round === latestWinnersRound + 1);
+      if (allComplete && !alreadyExists) {
+        const winners = latestWinnersMatches.map(getWinner).filter(Boolean);
+        addRound(winners, latestWinnersRound + 1, 'winners');
+      }
+    }
+
+    if (!losersMatches.some((match) => match.status === 'pending')) {
+      const losses = computeLossCounts(tournament);
+      const eligible = tournament.players
+        .filter((player) => losses[player] === 1)
+        .filter((player) => !pendingPlayers.has(player));
+      if (eligible.length >= 2) {
+        const nextLosersRound = (losersMatches.length
+          ? Math.max(...losersMatches.map((match) => match.round))
+          : 0) + 1;
+        addRound(eligible, nextLosersRound, 'losers');
+      }
+    }
+
+    if (!hasPendingInBracket('final')) {
+      const losses = computeLossCounts(tournament);
+      const winnersFinalists = tournament.players
+        .filter((player) => losses[player] === 0)
+        .filter((player) => !pendingPlayers.has(player));
+      const losersFinalists = tournament.players
+        .filter((player) => losses[player] === 1)
+        .filter((player) => !pendingPlayers.has(player));
+      const noPendingElimRounds = !hasPendingInBracket('winners') && !hasPendingInBracket('losers');
+      if (
+        noPendingElimRounds &&
+        finalsMatches.length === 0 &&
+        winnersFinalists.length === 1 &&
+        losersFinalists.length === 1
+      ) {
+        addRound([winnersFinalists[0], losersFinalists[0]], 1, 'final');
+        return;
+      }
+      const remaining = tournament.players.filter((player) => losses[player] < 2);
+      const finalsRounds = finalsMatches.map((match) => match.round);
+      const hasFinalsReset = finalsRounds.includes(2);
+      if (
+        noPendingElimRounds &&
+        finalsMatches.length > 0 &&
+        !hasFinalsReset &&
+        remaining.length === 2 &&
+        remaining.every((player) => losses[player] === 1)
+      ) {
+        addRound(remaining, 2, 'final');
+      }
+    }
+  };
+
   const ensureNextRound = (tournament) => {
     if (tournament.type === 'round robin') {
+      return;
+    }
+    if (tournament.type === 'double elimination') {
+      ensureDoubleEliminationRounds(tournament);
       return;
     }
     const rounds = tournament.matches.reduce((acc, match) => {
@@ -499,6 +624,66 @@
       bracketView.innerHTML = '<p class="tournaments__bracket-empty">Bracket view is available for elimination formats.</p>';
       return;
     }
+    if (tournament.type === 'double elimination') {
+      const bracketGroups = tournament.matches.reduce((acc, match) => {
+        const bracket = match.bracket || 'winners';
+        if (!acc[bracket]) {
+          acc[bracket] = [];
+        }
+        acc[bracket].push(match);
+        return acc;
+      }, {});
+      const renderBracketRounds = (matches) => {
+        const rounds = matches.reduce((acc, match) => {
+          acc[match.round] = acc[match.round] || [];
+          acc[match.round].push(match);
+          return acc;
+        }, {});
+        const roundNumbers = Object.keys(rounds)
+          .map(Number)
+          .sort((a, b) => a - b);
+        if (roundNumbers.length === 0) {
+          return '<p class="tournaments__bracket-empty">Bracket will appear once matches are created.</p>';
+        }
+        return roundNumbers
+          .map((round) => {
+            const matchesHtml = rounds[round]
+              .map(
+                (match) => `
+                <div class="tournaments__bracket-match">
+                  <span>${match.player1}<strong>${match.score1 ?? '-'}</strong></span>
+                  <span>${match.player2}<strong>${match.score2 ?? '-'}</strong></span>
+                </div>
+              `,
+              )
+              .join('');
+            return `
+              <div class="tournaments__bracket-round">
+                <h4>Round ${round}</h4>
+                ${matchesHtml}
+              </div>
+            `;
+          })
+          .join('');
+      };
+
+      const winnersHtml = renderBracketRounds(bracketGroups.winners || []);
+      const losersHtml = renderBracketRounds(bracketGroups.losers || []);
+      const finalsHtml = bracketGroups.final ? renderBracketRounds(bracketGroups.final) : '';
+
+      bracketView.innerHTML = `
+        <div class="tournaments__bracket-group">
+          <h4>Winners bracket</h4>
+          ${winnersHtml}
+        </div>
+        <div class="tournaments__bracket-group">
+          <h4>Losers bracket</h4>
+          ${losersHtml}
+        </div>
+        ${finalsHtml ? `<div class="tournaments__bracket-group"><h4>Finals</h4>${finalsHtml}</div>` : ''}
+      `;
+      return;
+    }
     const rounds = tournament.matches.reduce((acc, match) => {
       acc[match.round] = acc[match.round] || [];
       acc[match.round].push(match);
@@ -541,13 +726,24 @@
     upcomingMatches.innerHTML = '';
     completedMatches.innerHTML = '';
 
+    const formatBracket = (match) => {
+      if (tournament.type !== 'double elimination') {
+        return '';
+      }
+      const bracket = match.bracket || 'winners';
+      const label = bracket.charAt(0).toUpperCase() + bracket.slice(1);
+      return `${label} bracket`;
+    };
+
     upcoming.forEach((match) => {
       const matchEl = document.createElement('div');
       matchEl.className = 'tournaments__match';
+      const bracketLabel = formatBracket(match);
       matchEl.innerHTML = `
         <div class="tournaments__match-header">
           <span>Round ${match.round}</span>
           <span>Match #${match.id}</span>
+          ${bracketLabel ? `<span>${bracketLabel}</span>` : ''}
         </div>
         <div class="tournaments__scoreline">
           <strong>${match.player1}</strong>
@@ -579,10 +775,12 @@
     completed.forEach((match) => {
       const matchEl = document.createElement('div');
       matchEl.className = 'tournaments__match';
+      const bracketLabel = formatBracket(match);
       matchEl.innerHTML = `
         <div class="tournaments__match-header">
           <span>Round ${match.round}</span>
           <span>Match #${match.id}</span>
+          ${bracketLabel ? `<span>${bracketLabel}</span>` : ''}
         </div>
         <div class="tournaments__scoreline">
           <strong>${match.player1}</strong>
