@@ -11,6 +11,8 @@
   const tournamentSize = document.querySelector('#tournament-size');
   const tournamentType = document.querySelector('#tournament-type');
   const tournamentName = document.querySelector('#tournament-name');
+  const tournamentRounds = document.querySelector('#tournament-rounds');
+  const tournamentRoundsField = document.querySelector('#tournament-rounds-field');
   const formError = document.querySelector('#tournament-error');
   const detailName = document.querySelector('#detail-name');
   const detailMeta = document.querySelector('#detail-meta');
@@ -72,9 +74,29 @@
     });
   };
 
+  const getSwissDefaultRounds = (count) => Math.max(1, Math.ceil(Math.log2(count)));
+
+  const updateSwissRounds = () => {
+    if (!tournamentRounds || !tournamentRoundsField) {
+      return;
+    }
+    const isSwiss = tournamentType.value === 'swiss';
+    tournamentRoundsField.hidden = !isSwiss;
+    tournamentRounds.required = isSwiss;
+    if (!isSwiss) {
+      tournamentRounds.dataset.manual = 'false';
+      return;
+    }
+    const count = Math.max(2, Number.parseInt(tournamentSize.value, 10) || 2);
+    if (tournamentRounds.dataset.manual !== 'true') {
+      tournamentRounds.value = getSwissDefaultRounds(count);
+    }
+  };
+
   const renderPlayerFields = () => {
     const count = Math.max(2, Number.parseInt(tournamentSize.value, 10) || 2);
     tournamentSize.value = count;
+    updateSwissRounds();
     playerFields.innerHTML = '';
     for (let i = 0; i < count; i += 1) {
       const field = document.createElement('label');
@@ -237,6 +259,9 @@
     return pairs;
   };
 
+  const getSwissRoundsLimit = (tournament) =>
+    tournament.rounds || getSwissDefaultRounds(tournament.players.length);
+
   const getWinner = (match) => {
     if (match.player2 === 'Bye') {
       return match.player1;
@@ -272,6 +297,9 @@
     const nextRound = latestRound + 1;
     const alreadyExists = tournament.matches.some((match) => match.round === nextRound);
     if (alreadyExists) {
+      return;
+    }
+    if (tournament.type === 'swiss' && nextRound > getSwissRoundsLimit(tournament)) {
       return;
     }
     const nextMatchId = Math.max(0, ...tournament.matches.map((match) => match.id)) + 1;
@@ -627,6 +655,20 @@
   const setupForm = () => {
     renderPlayerFields();
     tournamentSize.addEventListener('change', renderPlayerFields);
+    if (tournamentType) {
+      tournamentType.addEventListener('change', () => {
+        if (tournamentRounds) {
+          tournamentRounds.dataset.manual = 'false';
+        }
+        updateSwissRounds();
+      });
+    }
+    if (tournamentRounds) {
+      tournamentRounds.addEventListener('input', () => {
+        tournamentRounds.dataset.manual = 'true';
+      });
+    }
+    updateSwissRounds();
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -634,8 +676,16 @@
       const name = tournamentName.value.trim();
       const type = tournamentType.value;
       const count = Number.parseInt(tournamentSize.value, 10);
+      const swissRounds =
+        type === 'swiss'
+          ? Number.parseInt(tournamentRounds ? tournamentRounds.value : '', 10)
+          : null;
       if (!name || !count || count < 2) {
         formError.textContent = 'Please provide a valid name and at least two players.';
+        return;
+      }
+      if (type === 'swiss' && (!swissRounds || swissRounds < 1)) {
+        formError.textContent = 'Please provide a valid number of swiss rounds.';
         return;
       }
       const players = Array.from(playerFields.querySelectorAll('input'))
@@ -668,6 +718,7 @@
         players,
         seeds,
         matches: createMatches(type, players, seeds),
+        rounds: type === 'swiss' ? swissRounds || getSwissDefaultRounds(players.length) : null,
         createdAt: new Date().toISOString(),
       };
       ensureNextRound(tournament);
