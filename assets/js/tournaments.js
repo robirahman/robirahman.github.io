@@ -16,9 +16,17 @@
   const detailMeta = document.querySelector('#detail-meta');
   const bracketView = document.querySelector('#bracket-view');
   const standingsTable = document.querySelector('#standings-table');
+  const participantDetail = document.querySelector('#participant-detail');
+  const participantName = document.querySelector('#participant-name');
+  const participantForm = document.querySelector('#participant-form');
+  const participantEdit = document.querySelector('#participant-edit');
+  const participantError = document.querySelector('#participant-error');
+  const participantMatches = document.querySelector('#participant-matches');
   const upcomingMatches = document.querySelector('#upcoming-matches');
   const completedMatches = document.querySelector('#completed-matches');
   const matchesEmpty = document.querySelector('#matches-empty');
+  let activeTournament = null;
+  let activeParticipant = null;
 
   if (!listPanel || !newPanel || !detailPanel) {
     return;
@@ -335,7 +343,11 @@
       .map(
         (row) => `
         <tr>
-          <td>${row.player}</td>
+          <td>
+            <button class="tournaments__link" type="button" data-player="${row.player}">
+              ${row.player}
+            </button>
+          </td>
           <td>${row.wins}</td>
           <td>${row.losses}</td>
           <td>${row.draws}</td>
@@ -359,6 +371,96 @@
         <tbody>${rows}</tbody>
       </table>
     `;
+  };
+
+  const renderParticipant = (tournament, player) => {
+    if (!participantDetail || !participantName || !participantMatches || !participantEdit) {
+      return;
+    }
+    if (!player || !tournament.players.includes(player)) {
+      participantDetail.hidden = true;
+      activeParticipant = null;
+      return;
+    }
+    activeParticipant = player;
+    participantDetail.hidden = false;
+    participantName.textContent = player;
+    participantEdit.value = player;
+    participantError.textContent = '';
+
+    const matches = tournament.matches
+      .filter((match) => match.player1 === player || match.player2 === player)
+      .sort((a, b) => a.round - b.round);
+
+    if (matches.length === 0) {
+      participantMatches.innerHTML = '<p class="tournaments__empty">No matches yet.</p>';
+      return;
+    }
+
+    participantMatches.innerHTML = matches
+      .map((match) => {
+        const opponent = match.player1 === player ? match.player2 : match.player1;
+        const scoreline =
+          match.status === 'complete'
+            ? `${match.score1 ?? '-'} - ${match.score2 ?? '-'}`
+            : 'Scheduled';
+        const playerScore =
+          match.status === 'complete'
+            ? match.player1 === player
+              ? match.score1
+              : match.score2
+            : null;
+        const opponentScore =
+          match.status === 'complete'
+            ? match.player1 === player
+              ? match.score2
+              : match.score1
+            : null;
+        const displayScore =
+          match.status === 'complete' ? `${playerScore ?? '-'} - ${opponentScore ?? '-'}` : scoreline;
+        return `
+          <div class="tournaments__participant-match">
+            <div class="tournaments__participant-opponent">
+              <span>Round ${match.round}</span>
+              <span>vs ${opponent}</span>
+            </div>
+            <div class="tournaments__participant-score">${displayScore}</div>
+          </div>
+        `;
+      })
+      .join('');
+  };
+
+  const renameParticipant = (tournament, oldName, newName) => {
+    const trimmed = newName.trim();
+    if (!trimmed) {
+      return 'Please enter a valid name.';
+    }
+    if (trimmed.toLowerCase() === 'bye') {
+      return 'The name "Bye" is reserved.';
+    }
+    if (oldName === trimmed) {
+      return '';
+    }
+    if (tournament.players.includes(trimmed)) {
+      return 'That name is already taken.';
+    }
+
+    tournament.players = tournament.players.map((player) => (player === oldName ? trimmed : player));
+    if (tournament.seeds && tournament.seeds[oldName]) {
+      const seedValue = tournament.seeds[oldName];
+      delete tournament.seeds[oldName];
+      tournament.seeds[trimmed] = seedValue;
+    }
+    tournament.matches.forEach((match) => {
+      if (match.player1 === oldName) {
+        match.player1 = trimmed;
+      }
+      if (match.player2 === oldName) {
+        match.player2 = trimmed;
+      }
+    });
+    return '';
   };
 
   const renderBracket = (tournament) => {
@@ -501,19 +603,25 @@
   const renderTournament = (slug) => {
     const tournament = getTournaments().find((entry) => entry.slug === slug);
     if (!tournament) {
+      activeTournament = null;
       detailName.textContent = 'Tournament not found';
       detailMeta.textContent = 'Create a new tournament to get started.';
       standingsTable.innerHTML = '';
       upcomingMatches.innerHTML = '';
       completedMatches.innerHTML = '';
       matchesEmpty.hidden = false;
+      if (participantDetail) {
+        participantDetail.hidden = true;
+      }
       return;
     }
+    activeTournament = tournament;
     detailName.textContent = tournament.name;
     detailMeta.textContent = `${tournament.type} · ${tournament.players.length} players`;
     renderBracket(tournament);
     renderStandings(tournament);
     renderMatches(tournament);
+    renderParticipant(tournament, activeParticipant);
   };
 
   const setupForm = () => {
@@ -581,6 +689,33 @@
       renderTournament(route.slug);
     }
   };
+
+  if (standingsTable) {
+    standingsTable.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-player]');
+      if (!target || !activeTournament) {
+        return;
+      }
+      renderParticipant(activeTournament, target.getAttribute('data-player'));
+    });
+  }
+
+  if (participantForm) {
+    participantForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!activeTournament || !activeParticipant) {
+        return;
+      }
+      const error = renameParticipant(activeTournament, activeParticipant, participantEdit.value);
+      if (error) {
+        participantError.textContent = error;
+        return;
+      }
+      participantError.textContent = '';
+      persistTournament(activeTournament);
+      renderTournament(activeTournament.slug);
+    });
+  }
 
   window.addEventListener('hashchange', renderRoute);
   renderRoute();

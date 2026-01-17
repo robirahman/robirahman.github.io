@@ -142,6 +142,67 @@
   font-weight: 600;
 }
 
+.tournaments__link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #1f6feb;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.tournaments__participant {
+  background: #f9fafc;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.tournaments__participant-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tournaments__participant-meta {
+  margin: 0.35rem 0 0;
+  color: #556;
+}
+
+.tournaments__participant-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 420px;
+}
+
+.tournaments__participant-matches {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tournaments__participant-match {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tournaments__participant-opponent {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.tournaments__participant-score {
+  color: #556;
+  font-size: 0.9rem;
+}
+
 .tournaments__matches {
   display: grid;
   gap: 1rem;

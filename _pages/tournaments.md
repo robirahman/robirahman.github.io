@@ -84,6 +84,29 @@ permalink: /tournaments/
       <div class="tournaments__table" id="standings-table"></div>
     </section>
 
+    <section class="tournaments__section" id="participant-detail" hidden>
+      <div class="tournaments__participant">
+        <div class="tournaments__participant-header">
+          <div>
+            <h3>Participant details</h3>
+            <p id="participant-name" class="tournaments__participant-meta"></p>
+          </div>
+        </div>
+        <form id="participant-form" class="tournaments__participant-form">
+          <label class="tournaments__field">
+            <span class="tournaments__label">Edit name</span>
+            <input id="participant-edit" type="text" required />
+          </label>
+          <button class="tournaments__button" type="submit">Save name</button>
+          <p id="participant-error" class="tournaments__error" role="alert"></p>
+        </form>
+        <div class="tournaments__participant-history">
+          <h4>Match history</h4>
+          <div id="participant-matches" class="tournaments__participant-matches"></div>
+        </div>
+      </div>
+    </section>
+
     <section class="tournaments__section">
       <h3>Upcoming matchups</h3>
       <div id="upcoming-matches" class="tournaments__matches"></div>
