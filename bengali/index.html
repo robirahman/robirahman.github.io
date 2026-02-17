@@ -1,0 +1,3682 @@
+---
+layout: none
+title: Bengali Flashcards
+nav: true
+nav_order: 8
+permalink: /bengali/
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>বাংলা শিক্ষা — Learn Bengali</title>
+<style>
+:root {
+  --bg: #1a0f0e;
+  --card: #2a1a18;
+  --card-hover: #3d2520;
+  --accent: #f4a532;
+  --accent-dim: #b8792a;
+  --wrong: #e84545;
+  --text: #f5ede4;
+  --text-dim: #a89080;
+  --gold: #d4af37;
+  --vowel: #e88eb4;
+  --consonant: #5eb3d4;
+  --special: #e87841;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* ─── NAV ─── */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--card);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky; top: 0; z-index: 100;
+}
+nav h1 { font-size: 1.2rem; font-weight: 700; }
+nav h1 span { color: var(--accent); }
+.nav-stats {
+  display: flex; gap: 20px; align-items: center; font-size: 0.85rem;
+}
+.stat-item { display: flex; align-items: center; gap: 6px; }
+.stat-item .icon { font-size: 1.1rem; }
+.streak-bar {
+  height: 6px; width: 120px; background: rgba(255,255,255,0.08);
+  border-radius: 3px; overflow: hidden;
+}
+.streak-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), #ffb84d);
+  border-radius: 3px; transition: width 0.5s ease;
+}
+/* ─── SCREENS ─── */
+.screen { display:none; padding: 24px; max-width: 900px; margin: 0 auto; }
+.screen.active { display:block; }
+
+/* ─── HOME ─── */
+#home .hero { text-align:center; padding: 40px 0 30px; }
+#home .hero h2 { font-size: 2rem; margin-bottom: 8px; }
+#home .hero p { color: var(--text-dim); font-size: 1.05rem; }
+.module-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px; margin-top: 24px;
+}
+.module-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 24px; cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+.module-card:hover {
+  background: var(--card-hover);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.module-card .module-icon { font-size: 2.2rem; margin-bottom: 12px; }
+.module-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
+.module-card p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; }
+.module-progress {
+  height: 6px; background: rgba(255,255,255,0.08);
+  border-radius: 3px; overflow: hidden;
+}
+.module-progress-fill {
+  height: 100%; border-radius: 3px; transition: width 0.5s ease;
+}
+.module-card .progress-label {
+  font-size: 0.75rem; color: var(--text-dim); margin-top: 6px;
+}
+
+/* ─── LEARN SCREEN ─── */
+#learn { text-align: center; }
+#learn .learn-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+#learn .learn-header h2 { font-size: 1.3rem; }
+.back-btn, .nav-btn {
+  background: rgba(255,255,255,0.08); border: none; color: var(--text);
+  padding: 8px 16px; border-radius: 10px; cursor: pointer;
+  font-size: 0.9rem; transition: background 0.2s;
+}
+.back-btn:hover, .nav-btn:hover { background: rgba(255,255,255,0.15); }
+
+.flashcard-container {
+  perspective: 1000px;
+  margin: 0 auto 24px;
+  max-width: 400px;
+}
+.flashcard {
+  width: 100%; aspect-ratio: 3/4;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+  cursor: pointer;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+.flashcard-front {
+  background: linear-gradient(145deg, var(--card), #3d2520);
+  border: 2px solid rgba(255,255,255,0.06);
+}
+.flashcard-back {
+  background: linear-gradient(145deg, #2f221e, #442a24);
+  border: 2px solid rgba(255,255,255,0.06);
+  transform: rotateY(180deg);
+}
+.letter-display {
+  font-size: 8rem; line-height: 1;
+  font-family: 'Noto Sans Bengali', 'Kalpurush', 'SolaimanLipi', sans-serif;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 20px rgba(244,165,50,0.3));
+}
+.letter-type-badge {
+  display: inline-block; padding: 4px 14px;
+  border-radius: 20px; font-size: 0.75rem;
+  font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 12px;
+}
+.badge-vowel { background: rgba(232,142,180,0.15); color: var(--vowel); }
+.badge-consonant { background: rgba(94,179,212,0.15); color: var(--consonant); }
+.badge-special { background: rgba(232,120,65,0.15); color: var(--special); }
+
+.letter-name { font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; }
+.letter-translit { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 4px; }
+.letter-sound { font-size: 1rem; color: var(--gold); }
+.letter-example { font-size: 0.9rem; color: var(--text-dim); margin-top: 8px; }
+
+.card-hint { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 16px; }
+.card-counter { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 16px; }
+.learn-nav {
+  display: flex; gap: 12px; justify-content: center; margin-top: 8px;
+}
+.learn-nav .nav-btn { min-width: 100px; }
+.btn-primary {
+  background: var(--accent); color: #1a0909; font-weight: 700;
+  border: none; padding: 12px 28px; border-radius: 12px;
+  cursor: pointer; font-size: 1rem; transition: all 0.2s;
+}
+.btn-primary:hover { background: #ffb84d; transform: translateY(-1px); }
+
+/* ─── QUIZ SCREEN ─── */
+#quiz { text-align: center; }
+#quiz .quiz-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.quiz-progress-bar {
+  width: 100%; height: 8px; background: rgba(255,255,255,0.08);
+  border-radius: 4px; margin-bottom: 32px; overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%; background: var(--accent); border-radius: 4px;
+  transition: width 0.4s ease;
+}
+.quiz-question-area {
+  background: var(--card); border-radius: var(--radius);
+  padding: 40px 32px; margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.quiz-prompt { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 12px; }
+.quiz-letter {
+  font-size: 7rem; line-height: 1;
+  font-family: 'Noto Sans Bengali', 'Kalpurush', 'SolaimanLipi', sans-serif;
+  margin-bottom: 16px;
+}
+.quiz-sub { font-size: 1rem; color: var(--text-dim); }
+.quiz-letter-roman {
+  font-size: 3.5rem; line-height: 1; margin-bottom: 16px;
+  color: var(--accent); font-weight: 700;
+}
+
+/* Multiple choice */
+.mc-options {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  max-width: 500px; margin: 0 auto;
+}
+.mc-btn {
+  background: var(--card); border: 2px solid rgba(255,255,255,0.1);
+  color: var(--text); padding: 16px; border-radius: 12px;
+  font-size: 1.05rem; cursor: pointer; transition: all 0.2s;
+}
+.mc-btn:hover:not(.disabled) {
+  border-color: var(--accent); background: var(--card-hover);
+}
+.mc-btn.correct {
+  border-color: var(--accent); background: rgba(244,165,50,0.12);
+  color: var(--accent);
+}
+.mc-btn.wrong {
+  border-color: var(--wrong); background: rgba(255,75,75,0.12);
+  color: var(--wrong);
+}
+.mc-btn.disabled { cursor: default; opacity: 0.6; }
+.mc-btn.reveal-correct {
+  border-color: var(--accent); background: rgba(244,165,50,0.08);
+}
+
+/* Fill in the blank */
+.fib-area { max-width: 400px; margin: 0 auto; }
+.fib-input {
+  width: 100%; padding: 14px 18px;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px; color: var(--text);
+  font-size: 1.15rem; text-align: center;
+  outline: none; transition: border-color 0.2s;
+}
+.fib-input:focus { border-color: var(--accent); }
+.fib-input.correct { border-color: var(--accent); }
+.fib-input.wrong { border-color: var(--wrong); }
+.fib-submit {
+  margin-top: 12px; width: 100%;
+}
+.fib-hint {
+  font-size: 0.8rem; color: var(--text-dim); margin-top: 8px;
+}
+
+/* Quiz feedback */
+.quiz-feedback {
+  margin-top: 16px; padding: 12px 20px;
+  border-radius: 10px; font-size: 0.95rem;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct-fb {
+  background: rgba(244,165,50,0.1); color: var(--accent);
+}
+.quiz-feedback.wrong-fb {
+  background: rgba(255,75,75,0.1); color: var(--wrong);
+}
+.quiz-next-btn {
+  margin-top: 20px; display: none;
+}
+.quiz-next-btn.show { display: inline-block; }
+
+/* ─── RESULTS SCREEN ─── */
+#results { text-align: center; padding-top: 60px; }
+.results-circle {
+  width: 160px; height: 160px; margin: 0 auto 24px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 2.5rem; font-weight: 800;
+  position: relative;
+}
+.results-circle svg {
+  position: absolute; inset: 0; transform: rotate(-90deg);
+}
+.results-circle circle {
+  fill: none; stroke-width: 8;
+}
+.results-circle .bg-ring { stroke: rgba(255,255,255,0.08); }
+.results-circle .fg-ring {
+  stroke: var(--accent); stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+.results-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+.results-sub { color: var(--text-dim); margin-bottom: 32px; }
+.results-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ─── ALPHABET CHART ─── */
+#chart { }
+#chart .chart-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.chart-section { margin-bottom: 32px; }
+.chart-section h3 {
+  font-size: 1.1rem; margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+.chart-cell {
+  background: var(--card); border-radius: 10px;
+  padding: 10px 6px; text-align: center; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.2s;
+  position: relative;
+}
+.chart-cell:hover {
+  border-color: var(--accent); background: var(--card-hover);
+}
+.chart-cell .chart-letter {
+  font-size: 1.8rem; line-height: 1.2;
+  font-family: 'Noto Sans Bengali', 'Kalpurush', 'SolaimanLipi', sans-serif;
+}
+.chart-cell .chart-romanized {
+  font-size: 0.65rem; color: var(--text-dim); margin-top: 2px;
+}
+.chart-cell .mastery-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.mastery-0 { background: rgba(255,255,255,0.1); }
+.mastery-1 { background: var(--wrong); }
+.mastery-2 { background: var(--gold); }
+.mastery-3 { background: var(--accent); }
+
+/* ─── PLACEMENT TEST ─── */
+.pt-cta-card {
+  background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 24px; cursor: pointer;
+  margin-bottom: 20px; text-align: center;
+  transition: all 0.2s;
+}
+.pt-cta-card:hover {
+  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+  transform: translateY(-2px); box-shadow: var(--shadow);
+}
+.pt-cta-card h3 { color: var(--gold); font-size: 1.15rem; margin-bottom: 4px; }
+.pt-cta-card p { color: var(--text-dim); font-size: 0.85rem; }
+
+.placement-stage-label {
+  display: inline-block; padding: 4px 14px;
+  border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  background: rgba(212,175,55,0.12); color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.placement-results-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; margin: 24px 0;
+}
+.placement-module-result {
+  background: var(--card); border-radius: var(--radius);
+  padding: 24px 16px; text-align: center;
+}
+.placement-module-result h4 { font-size: 0.95rem; margin-bottom: 12px; }
+.placement-module-result .pm-ring {
+  width: 100px; height: 100px; margin: 0 auto 12px;
+  position: relative;
+}
+.placement-module-result .pm-ring svg {
+  position: absolute; inset: 0; transform: rotate(-90deg);
+}
+.placement-module-result .pm-ring circle { fill: none; stroke-width: 6; }
+.placement-module-result .pm-ring .bg-ring { stroke: rgba(255,255,255,0.08); }
+.placement-module-result .pm-ring .fg-ring {
+  stroke: var(--accent); stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+.placement-module-result .pm-pct {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; font-weight: 700;
+}
+.placement-module-result .pm-detail {
+  font-size: 0.8rem; color: var(--text-dim);
+}
+
+.pt-retake-btn {
+  background: none; border: none; color: var(--gold);
+  padding: 12px 16px; font-size: 0.85rem; cursor: pointer;
+  font-weight: 600; transition: color 0.2s;
+}
+.pt-retake-btn:hover { color: #f4d58d; }
+
+@media (max-width: 600px) {
+  .placement-results-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── TAB BAR ─── */
+.tab-bar {
+  display: flex; gap: 0; background: var(--card);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 24px; position: sticky; top: 56px; z-index: 99;
+}
+.tab-btn {
+  background: none; border: none; color: var(--text-dim);
+  padding: 12px 20px; font-size: 0.95rem; cursor: pointer;
+  border-bottom: 3px solid transparent; transition: all 0.2s;
+  font-weight: 600;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ─── VOCAB BROWSE ─── */
+#vocab-browse .vb-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+}
+.vb-search {
+  flex: 1; min-width: 200px; padding: 10px 16px;
+  background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 10px; color: var(--text); font-size: 0.95rem; outline: none;
+}
+.vb-search:focus { border-color: var(--accent); }
+.cat-chips {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.cat-chip {
+  padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+  cursor: pointer; border: 2px solid rgba(255,255,255,0.08);
+  background: var(--card); color: var(--text-dim); transition: all 0.2s;
+  white-space: nowrap;
+}
+.cat-chip:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.cat-chip.active { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.08); }
+.vocab-list { display: flex; flex-direction: column; gap: 6px; }
+.vocab-row {
+  display: grid; grid-template-columns: 80px 1fr 1fr auto;
+  align-items: center; gap: 12px; padding: 12px 16px;
+  background: var(--card); border-radius: 10px; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.15s;
+}
+.vocab-row:hover { border-color: rgba(255,255,255,0.1); background: var(--card-hover); }
+.vocab-row .vr-bengali {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 1.3rem; font-weight: 600;
+}
+.vocab-row .vr-roman { color: var(--text-dim); font-size: 0.9rem; }
+.vocab-row .vr-english { font-size: 0.95rem; }
+.vocab-row .vr-mastery {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.vocab-pagination {
+  display: flex; justify-content: center; align-items: center;
+  gap: 12px; margin-top: 20px;
+}
+
+/* ─── VOCAB LEARN ─── */
+.vocab-card-bengali {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 4rem; line-height: 1.2; margin-bottom: 8px;
+}
+.vocab-card-roman { font-size: 1.2rem; color: var(--text-dim); margin-bottom: 16px; }
+.vocab-card-pos {
+  display: inline-block; padding: 3px 12px; border-radius: 16px;
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+  background: rgba(255,255,255,0.06); color: var(--text-dim); margin-bottom: 12px;
+}
+.vocab-card-english { font-size: 1.5rem; font-weight: 600; margin-bottom: 8px; }
+.vocab-card-cat { font-size: 0.85rem; color: var(--text-dim); }
+
+/* ─── VOCAB QUIZ ─── */
+.vq-bengali {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 4.5rem; line-height: 1.2;
+}
+.vq-hint { font-size: 0.9rem; color: var(--text-dim); margin-top: 4px; }
+
+/* ─── GRAMMAR ─── */
+.grammar-content {
+  max-width: 700px; margin: 0 auto;
+  background: var(--card); border-radius: var(--radius);
+  padding: 32px; box-shadow: var(--shadow);
+}
+.grammar-content h2 {
+  font-size: 1.4rem; margin-bottom: 8px;
+}
+.grammar-content .grammar-desc {
+  color: var(--text-dim); margin-bottom: 20px; font-size: 0.95rem;
+}
+.grammar-content .grammar-explanation {
+  line-height: 1.7; font-size: 1rem; white-space: pre-line; margin-bottom: 24px;
+}
+.grammar-example {
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px; margin-bottom: 10px;
+}
+.grammar-example .ge-bengali {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 1.3rem; font-weight: 600; margin-bottom: 2px;
+}
+.grammar-example .ge-roman { color: var(--text-dim); font-size: 0.85rem; }
+.grammar-example .ge-english { font-size: 0.95rem; margin-top: 2px; }
+.grammar-lesson-actions {
+  text-align: center; margin-top: 28px;
+}
+
+/* Word-order quiz */
+.word-order-area { max-width: 500px; margin: 0 auto; }
+.word-tiles {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-bottom: 20px; min-height: 50px;
+}
+.word-tile {
+  background: var(--card); border: 2px solid rgba(255,255,255,0.12);
+  color: var(--text); padding: 10px 18px; border-radius: 10px;
+  font-size: 1.1rem; cursor: pointer; transition: all 0.15s;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.word-tile:hover { border-color: var(--accent); background: var(--card-hover); }
+.word-tile.used { opacity: 0.3; pointer-events: none; }
+.answer-area-wo {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; min-height: 54px;
+  padding: 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 2px dashed rgba(255,255,255,0.1);
+  margin-bottom: 16px;
+}
+.answer-area-wo .word-tile {
+  background: rgba(244,165,50,0.1); border-color: var(--accent);
+}
+.answer-area-wo .word-tile:hover { background: rgba(255,75,75,0.1); border-color: var(--wrong); }
+.wo-check-btn { width: 100%; }
+.answer-area-wo.correct-wo { border-color: var(--accent); background: rgba(244,165,50,0.06); }
+.answer-area-wo.wrong-wo { border-color: var(--wrong); background: rgba(255,75,75,0.06); }
+
+/* ─── PROFILE SCREEN ─── */
+.profile-screen {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px;
+}
+.profile-screen.active { display: flex; }
+.profile-screen h1 { font-size: 1.8rem; margin-bottom: 4px; }
+.profile-screen h1 span { color: var(--accent); }
+.profile-screen .profile-subtitle {
+  color: var(--text-dim); font-size: 1rem; margin-bottom: 32px;
+}
+.profile-list {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  justify-content: center; max-width: 600px; margin-bottom: 24px;
+}
+.profile-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 24px 28px; cursor: pointer; text-align: center;
+  border: 2px solid transparent; transition: all 0.2s;
+  min-width: 140px;
+}
+.profile-card:hover {
+  border-color: var(--accent); background: var(--card-hover);
+  transform: translateY(-2px); box-shadow: var(--shadow);
+}
+.profile-card .pc-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+.profile-card .pc-stats { font-size: 0.8rem; color: var(--text-dim); }
+.profile-add {
+  background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.15);
+  border-radius: var(--radius); padding: 24px 28px; cursor: pointer;
+  text-align: center; transition: all 0.2s; min-width: 140px;
+}
+.profile-add:hover {
+  border-color: var(--accent); background: rgba(244,165,50,0.06);
+}
+.profile-add .pa-icon { font-size: 2rem; margin-bottom: 4px; color: var(--text-dim); }
+.profile-add .pa-label { font-size: 0.9rem; color: var(--text-dim); }
+.profile-input-wrap {
+  display: none; flex-direction: column; align-items: center; gap: 12px;
+}
+.profile-input-wrap.active { display: flex; }
+.profile-input {
+  padding: 12px 20px; background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.1); border-radius: 12px;
+  color: var(--text); font-size: 1.1rem; text-align: center;
+  outline: none; width: 260px;
+}
+.profile-input:focus { border-color: var(--accent); }
+.profile-input-actions { display: flex; gap: 10px; }
+.profile-input-actions .btn-primary { padding: 10px 24px; font-size: 0.9rem; }
+.profile-input-actions .btn-cancel {
+  background: rgba(255,255,255,0.08); border: none; color: var(--text);
+  padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 0.9rem;
+}
+
+/* Nav user button */
+.nav-user-btn {
+  background: rgba(255,255,255,0.08); border: none; color: var(--text);
+  padding: 6px 14px; border-radius: 20px; cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px; position: relative;
+}
+.nav-user-btn:hover { background: rgba(255,255,255,0.15); }
+.nav-user-btn .user-icon { font-size: 1rem; }
+.profile-menu {
+  display: none; position: absolute; top: 100%; right: 0; margin-top: 8px;
+  background: var(--card); border-radius: 12px; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); min-width: 180px; z-index: 300;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.profile-menu.open { display: block; }
+.profile-menu button {
+  display: block; width: 100%; text-align: left;
+  background: none; border: none; color: var(--text);
+  padding: 12px 18px; font-size: 0.9rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.profile-menu button:hover { background: rgba(255,255,255,0.06); }
+.profile-menu button.danger { color: var(--wrong); }
+
+/* ─── BACK TO SITE LINKS ─── */
+.back-to-site {
+  position: absolute; top: 20px; left: 24px;
+  color: var(--text-dim); font-size: 0.85rem; text-decoration: none;
+  opacity: 0.6; transition: opacity 0.2s;
+}
+.back-to-site:hover { opacity: 1; }
+.back-to-site-nav {
+  color: var(--text-dim); font-size: 0.8rem; text-decoration: none;
+  white-space: nowrap; opacity: 0.6; transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.back-to-site-nav:hover { opacity: 1; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .letter-display { font-size: 5rem; }
+  .quiz-letter { font-size: 5rem; }
+  .mc-options { grid-template-columns: 1fr; }
+  .module-grid { grid-template-columns: 1fr; }
+  nav { padding: 12px 16px; }
+  .screen { padding: 16px; }
+  .flashcard-face { padding: 24px; }
+  .tab-bar { padding: 0 12px; }
+  .tab-btn { padding: 10px 14px; font-size: 0.85rem; }
+  .vocab-row { grid-template-columns: 70px 1fr 1fr auto; gap: 8px; padding: 10px 12px; }
+  .vocab-row .vr-bengali { font-size: 1.1rem; }
+  .vocab-card-bengali { font-size: 3rem; }
+  .vq-bengali { font-size: 3.5rem; }
+  .grammar-content { padding: 20px; }
+  .word-tile { padding: 8px 14px; font-size: 1rem; }
+  .profile-card { min-width: 120px; padding: 18px 20px; }
+  .profile-input { width: 220px; }
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- PROFILE SELECTION SCREEN -->
+<div class="profile-screen" id="profile-screen">
+  <a href="https://robirahman.com" class="back-to-site">← robirahman.com</a>
+  <h1><span>বাংলা</span> শিক্ষা</h1>
+  <p class="profile-subtitle">Choose your profile</p>
+  <div class="profile-list" id="profile-list"></div>
+  <div class="profile-input-wrap" id="profile-input-wrap">
+    <input class="profile-input" id="profile-name-input" type="text" placeholder="Enter your name" maxlength="30" autocomplete="off">
+    <div class="profile-input-actions">
+      <button class="btn-primary" id="profile-create-btn" onclick="createProfile()">Start</button>
+      <button class="btn-cancel" id="profile-cancel-btn" onclick="cancelNewProfile()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<nav id="main-nav" style="display:none">
+  <div style="display:flex;align-items:center;gap:20px;">
+    <a href="https://robirahman.com" class="back-to-site-nav">← robirahman.com</a>
+    <h1><span>বাংলা</span> শিক্ষা</h1>
+  </div>
+  <div class="nav-stats">
+    <div class="stat-item"><span class="icon">🔥</span><span id="streak-count">0</span></div>
+    <div class="stat-item">
+      <span class="icon">⭐</span><span id="xp-count">0</span> XP
+    </div>
+    <div class="streak-bar"><div class="streak-fill" id="streak-bar-fill" style="width:0%"></div></div>
+    <button class="nav-user-btn" id="nav-user-btn" onclick="toggleProfileMenu(event)">
+      <span class="user-icon">👤</span>
+      <span id="nav-user-name"></span>
+      <div class="profile-menu" id="profile-menu">
+        <button onclick="switchProfile()">Switch Profile</button>
+        <button onclick="exportProgress()">Export Progress</button>
+        <button onclick="importProgress()">Import Progress</button>
+        <button class="danger" onclick="deleteCurrentProfile()">Delete Profile</button>
+      </div>
+    </button>
+  </div>
+</nav>
+
+<div class="tab-bar" id="tab-bar" style="display:none">
+  <button class="tab-btn active" onclick="switchTab('alphabet')">Alphabet</button>
+  <button class="tab-btn" onclick="switchTab('vocabulary')">Vocabulary</button>
+  <button class="tab-btn" onclick="switchTab('grammar')">Grammar</button>
+  <button class="pt-retake-btn" id="pt-retake-btn" style="display:none" onclick="startPlacementTest()">Retake Placement</button>
+</div>
+
+<!-- PLACEMENT TEST: INTRO -->
+<div class="screen" id="placement-intro">
+  <div style="text-align:center;padding:40px 0 20px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🎯</div>
+    <h2 style="font-size:1.6rem;margin-bottom:8px;">Placement Test</h2>
+    <p style="color:var(--text-dim);max-width:500px;margin:0 auto 24px;line-height:1.6;">
+      Already know some Bengali? Take this quick test to skip ahead.<br>
+      30 questions across alphabet, vocabulary, and grammar.<br>
+      We'll set your mastery levels based on your results.
+    </p>
+    <button class="btn-primary" onclick="beginPlacementQuiz()" style="font-size:1.1rem;padding:14px 36px;">Begin Test</button>
+    <div style="margin-top:16px;">
+      <a href="#" onclick="discardPlacementResults();return false;" style="color:var(--text-dim);font-size:0.85rem;">Skip — I'm a complete beginner</a>
+    </div>
+  </div>
+</div>
+
+<!-- PLACEMENT TEST: QUIZ -->
+<div class="screen" id="placement-quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="confirmQuitPlacement()">← Quit</button>
+    <h2 id="pt-quiz-title">Placement Test</h2>
+    <div id="pt-score">0 / 0</div>
+  </div>
+  <div class="placement-stage-label" id="pt-stage-label">Alphabet</div>
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill" id="pt-progress-fill"></div>
+  </div>
+  <div class="quiz-question-area" id="pt-question-area"></div>
+  <div id="pt-answer-area"></div>
+  <div class="quiz-feedback" id="pt-feedback"></div>
+  <button class="btn-primary quiz-next-btn" id="pt-next-btn" onclick="nextPlacementQuestion()">Continue →</button>
+</div>
+
+<!-- PLACEMENT TEST: RESULTS -->
+<div class="screen" id="placement-results">
+  <div style="text-align:center;padding-top:30px;">
+    <h2 style="font-size:1.6rem;margin-bottom:8px;">Placement Results</h2>
+    <p style="color:var(--text-dim);margin-bottom:24px;" id="pt-results-summary">Here's how you did:</p>
+    <div class="placement-results-grid" id="pt-results-grid"></div>
+    <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="applyPlacementResults()" style="padding:14px 32px;font-size:1.05rem;">Apply & Start Learning</button>
+      <button class="nav-btn" onclick="discardPlacementResults()">Discard & Start Fresh</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME (Alphabet) -->
+<div class="screen active" id="home">
+  <div class="hero">
+    <h2>বাংলা বর্ণমালা</h2>
+    <p>Master the Bengali alphabet step by step</p>
+  </div>
+  <div class="module-grid" id="module-grid"></div>
+</div>
+
+<!-- VOCAB HOME -->
+<div class="screen" id="vocab-home">
+  <div class="hero">
+    <h2>শব্দভাণ্ডার</h2>
+    <p>Learn the 1000 most common Bengali words</p>
+  </div>
+  <div class="module-grid" id="vocab-module-grid"></div>
+</div>
+
+<!-- VOCAB BROWSE -->
+<div class="screen" id="vocab-browse">
+  <div class="vb-header">
+    <button class="back-btn" onclick="showScreen('vocab-home')">← Back</button>
+    <input type="text" class="vb-search" id="vb-search" placeholder="Search words…" oninput="filterVocabList()">
+  </div>
+  <div class="cat-chips" id="cat-chips"></div>
+  <div class="vocab-list" id="vocab-list"></div>
+  <div class="vocab-pagination" id="vocab-pagination"></div>
+</div>
+
+<!-- VOCAB LEARN (flashcards) -->
+<div class="screen" id="vocab-learn">
+  <div class="learn-header">
+    <button class="back-btn" onclick="showScreen('vocab-home')">← Back</button>
+    <h2 id="vl-title">Category</h2>
+    <div class="card-counter" id="vl-counter">1 / 10</div>
+  </div>
+  <div class="card-hint">Tap card to flip</div>
+  <div class="flashcard-container">
+    <div class="flashcard" id="vocab-flashcard" onclick="flipVocabCard()">
+      <div class="flashcard-face flashcard-front">
+        <div class="vocab-card-bengali" id="vc-bengali">শব্দ</div>
+        <div class="vocab-card-roman" id="vc-roman">shobdo</div>
+      </div>
+      <div class="flashcard-face flashcard-back">
+        <div class="vocab-card-pos" id="vc-pos">noun</div>
+        <div class="vocab-card-english" id="vc-english">word</div>
+        <div class="vocab-card-cat" id="vc-cat">Education</div>
+      </div>
+    </div>
+  </div>
+  <div class="learn-nav">
+    <button class="nav-btn" id="vl-prev" onclick="prevVocabCard()">← Prev</button>
+    <button class="btn-primary" id="vl-quiz-btn" onclick="startVocabQuiz()">Start Quiz →</button>
+    <button class="nav-btn" id="vl-next" onclick="nextVocabCard()">Next →</button>
+  </div>
+</div>
+
+<!-- VOCAB QUIZ -->
+<div class="screen" id="vocab-quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="showScreen('vocab-home')">← Quit</button>
+    <h2 id="vq-title">Vocab Quiz</h2>
+    <div id="vq-score">0 / 0</div>
+  </div>
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill" id="vq-progress-fill"></div>
+  </div>
+  <div class="quiz-question-area" id="vq-question-area"></div>
+  <div id="vq-answer-area"></div>
+  <div class="quiz-feedback" id="vq-feedback"></div>
+  <button class="btn-primary quiz-next-btn" id="vq-next-btn" onclick="nextVocabQuestion()">Continue →</button>
+</div>
+
+<!-- VOCAB RESULTS -->
+<div class="screen" id="vocab-results">
+  <div class="results-circle" id="vr-circle">
+    <svg viewBox="0 0 160 160">
+      <circle class="bg-ring" cx="80" cy="80" r="72"/>
+      <circle class="fg-ring" id="vr-ring" cx="80" cy="80" r="72"
+        stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+    </svg>
+    <span id="vr-pct">0%</span>
+  </div>
+  <div class="results-title" id="vr-title">Great job!</div>
+  <div class="results-sub" id="vr-sub">You scored 8/10</div>
+  <div class="results-actions">
+    <button class="btn-primary" onclick="retryVocabQuiz()">Try Again</button>
+    <button class="nav-btn" onclick="showScreen('vocab-home')">Home</button>
+  </div>
+</div>
+
+<!-- LEARN -->
+<div class="screen" id="learn">
+  <div class="learn-header">
+    <button class="back-btn" onclick="showScreen('home')">← Back</button>
+    <h2 id="learn-title">Vowels</h2>
+    <div class="card-counter" id="card-counter">1 / 11</div>
+  </div>
+  <div class="card-hint">Tap card to flip</div>
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="flashcard-face flashcard-front" id="card-front">
+        <div class="letter-type-badge badge-vowel" id="card-badge">VOWEL</div>
+        <div class="letter-display" id="card-letter">অ</div>
+      </div>
+      <div class="flashcard-face flashcard-back" id="card-back">
+        <div class="letter-name" id="card-name">Ô (Shôro Ô)</div>
+        <div class="letter-translit" id="card-translit">Romanized: ô / o</div>
+        <div class="letter-sound" id="card-sound">Sound: /ɔ/ like "o" in "hot"</div>
+        <div class="letter-example" id="card-example">Example: অজ (ôj) — indigestion</div>
+      </div>
+    </div>
+  </div>
+  <div class="learn-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevCard()">← Prev</button>
+    <button class="btn-primary" id="quiz-start-btn" onclick="startQuiz()">Start Quiz →</button>
+    <button class="nav-btn" id="next-btn" onclick="nextCard()">Next →</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="showScreen('home')">← Quit</button>
+    <h2 id="quiz-title">Quiz</h2>
+    <div id="quiz-score">0 / 0</div>
+  </div>
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+  </div>
+  <div class="quiz-question-area" id="quiz-question-area"></div>
+  <div id="quiz-answer-area"></div>
+  <div class="quiz-feedback" id="quiz-feedback"></div>
+  <button class="btn-primary quiz-next-btn" id="quiz-next-btn" onclick="nextQuestion()">Continue →</button>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="results">
+  <div class="results-circle" id="results-circle">
+    <svg viewBox="0 0 160 160">
+      <circle class="bg-ring" cx="80" cy="80" r="72"/>
+      <circle class="fg-ring" id="results-ring" cx="80" cy="80" r="72"
+        stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+    </svg>
+    <span id="results-pct">0%</span>
+  </div>
+  <div class="results-title" id="results-title">Great job!</div>
+  <div class="results-sub" id="results-sub">You scored 8/10</div>
+  <div class="results-actions">
+    <button class="btn-primary" onclick="retryQuiz()">Try Again</button>
+    <button class="nav-btn" onclick="showScreen('home')">Home</button>
+  </div>
+</div>
+
+<!-- CHART -->
+<div class="screen" id="chart">
+  <div class="chart-header">
+    <button class="back-btn" onclick="showScreen('home')">← Back</button>
+    <h2>Full Alphabet Chart</h2>
+  </div>
+  <div id="chart-content"></div>
+</div>
+
+<!-- GRAMMAR HOME -->
+<div class="screen" id="grammar-home">
+  <div class="hero">
+    <h2>ব্যাকরণ</h2>
+    <p>Master Bengali grammar in 20 structured lessons</p>
+  </div>
+  <div class="module-grid" id="grammar-module-grid"></div>
+</div>
+
+<!-- GRAMMAR LESSON -->
+<div class="screen" id="grammar-lesson">
+  <div class="learn-header">
+    <button class="back-btn" onclick="showScreen('grammar-home')">← Back</button>
+    <h2 id="gl-title">Lesson</h2>
+    <div></div>
+  </div>
+  <div class="grammar-content" id="gl-content"></div>
+</div>
+
+<!-- GRAMMAR QUIZ -->
+<div class="screen" id="grammar-quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="showScreen('grammar-home')">← Quit</button>
+    <h2 id="gq-title">Grammar Quiz</h2>
+    <div id="gq-score">0 / 0</div>
+  </div>
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill" id="gq-progress-fill"></div>
+  </div>
+  <div class="quiz-question-area" id="gq-question-area"></div>
+  <div id="gq-answer-area"></div>
+  <div class="quiz-feedback" id="gq-feedback"></div>
+  <button class="btn-primary quiz-next-btn" id="gq-next-btn" onclick="nextGrammarQuestion()">Continue →</button>
+</div>
+
+<!-- GRAMMAR RESULTS -->
+<div class="screen" id="grammar-results">
+  <div class="results-circle" id="gr-circle">
+    <svg viewBox="0 0 160 160">
+      <circle class="bg-ring" cx="80" cy="80" r="72"/>
+      <circle class="fg-ring" id="gr-ring" cx="80" cy="80" r="72"
+        stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+    </svg>
+    <span id="gr-pct">0%</span>
+  </div>
+  <div class="results-title" id="gr-title">Great job!</div>
+  <div class="results-sub" id="gr-sub">You scored 8/10</div>
+  <div class="results-actions">
+    <button class="btn-primary" onclick="retryGrammarQuiz()">Try Again</button>
+    <button class="nav-btn" onclick="showScreen('grammar-home')">Home</button>
+  </div>
+</div>
+
+<script src="grammar.js"></script>
+<script src="vocab.js"></script>
+<script>
+// ════════════════════════════════════════
+//  BENGALI ALPHABET DATA
+// ════════════════════════════════════════
+const VOWELS = [
+  { letter:"অ", name:"Ô (Shôro Ô)", romanized:"ô / o", ipa:"/ɔ/", sound:'Like "o" in "hot"', example:"অজ (ôj) — indigestion" },
+  { letter:"আ", name:"A (Shôro A)", romanized:"a / aa", ipa:"/a/", sound:'Like "a" in "father"', example:"আম (am) — mango" },
+  { letter:"ই", name:"I (Hrôshsho I)", romanized:"i", ipa:"/i/", sound:'Like "ee" in "see" (short)', example:"ইট (iṭ) — brick" },
+  { letter:"ঈ", name:"II (Dirgho II)", romanized:"ii / ī", ipa:"/iː/", sound:'Like "ee" in "see" (long)', example:"ঈদ (īd) — Eid" },
+  { letter:"উ", name:"U (Hrôshsho U)", romanized:"u", ipa:"/u/", sound:'Like "oo" in "food" (short)', example:"উট (uṭ) — camel" },
+  { letter:"ঊ", name:"UU (Dirgho UU)", romanized:"uu / ū", ipa:"/uː/", sound:'Like "oo" in "food" (long)', example:"ঊন (ūn) — minus" },
+  { letter:"ঋ", name:"Ri (Ri)", romanized:"ri / ṛ", ipa:"/ri/", sound:'Like "ri" in "rip"', example:"ঋতু (ritu) — season" },
+  { letter:"এ", name:"E (E)", romanized:"e / ē", ipa:"/e/", sound:'Like "ay" in "say"', example:"একটা (ekṭa) — one" },
+  { letter:"ঐ", name:"OI (OI)", romanized:"oi", ipa:"/oi/", sound:'Like "oy" in "boy"', example:"ঐক্য (oikko) — unity" },
+  { letter:"ও", name:"O (O)", romanized:"o / ō", ipa:"/o/", sound:'Like "o" in "go"', example:"ওজন (ojon) — weight" },
+  { letter:"ঔ", name:"OU (OU)", romanized:"ou", ipa:"/ou/", sound:'Like "ow" in "cow"', example:"ঔষধ (oushôdh) — medicine" },
+];
+
+const CONSONANTS_VELAR = [
+  { letter:"ক", name:"Kô", romanized:"k / kô", ipa:"/k/", sound:'Like "k" in "kite"', example:"কলম (kôlôm) — pen" },
+  { letter:"খ", name:"Khô", romanized:"kh / khô", ipa:"/kʰ/", sound:'Aspirated "k", like "k" in "kin"', example:"খবর (khôbôr) — news" },
+  { letter:"গ", name:"Gô", romanized:"g / gô", ipa:"/ɡ/", sound:'Like "g" in "go"', example:"গরু (goru) — cow" },
+  { letter:"ঘ", name:"Ghô", romanized:"gh / ghô", ipa:"/ɡʱ/", sound:'Aspirated "g"', example:"ঘর (ghôr) — house" },
+  { letter:"ঙ", name:"Ngô (Umô)", romanized:"ng / ṅ", ipa:"/ŋ/", sound:'Like "ng" in "sing"', example:"বাঙালি (bangali) — Bengali" },
+];
+
+const CONSONANTS_PALATAL = [
+  { letter:"চ", name:"Chô", romanized:"ch / chô", ipa:"/tʃ/", sound:'Like "ch" in "chat"', example:"চা (cha) — tea" },
+  { letter:"ছ", name:"Chhô", romanized:"chh / chhô", ipa:"/tʃʰ/", sound:'Aspirated "ch"', example:"ছবি (chhobi) — picture" },
+  { letter:"জ", name:"Jô (Borgiyo Jô)", romanized:"j / jô", ipa:"/dʒ/", sound:'Like "j" in "jam"', example:"জল (jôl) — water" },
+  { letter:"ঝ", name:"Jhô", romanized:"jh / jhô", ipa:"/dʒʱ/", sound:'Aspirated "j"', example:"ঝড় (jhôṛ) — storm" },
+  { letter:"ঞ", name:"Niyô (Ñô)", romanized:"ny / ñ", ipa:"/ɲ/", sound:'Like "ny" in "canyon"', example:"মিঞা (minya) — mister" },
+];
+
+const CONSONANTS_RETROFLEX = [
+  { letter:"ট", name:"Ṭô (Murdhonyo Ṭô)", romanized:"ṭ / ṭô", ipa:"/ʈ/", sound:'Retroflex "t" (tongue curled back)', example:"টাকা (ṭaka) — money" },
+  { letter:"ঠ", name:"Ṭhô", romanized:"ṭh / ṭhô", ipa:"/ʈʰ/", sound:'Aspirated retroflex "t"', example:"ঠান্ডা (ṭhanḍa) — cold" },
+  { letter:"ড", name:"Ḍô", romanized:"ḍ / ḍô", ipa:"/ɖ/", sound:'Retroflex "d" (tongue curled back)', example:"ডাক (ḍak) — mail" },
+  { letter:"ঢ", name:"Ḍhô", romanized:"ḍh / ḍhô", ipa:"/ɖʱ/", sound:'Aspirated retroflex "d"', example:"ঢাকা (ḍhaka) — Dhaka" },
+  { letter:"ণ", name:"Nô (Murdhonyo Nô)", romanized:"ṇ / ṇô", ipa:"/ɳ/", sound:'Retroflex "n" (tongue curled back)', example:"বাণ (baṇ) — arrow" },
+];
+
+const CONSONANTS_DENTAL = [
+  { letter:"ত", name:"Tô (Dontyo Tô)", romanized:"t / tô", ipa:"/t̪/", sound:'Dental "t" (tongue touches teeth)', example:"তারা (tara) — they/star" },
+  { letter:"থ", name:"Thô", romanized:"th / thô", ipa:"/t̪ʰ/", sound:'Aspirated dental "t"', example:"থালা (thala) — plate" },
+  { letter:"দ", name:"Dô (Dontyo Dô)", romanized:"d / dô", ipa:"/d̪/", sound:'Dental "d" (tongue touches teeth)', example:"দিন (din) — day" },
+  { letter:"ধ", name:"Dhô", romanized:"dh / dhô", ipa:"/d̪ʱ/", sound:'Aspirated dental "d"', example:"ধান (dhan) — paddy" },
+  { letter:"ন", name:"Nô (Dontyo Nô)", romanized:"n / nô", ipa:"/n/", sound:'Like "n" in "no"', example:"নদী (nôdi) — river" },
+];
+
+const CONSONANTS_LABIAL = [
+  { letter:"প", name:"Pô", romanized:"p / pô", ipa:"/p/", sound:'Like "p" in "spin"', example:"পানি (pani) — water" },
+  { letter:"ফ", name:"Phô", romanized:"ph / phô", ipa:"/pʰ/", sound:'Aspirated "p" or "f" sound', example:"ফুল (phul) — flower" },
+  { letter:"ব", name:"Bô", romanized:"b / bô", ipa:"/b/", sound:'Like "b" in "bat"', example:"বই (boi) — book" },
+  { letter:"ভ", name:"Bhô", romanized:"bh / bhô", ipa:"/bʱ/", sound:'Aspirated "b"', example:"ভাত (bhat) — rice" },
+  { letter:"ম", name:"Mô", romanized:"m / mô", ipa:"/m/", sound:'Like "m" in "man"', example:"মা (ma) — mother" },
+];
+
+const CONSONANTS_OTHER = [
+  { letter:"য", name:"Jô (Antahsthô Jô)", romanized:"j / z", ipa:"/dʒ/ or /z/", sound:'Like "j" or "z" depending on position', example:"যা (ja) — go" },
+  { letter:"র", name:"Rô", romanized:"r / rô", ipa:"/r/", sound:'Flapped "r" like Spanish "r"', example:"রং (rông) — color" },
+  { letter:"ল", name:"Lô", romanized:"l / lô", ipa:"/l/", sound:'Like "l" in "lamp"', example:"লাল (lal) — red" },
+  { letter:"শ", name:"Shô (Talobbo Shô)", romanized:"sh / shô", ipa:"/ʃ/", sound:'Like "sh" in "ship"', example:"শিক্ষা (shikkha) — education" },
+  { letter:"ষ", name:"Shô (Murdhonyo Shô)", romanized:"ṣh / ṣhô", ipa:"/ʃ/", sound:'Like "sh" (retroflex, same as শ in modern)', example:"ষাঁড় (shaṛ) — bull" },
+  { letter:"স", name:"Sô (Dontyo Sô)", romanized:"s / sô", ipa:"/s/", sound:'Like "s" in "sun"', example:"সূর্য (shurjo) — sun" },
+  { letter:"হ", name:"Hô", romanized:"h / hô", ipa:"/h/", sound:'Like "h" in "hat"', example:"হাত (hat) — hand" },
+];
+
+const CONSONANTS_SPECIAL = [
+  { letter:"ড়", name:"Ṛô (Ḍô-e Shunno)", romanized:"ṛ / ṛô", ipa:"/ɽ/", sound:'Flapped retroflex "r"', example:"পড়া (pôṛa) — to read" },
+  { letter:"ঢ়", name:"Ṛhô (Ḍhô-e Shunno)", romanized:"ṛh / ṛhô", ipa:"/ɽʱ/", sound:'Aspirated flapped retroflex', example:"আষাঢ় (ashaṛh) — month name" },
+  { letter:"য়", name:"Yô (Ôntohsthô Yô)", romanized:"y / yô", ipa:"/j/", sound:'Like "y" in "yes"', example:"যায় (jay) — goes" },
+  { letter:"ৎ", name:"Khônḍô Tô", romanized:"t", ipa:"/t/", sound:'Abrupt "t" (unreleased stop)', example:"হাৎ (hat) — sudden stop" },
+  { letter:"ং", name:"Anushshar", romanized:"ng / ṃ", ipa:"/ŋ/", sound:'Nasal "ng" at end of syllable', example:"বাংলা (bangla) — Bengali" },
+  { letter:"ঃ", name:"Bishôrgô", romanized:"h / ḥ", ipa:"/h/", sound:'Light aspiration / breath', example:"দুঃখ (dukhkhô) — sorrow" },
+  { letter:"ঁ", name:"Chôndrobindu", romanized:"~n / n̐", ipa:"/◌̃/", sound:'Nasalizes the preceding vowel', example:"চাঁদ (chãd) — moon" },
+];
+
+const ALL_CONSONANTS = [
+  ...CONSONANTS_VELAR, ...CONSONANTS_PALATAL, ...CONSONANTS_RETROFLEX,
+  ...CONSONANTS_DENTAL, ...CONSONANTS_LABIAL, ...CONSONANTS_OTHER,
+  ...CONSONANTS_SPECIAL,
+];
+
+const ALL_LETTERS = [
+  ...VOWELS.map(v => ({...v, type:'vowel'})),
+  ...ALL_CONSONANTS.map(c => ({...c, type:'consonant'})),
+];
+
+// ════════════════════════════════════════
+//  MODULES
+// ════════════════════════════════════════
+const MODULES = [
+  { id:'mixed', title:'Mixed Practice', desc:'Adaptive lessons — new letters introduced as you master earlier ones', icon:'🧠', isMixed: true, color: () => 'var(--accent)' },
+  { id:'vowels', title:'Vowels (স্বরবর্ণ)', desc:'11 vowel letters — the foundation', icon:'🔤', letters: VOWELS.map(v=>({...v,type:'vowel'})), color: var_vowel },
+  { id:'consonants-1', title:'Consonants I (ক–ঙ)', desc:'Velar stops — k/kh/g/gh/ng', icon:'🅰️', letters: CONSONANTS_VELAR.map(c=>({...c,type:'consonant'})), color: var_consonant },
+  { id:'consonants-2', title:'Consonants II (চ–ঞ)', desc:'Palatal stops — ch/chh/j/jh/ny', icon:'🅱️', letters: CONSONANTS_PALATAL.map(c=>({...c,type:'consonant'})), color: var_consonant },
+  { id:'consonants-3', title:'Consonants III (ট–ণ)', desc:'Retroflex stops — tongue curled back', icon:'🔡', letters: CONSONANTS_RETROFLEX.map(c=>({...c,type:'consonant'})), color: var_consonant },
+  { id:'consonants-4', title:'Consonants IV (ত–ন)', desc:'Dental stops — tongue touches teeth', icon:'📝', letters: CONSONANTS_DENTAL.map(c=>({...c,type:'consonant'})), color: var_consonant },
+  { id:'consonants-5', title:'Consonants V (প–ম)', desc:'Labial stops — lips together', icon:'💬', letters: CONSONANTS_LABIAL.map(c=>({...c,type:'consonant'})), color: var_consonant },
+  { id:'consonants-6', title:'Consonants VI (য–হ)', desc:'Semivowels, liquids & sibilants', icon:'🔊', letters: CONSONANTS_OTHER.map(c=>({...c,type:'consonant'})), color: var_consonant },
+  { id:'special', title:'Special Characters', desc:'Modifiers & extra letters (ড়, ং, ঃ…)', icon:'✨', letters: CONSONANTS_SPECIAL.map(c=>({...c,type:'consonant'})), color: var_special },
+  { id:'chart', title:'Full Alphabet Chart', desc:'Review all 50 letters at a glance', icon:'📊', isChart: true },
+];
+
+// ════════════════════════════════════════
+//  MIXED PRACTICE — ADAPTIVE ALGORITHM
+// ════════════════════════════════════════
+// Letters are introduced in a deliberate curriculum order: common vowels
+// first, then the most frequent consonants, spreading across groups so
+// the learner sees variety early.  New letters unlock only once the
+// current working set is sufficiently familiar.
+
+const MIXED_CURRICULUM = [
+  // Wave 1 — first 5: core vowels
+  ...['অ','আ','ই','উ','এ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 2 — first consonants (common, across groups)
+  ...['ক','গ','ত','প','ম'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 3 — more vowels + high-frequency consonants
+  ...['ও','ঈ','ঊ','ন','র'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 4
+  ...['ল','স','হ','ব','দ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 5
+  ...['চ','জ','শ','খ','ট'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 6
+  ...['ঐ','ঔ','ঋ','ফ','ভ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 7
+  ...['ঘ','ঙ','ছ','ঝ','ঞ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 8
+  ...['ঠ','ড','ঢ','ণ','থ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 9
+  ...['ধ','য','ষ','ং','ৎ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+  // Wave 10 — remaining special characters
+  ...['ড়','ঢ়','য়','ঃ','ঁ'].map(l => ALL_LETTERS.find(x => x.letter === l)),
+].filter(Boolean);
+
+const MIXED_WAVE_SIZE = 5;        // letters per wave
+const MIXED_INTRO_BATCH = 3;      // new letters shown as flashcards before a quiz
+const UNLOCK_THRESHOLD = 2;       // mastery level to count a letter as "familiar"
+                                  // (0=unseen, 1=seen, 2=learning, 3=mastered)
+const MIXED_QUIZ_SIZE = 8;        // questions per quiz round
+
+/**
+ * Determine how many letters the user has unlocked so far.
+ * A new wave unlocks when ≥60% of the previous wave's letters are at
+ * or above UNLOCK_THRESHOLD.
+ */
+function getMixedUnlockedCount() {
+  let unlocked = MIXED_WAVE_SIZE; // first wave is always available
+  while (unlocked < MIXED_CURRICULUM.length) {
+    // Check the most recently unlocked wave
+    const waveStart = unlocked - MIXED_WAVE_SIZE;
+    const wave = MIXED_CURRICULUM.slice(waveStart, unlocked);
+    const familiar = wave.filter(l => getMastery(l.letter) >= UNLOCK_THRESHOLD).length;
+    if (familiar >= Math.ceil(wave.length * 0.6)) {
+      unlocked = Math.min(unlocked + MIXED_WAVE_SIZE, MIXED_CURRICULUM.length);
+    } else {
+      break;
+    }
+  }
+  return unlocked;
+}
+
+/**
+ * Build a mixed session.  Returns { teach: [...], quiz: [...] }.
+ *  - teach: new (unseen) letters to introduce via flashcards first.
+ *  - quiz:  a set to drill, weighted toward lower-mastery letters,
+ *           mixing old and new.
+ */
+function buildMixedSession() {
+  const unlocked = getMixedUnlockedCount();
+  const pool = MIXED_CURRICULUM.slice(0, unlocked);
+
+  // Find letters not yet seen (mastery 0)
+  const unseen = pool.filter(l => getMastery(l.letter) === 0);
+  // Pick a small batch to teach
+  const teach = unseen.slice(0, MIXED_INTRO_BATCH);
+
+  // For the quiz, rank all unlocked letters by priority:
+  //   mastery 1 (just seen)  → highest priority
+  //   mastery 2 (learning)   → medium
+  //   mastery 0 (about-to-be-taught) → medium-high (they'll see flashcards first)
+  //   mastery 3 (mastered)   → lowest, but still include some for maintenance
+  const prioritized = [...pool].sort((a, b) => {
+    const ma = getMastery(a.letter), mb = getMastery(b.letter);
+    // Score: lower = quiz sooner.  Mastered letters get a random
+    // bump so they still appear occasionally.
+    const sa = ma === 3 ? 3 + Math.random() * 2 : ma === 0 ? 0.5 : ma === 1 ? 0 : 1;
+    const sb = mb === 3 ? 3 + Math.random() * 2 : mb === 0 ? 0.5 : mb === 1 ? 0 : 1;
+    return sa - sb;
+  });
+
+  const quiz = prioritized.slice(0, Math.min(MIXED_QUIZ_SIZE, pool.length));
+  return { teach, quiz, unlocked, total: MIXED_CURRICULUM.length };
+}
+
+let mixedSession = null;
+
+function startMixedPractice() {
+  mixedSession = buildMixedSession();
+
+  if (mixedSession.teach.length > 0) {
+    // Show flashcards for new letters first, then auto-start quiz
+    currentModule = {
+      id: 'mixed',
+      title: 'New Letters',
+      letters: mixedSession.teach,
+      isMixed: true,
+    };
+    currentCardIndex = 0;
+    document.getElementById('learn-title').textContent = 'New Letters';
+    document.getElementById('quiz-start-btn').textContent = 'Practice Quiz →';
+    document.getElementById('quiz-start-btn').onclick = () => launchMixedQuiz();
+    showCard();
+    showScreen('learn');
+  } else {
+    // Nothing new to teach — go straight to quiz
+    launchMixedQuiz();
+  }
+}
+
+function launchMixedQuiz() {
+  if (!mixedSession) mixedSession = buildMixedSession();
+  currentModule = {
+    id: 'mixed',
+    title: 'Mixed Practice',
+    letters: mixedSession.quiz,
+    isMixed: true,
+  };
+  quizModuleRef = currentModule;
+  generateQuiz(currentModule.letters);
+  quizIndex = 0;
+  quizCorrect = 0;
+  document.getElementById('quiz-title').textContent = 'Mixed Practice';
+  showScreen('quiz');
+  renderQuestion();
+  updateStreak();
+}
+
+function var_vowel(){ return 'var(--vowel)'; }
+function var_consonant(){ return 'var(--consonant)'; }
+function var_special(){ return 'var(--special)'; }
+
+// ════════════════════════════════════════
+//  PROGRESS / STATE
+// ════════════════════════════════════════
+let progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+let _saveTimer = null;
+let currentUser = null;
+
+// ── localStorage helpers ──
+const LS_PREFIX = 'bengali_progress_';
+
+function _lsKey(name) {
+  return LS_PREFIX + name;
+}
+
+function _loadProgressLS(name) {
+  try {
+    const raw = localStorage.getItem(_lsKey(name));
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && data.mastery) return data;
+    }
+  } catch(e) {}
+  return { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+}
+
+function _saveProgressLS(name, data) {
+  localStorage.setItem(_lsKey(name), JSON.stringify(data));
+}
+
+function _deleteProgressLS(name) {
+  localStorage.removeItem(_lsKey(name));
+}
+
+function _listUsers() {
+  const users = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(LS_PREFIX)) {
+      const name = key.slice(LS_PREFIX.length);
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        users.push({ name, xp: data.xp || 0, streak: data.streak || 0 });
+      } catch(e) {
+        users.push({ name, xp: 0, streak: 0 });
+      }
+    }
+  }
+  return users.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function loadProgress() {
+  return _loadProgressLS(currentUser);
+}
+
+function saveProgress() {
+  // Debounce writes — flush at most every 500ms
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(_flushSave, 500);
+}
+
+function _flushSave() {
+  _saveTimer = null;
+  if (currentUser) _saveProgressLS(currentUser, progress);
+}
+
+function getMastery(letter) {
+  return progress.mastery[letter] || 0; // 0=unseen, 1=seen, 2=learning, 3=mastered
+}
+
+function addMastery(letter, correct) {
+  const cur = getMastery(letter);
+  if (correct) {
+    progress.mastery[letter] = Math.min(3, cur + 1);
+  } else {
+    progress.mastery[letter] = Math.max(1, cur - 1);
+  }
+  saveProgress();
+}
+
+function getModuleProgress(mod) {
+  if (mod.isChart) return null;
+  let total = mod.letters.length;
+  let mastered = mod.letters.filter(l => getMastery(l.letter) >= 3).length;
+  let seen = mod.letters.filter(l => getMastery(l.letter) >= 1).length;
+  return { total, mastered, seen, pct: Math.round((mastered / total) * 100) };
+}
+
+function updateStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (progress.lastDate === today) return;
+  if (progress.lastDate) {
+    const last = new Date(progress.lastDate);
+    const now = new Date(today);
+    const diff = (now - last) / (1000*60*60*24);
+    if (diff <= 1) {
+      progress.streak++;
+    } else {
+      progress.streak = 1;
+    }
+  } else {
+    progress.streak = 1;
+  }
+  progress.lastDate = today;
+  saveProgress();
+}
+
+function addXP(amount) {
+  progress.xp += amount;
+  saveProgress();
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('streak-count').textContent = progress.streak;
+  document.getElementById('xp-count').textContent = progress.xp;
+  // streak bar: fills based on days toward 7-day streak
+  const pct = Math.min(100, (progress.streak / 7) * 100);
+  document.getElementById('streak-bar-fill').style.width = pct + '%';
+}
+
+// ════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'home') renderHome();
+  if (id === 'chart') renderChart();
+}
+
+// ════════════════════════════════════════
+//  HOME
+// ════════════════════════════════════════
+function renderHome() {
+  const grid = document.getElementById('module-grid');
+  grid.innerHTML = '';
+  // Placement test card
+  // Remove stale PT card first, then re-add if needed
+  const oldPt = grid.parentElement.querySelector('.pt-cta-card');
+  if (oldPt) oldPt.remove();
+  if (shouldShowPlacementCard()) {
+    const ptCard = document.createElement('div');
+    ptCard.className = 'pt-cta-card';
+    ptCard.innerHTML = '<h3>🎯 Take the Placement Test</h3><p>Already know some Bengali? Skip ahead based on your level.</p>';
+    ptCard.onclick = () => startPlacementTest();
+    grid.parentElement.insertBefore(ptCard, grid);
+  }
+  MODULES.forEach(mod => {
+    const card = document.createElement('div');
+    card.className = 'module-card';
+
+    let progressHTML;
+    if (mod.isMixed) {
+      const unlocked = getMixedUnlockedCount();
+      const total = MIXED_CURRICULUM.length;
+      const mastered = MIXED_CURRICULUM.filter(l => getMastery(l.letter) >= 3).length;
+      const pct = Math.round((mastered / total) * 100);
+      const wave = Math.ceil(unlocked / MIXED_WAVE_SIZE);
+      const totalWaves = Math.ceil(total / MIXED_WAVE_SIZE);
+      progressHTML = `<div class="module-progress"><div class="module-progress-fill" style="width:${pct}%;background:${mod.color()}"></div></div>
+        <div class="progress-label">${mastered}/${total} mastered · Wave ${wave}/${totalWaves} unlocked</div>`;
+    } else {
+      const prog = getModuleProgress(mod);
+      progressHTML = prog ?
+        `<div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:${mod.color()}"></div></div>
+         <div class="progress-label">${prog.mastered}/${prog.total} mastered</div>` :
+        `<div class="progress-label">Reference</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="module-icon">${mod.icon}</div>
+      <h3>${mod.title}</h3>
+      <p>${mod.desc}</p>
+      ${progressHTML}
+    `;
+    card.onclick = () => {
+      if (mod.isChart) {
+        showScreen('chart');
+      } else if (mod.isMixed) {
+        startMixedPractice();
+      } else {
+        startLearn(mod);
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════
+//  LEARN (FLASHCARDS)
+// ════════════════════════════════════════
+let currentModule = null;
+let currentCardIndex = 0;
+
+function startLearn(mod) {
+  currentModule = mod;
+  currentCardIndex = 0;
+  document.getElementById('learn-title').textContent = mod.title;
+  // Reset quiz button to default behaviour (may have been overridden by mixed mode)
+  const qbtn = document.getElementById('quiz-start-btn');
+  qbtn.textContent = 'Start Quiz →';
+  qbtn.onclick = () => startQuiz();
+  showCard();
+  showScreen('learn');
+}
+
+function showCard() {
+  const card = currentModule.letters[currentCardIndex];
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+
+  document.getElementById('card-letter').textContent = card.letter;
+  const badge = document.getElementById('card-badge');
+  badge.textContent = card.type.toUpperCase();
+  badge.className = 'letter-type-badge badge-' + card.type;
+
+  document.getElementById('card-name').textContent = card.name;
+  document.getElementById('card-translit').textContent = 'Romanized: ' + card.romanized;
+  document.getElementById('card-sound').textContent = 'Sound: ' + card.ipa + ' — ' + card.sound;
+  document.getElementById('card-example').textContent = 'Example: ' + card.example;
+
+  document.getElementById('card-counter').textContent =
+    (currentCardIndex + 1) + ' / ' + currentModule.letters.length;
+
+  document.getElementById('prev-btn').style.visibility = currentCardIndex === 0 ? 'hidden' : 'visible';
+
+  // Mark as seen
+  if (getMastery(card.letter) === 0) {
+    progress.mastery[card.letter] = 1;
+    saveProgress();
+  }
+}
+
+function flipCard() {
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function nextCard() {
+  if (currentCardIndex < currentModule.letters.length - 1) {
+    currentCardIndex++;
+    showCard();
+  }
+}
+
+function prevCard() {
+  if (currentCardIndex > 0) {
+    currentCardIndex--;
+    showCard();
+  }
+}
+
+// ════════════════════════════════════════
+//  QUIZ
+// ════════════════════════════════════════
+let quizQuestions = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizAnswered = false;
+let quizModuleRef = null;
+
+function startQuiz() {
+  quizModuleRef = currentModule;
+  generateQuiz(currentModule.letters);
+  quizIndex = 0;
+  quizCorrect = 0;
+  document.getElementById('quiz-title').textContent = currentModule.title + ' Quiz';
+  showScreen('quiz');
+  renderQuestion();
+  updateStreak();
+}
+
+function generateStringPair(pool) {
+  const special = new Set(['ৎ', 'ং', 'ঃ', 'ঁ']);
+  const usable = pool.filter(l => !special.has(l.letter));
+  if (usable.length < 2) return null;
+  const len = Math.min(2 + Math.floor(Math.random() * 3), usable.length); // 2–4
+  const picked = shuffle(usable).slice(0, len);
+  const bengali = picked.map(l => l.letter).join('');
+  const roman = picked.map(l => l.romanized.split('/')[0].trim()).join('');
+  return { bengali, roman, letters: picked };
+}
+
+function generateQuiz(letters) {
+  quizQuestions = [];
+  const shuffled = [...letters].sort(() => Math.random() - 0.5);
+
+  // Weight toward letters with lower mastery
+  const weighted = [...shuffled].sort((a, b) => getMastery(a.letter) - getMastery(b.letter));
+
+  // Take up to 10 questions, mixing question types
+  const count = Math.min(10, weighted.length);
+  const selected = weighted.slice(0, count);
+
+  selected.forEach((item, i) => {
+    // Alternate between MC-name, MC-sound, fill-in-blank, and string types
+    const types = ['mc-name', 'mc-sound', 'fib-name', 'fib-romanized', 'read-string', 'spell-string'];
+    const qtype = types[i % types.length];
+
+    if (qtype === 'mc-name') {
+      // MC: What is the name of this letter?
+      const correct = item.name.split(' ')[0]; // short name
+      const distractors = generateDistractors(item, letters, 'name');
+      quizQuestions.push({
+        type: 'mc',
+        letter: item.letter,
+        letterType: item.type,
+        prompt: 'What is the name of this letter?',
+        correct: correct,
+        options: shuffle([correct, ...distractors]),
+        fullAnswer: item.name,
+        letterObj: item,
+      });
+    } else if (qtype === 'mc-sound') {
+      // MC: What sound does this letter make?
+      const correct = item.ipa;
+      const distractors = generateDistractors(item, letters, 'ipa');
+      quizQuestions.push({
+        type: 'mc',
+        letter: item.letter,
+        letterType: item.type,
+        prompt: 'What sound does this letter make?',
+        correct: correct,
+        options: shuffle([correct, ...distractors]),
+        fullAnswer: item.ipa + ' — ' + item.sound,
+        letterObj: item,
+      });
+    } else if (qtype === 'fib-name') {
+      // FIB: Type the name of this letter
+      const acceptable = [
+        item.name.split(' ')[0].toLowerCase(),
+        item.name.split('(').pop().replace(')','').trim().toLowerCase(),
+        item.romanized.split('/')[0].trim().toLowerCase(),
+      ].filter(Boolean);
+      quizQuestions.push({
+        type: 'fib',
+        letter: item.letter,
+        letterType: item.type,
+        prompt: 'Type the name of this letter:',
+        acceptable: [...new Set(acceptable)],
+        answer: item.name,
+        hint: 'Hint: ' + item.sound,
+        letterObj: item,
+      });
+    } else if (qtype === 'fib-romanized') {
+      // FIB: Type the romanized form
+      const acceptable = item.romanized.split('/').map(s => s.trim().toLowerCase());
+      // Also accept without diacritics
+      acceptable.forEach(a => {
+        acceptable.push(a.replace(/[ṭḍṇṣṛñ]/g, c =>
+          ({ṭ:'t',ḍ:'d',ṇ:'n',ṣ:'sh',ṛ:'r',ñ:'ny'}[c]||c)));
+      });
+      quizQuestions.push({
+        type: 'fib',
+        letter: item.letter,
+        letterType: item.type,
+        prompt: 'Type the romanized form of this letter:',
+        acceptable: [...new Set(acceptable)],
+        answer: item.romanized,
+        hint: 'Hint: ' + item.name,
+        letterObj: item,
+      });
+    } else if (qtype === 'read-string') {
+      const str = generateStringPair(letters);
+      if (str) {
+        const roman = str.roman.toLowerCase();
+        const romanNoDiacritics = roman.replace(/[ṭḍṇṣṛñ]/g, c =>
+          ({ṭ:'t',ḍ:'d',ṇ:'n',ṣ:'sh',ṛ:'r',ñ:'ny'}[c]||c));
+        const acceptable = [...new Set([roman, romanNoDiacritics])];
+        quizQuestions.push({
+          type: 'fib',
+          letter: str.bengali,
+          prompt: 'How do you pronounce this?',
+          acceptable,
+          answer: str.roman,
+          hint: '',
+          letterObj: null,
+          letters: str.letters,
+        });
+      }
+    } else if (qtype === 'spell-string') {
+      const str = generateStringPair(letters);
+      if (str) {
+        const special = new Set(['ৎ', 'ং', 'ঃ', 'ঁ']);
+        const distractorPool = letters.filter(l => !special.has(l.letter) && !str.letters.includes(l));
+        const distractors = shuffle(distractorPool).slice(0, Math.min(4, distractorPool.length));
+        const tiles = shuffle([...str.letters.map(l => l.letter), ...distractors.map(l => l.letter)]);
+        quizQuestions.push({
+          type: 'spell',
+          display: str.roman,
+          correct: str.bengali,
+          tiles,
+          letters: str.letters,
+          prompt: 'Spell this in Bengali:',
+        });
+      }
+    }
+  });
+}
+
+function generateDistractors(item, pool, field) {
+  const val = field === 'name' ? item.name.split(' ')[0] : item[field];
+  const others = pool.filter(l => l.letter !== item.letter)
+    .map(l => field === 'name' ? l.name.split(' ')[0] : l[field])
+    .filter(v => v !== val);
+  // If not enough from module, pull from all letters
+  if (others.length < 3) {
+    const extras = ALL_LETTERS.filter(l => l.letter !== item.letter)
+      .map(l => field === 'name' ? l.name.split(' ')[0] : l[field])
+      .filter(v => v !== val && !others.includes(v));
+    others.push(...extras);
+  }
+  return shuffle(others).slice(0, 3);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderQuestion() {
+  if (quizIndex >= quizQuestions.length) {
+    showResults();
+    return;
+  }
+  quizAnswered = false;
+  const q = quizQuestions[quizIndex];
+
+  // Update progress bar & score
+  document.getElementById('quiz-progress-fill').style.width =
+    ((quizIndex / quizQuestions.length) * 100) + '%';
+  document.getElementById('quiz-score').textContent =
+    quizCorrect + ' / ' + quizIndex;
+
+  // Render question area
+  const qa = document.getElementById('quiz-question-area');
+  if (q.type === 'spell') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="quiz-letter-roman">${q.display}</div>
+    `;
+  } else {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="quiz-letter">${q.letter}</div>
+    `;
+  }
+
+  // Render answer area
+  const aa = document.getElementById('quiz-answer-area');
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback';
+  fb.textContent = '';
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn';
+
+  if (q.type === 'mc') {
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" data-idx="${i}" onclick="answerMC(this, '${escapeStr(opt)}')">${opt}</button>`
+      ).join('') + '</div>';
+  } else if (q.type === 'spell') {
+    spellTileOrder = [];
+    aa.innerHTML = `<div class="word-order-area">
+      <div class="answer-area-wo" id="spell-answer-area"></div>
+      <div class="word-tiles" id="spell-tile-bank">
+        ${q.tiles.map((t, i) => `<div class="word-tile" data-idx="${i}" data-word="${t}" onclick="selectSpellTile(this)">${t}</div>`).join('')}
+      </div>
+      <button class="btn-primary wo-check-btn" onclick="answerSpell()">Check</button>
+    </div>`;
+  } else {
+    aa.innerHTML = `<div class="fib-area">
+      <input type="text" class="fib-input" id="fib-input" placeholder="Type your answer…"
+        onkeydown="if(event.key==='Enter')answerFIB()" autocomplete="off" autocapitalize="off">
+      <button class="btn-primary fib-submit" onclick="answerFIB()">Check</button>
+      <div class="fib-hint">${q.hint || ''}</div>
+    </div>`;
+    setTimeout(() => document.getElementById('fib-input')?.focus(), 100);
+  }
+}
+
+function escapeStr(s) {
+  return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function answerMC(btn, chosen) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const correct = chosen === q.correct;
+  const btns = document.querySelectorAll('.mc-btn');
+  btns.forEach(b => {
+    b.classList.add('disabled');
+    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+  });
+  if (correct) {
+    btn.classList.add('correct');
+    quizCorrect++;
+    addXP(10);
+    showFeedback(true, q.fullAnswer || q.correct);
+  } else {
+    btn.classList.add('wrong');
+    showFeedback(false, q.fullAnswer || q.correct);
+  }
+  addMastery(q.letter, correct);
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+let spellTileOrder = [];
+
+function selectSpellTile(tile) {
+  if (quizAnswered) return;
+  tile.classList.add('used');
+  spellTileOrder.push(tile.dataset.word);
+  const ansArea = document.getElementById('spell-answer-area');
+  const placed = document.createElement('div');
+  placed.className = 'word-tile';
+  placed.textContent = tile.dataset.word;
+  placed.dataset.srcIdx = tile.dataset.idx;
+  placed.onclick = function() { removeSpellTile(this); };
+  ansArea.appendChild(placed);
+}
+
+function removeSpellTile(placed) {
+  if (quizAnswered) return;
+  const srcIdx = placed.dataset.srcIdx;
+  const tiles = document.querySelectorAll('#spell-tile-bank .word-tile');
+  tiles.forEach(t => { if (t.dataset.idx === srcIdx) t.classList.remove('used'); });
+  placed.remove();
+  spellTileOrder = [];
+  document.querySelectorAll('#spell-answer-area .word-tile').forEach(t => {
+    spellTileOrder.push(t.textContent);
+  });
+}
+
+function answerSpell() {
+  if (quizAnswered) return;
+  if (spellTileOrder.length === 0) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const userAnswer = spellTileOrder.join('');
+  const correct = userAnswer === q.correct;
+  const ansArea = document.getElementById('spell-answer-area');
+  ansArea.classList.add(correct ? 'correct-wo' : 'wrong-wo');
+  document.querySelectorAll('#spell-tile-bank .word-tile').forEach(t => t.style.pointerEvents = 'none');
+  document.querySelectorAll('#spell-answer-area .word-tile').forEach(t => t.style.pointerEvents = 'none');
+  if (correct) {
+    quizCorrect++;
+    addXP(15);
+    showFeedback(true, q.correct);
+  } else {
+    showFeedback(false, q.correct);
+  }
+  q.letters.forEach(l => addMastery(l.letter, correct));
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function answerFIB() {
+  if (quizAnswered) return;
+  const input = document.getElementById('fib-input');
+  if (!input) return;
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const correct = q.acceptable.some(a => a === val);
+  if (correct) {
+    input.classList.add('correct');
+    quizCorrect++;
+    addXP(15); // FIB worth more XP
+    showFeedback(true, q.answer);
+  } else {
+    input.classList.add('wrong');
+    showFeedback(false, q.answer);
+  }
+  if (q.letters) {
+    q.letters.forEach(l => addMastery(l.letter, correct));
+  } else {
+    addMastery(q.letter, correct);
+  }
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function showFeedback(correct, answer) {
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? '✓ Correct! ' + answer : '✗ The answer is: ' + answer;
+}
+
+function nextQuestion() {
+  quizIndex++;
+  renderQuestion();
+}
+
+// ════════════════════════════════════════
+//  RESULTS
+// ════════════════════════════════════════
+function showResults() {
+  showScreen('results');
+  const total = quizQuestions.length;
+  const pct = Math.round((quizCorrect / total) * 100);
+
+  // Animate circle
+  setTimeout(() => {
+    const circumference = 2 * Math.PI * 72;
+    const offset = circumference * (1 - pct / 100);
+    document.getElementById('results-ring').style.strokeDashoffset = offset;
+  }, 100);
+  document.getElementById('results-pct').textContent = pct + '%';
+
+  const titles = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  document.getElementById('results-title').textContent = titles;
+  document.getElementById('results-sub').textContent =
+    `You scored ${quizCorrect}/${total} — earned ${quizCorrect * 10 + (total - quizCorrect) * 0} XP`;
+
+  // bonus XP for completion
+  addXP(5);
+  updateNav();
+}
+
+function retryQuiz() {
+  if (quizModuleRef && quizModuleRef.isMixed) {
+    // Rebuild mixed session with updated mastery data
+    startMixedPractice();
+  } else if (quizModuleRef) {
+    currentModule = quizModuleRef;
+    startQuiz();
+  }
+}
+
+// ════════════════════════════════════════
+//  ALPHABET CHART
+// ════════════════════════════════════════
+function renderChart() {
+  const content = document.getElementById('chart-content');
+  const sections = [
+    { title: 'স্বরবর্ণ — Vowels', letters: VOWELS, type: 'vowel' },
+    { title: 'ক-বর্গ — Velar', letters: CONSONANTS_VELAR, type: 'consonant' },
+    { title: 'চ-বর্গ — Palatal', letters: CONSONANTS_PALATAL, type: 'consonant' },
+    { title: 'ট-বর্গ — Retroflex', letters: CONSONANTS_RETROFLEX, type: 'consonant' },
+    { title: 'ত-বর্গ — Dental', letters: CONSONANTS_DENTAL, type: 'consonant' },
+    { title: 'প-বর্গ — Labial', letters: CONSONANTS_LABIAL, type: 'consonant' },
+    { title: 'অন্যান্য — Other', letters: CONSONANTS_OTHER, type: 'consonant' },
+    { title: 'বিশেষ — Special', letters: CONSONANTS_SPECIAL, type: 'consonant' },
+  ];
+
+  content.innerHTML = sections.map(sec => `
+    <div class="chart-section">
+      <h3>${sec.title}</h3>
+      <div class="chart-grid">
+        ${sec.letters.map(l => {
+          const m = getMastery(l.letter);
+          return `<div class="chart-cell" onclick="showChartDetail(this)" data-letter="${l.letter}"
+            data-name="${l.name}" data-romanized="${l.romanized}" data-ipa="${l.ipa}"
+            data-sound="${l.sound}" data-example="${l.example}">
+            <div class="mastery-dot mastery-${m}"></div>
+            <div class="chart-letter">${l.letter}</div>
+            <div class="chart-romanized">${l.romanized.split('/')[0].trim()}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function showChartDetail(el) {
+  const d = el.dataset;
+  // Toggle detail popup
+  const existing = el.querySelector('.chart-detail');
+  if (existing) { existing.remove(); return; }
+  // Remove any other open details
+  document.querySelectorAll('.chart-detail').forEach(e => e.remove());
+  const detail = document.createElement('div');
+  detail.className = 'chart-detail';
+  detail.style.cssText = `position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    background:#442a24;border-radius:10px;padding:12px;z-index:10;min-width:200px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);margin-top:8px;font-size:0.8rem;text-align:left;`;
+  detail.innerHTML = `
+    <div style="font-size:1rem;font-weight:600;margin-bottom:4px;">${d.name}</div>
+    <div style="color:var(--text-dim)">Romanized: ${d.romanized}</div>
+    <div style="color:var(--gold)">Sound: ${d.ipa} — ${d.sound}</div>
+    <div style="color:var(--text-dim);margin-top:4px">${d.example}</div>
+  `;
+  el.style.position = 'relative';
+  el.appendChild(detail);
+  // Close on outside click
+  setTimeout(() => {
+    const handler = (e) => {
+      if (!el.contains(e.target)) { detail.remove(); document.removeEventListener('click', handler); }
+    };
+    document.addEventListener('click', handler);
+  }, 10);
+}
+
+// ════════════════════════════════════════
+//  TAB SWITCHING
+// ════════════════════════════════════════
+let currentTab = 'alphabet';
+const alphabetScreens = ['home','learn','quiz','results','chart'];
+const vocabScreens = ['vocab-home','vocab-browse','vocab-learn','vocab-quiz','vocab-results'];
+const grammarScreens = ['grammar-home','grammar-lesson','grammar-quiz','grammar-results'];
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active',
+      (i === 0 && tab === 'alphabet') ||
+      (i === 1 && tab === 'vocabulary') ||
+      (i === 2 && tab === 'grammar'));
+  });
+  if (tab === 'alphabet') {
+    showScreen('home');
+  } else if (tab === 'vocabulary') {
+    showScreen('vocab-home');
+  } else {
+    showScreen('grammar-home');
+  }
+}
+
+// Override showScreen to handle tab visibility
+const _origShowScreen = showScreen;
+showScreen = function(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'home') renderHome();
+  if (id === 'chart') renderChart();
+  if (id === 'vocab-home') renderVocabHome();
+  if (id === 'grammar-home') renderGrammarHome();
+  if (id === 'placement-results') renderPlacementResultsUI();
+};
+
+// ════════════════════════════════════════
+//  VOCAB PROGRESS
+// ════════════════════════════════════════
+function getVocabMastery(bengali) {
+  return progress.mastery['v:' + bengali] || 0;
+}
+function addVocabMastery(bengali, correct) {
+  const key = 'v:' + bengali;
+  const cur = progress.mastery[key] || 0;
+  if (correct) {
+    progress.mastery[key] = Math.min(3, cur + 1);
+  } else {
+    progress.mastery[key] = Math.max(1, cur - 1);
+  }
+  saveProgress();
+}
+
+// ════════════════════════════════════════
+//  VOCAB HOME
+// ════════════════════════════════════════
+function renderVocabHome() {
+  const grid = document.getElementById('vocab-module-grid');
+  grid.innerHTML = '';
+  // Remove stale PT card first, then re-add if needed
+  const oldPt = grid.parentElement.querySelector('.pt-cta-card');
+  if (oldPt) oldPt.remove();
+  if (shouldShowPlacementCard()) {
+    const ptCard = document.createElement('div');
+    ptCard.className = 'pt-cta-card';
+    ptCard.innerHTML = '<h3>🎯 Take the Placement Test</h3><p>Already know some Bengali? Skip ahead based on your level.</p>';
+    ptCard.onclick = () => startPlacementTest();
+    grid.parentElement.insertBefore(ptCard, grid);
+  }
+
+  // Mixed Practice card
+  const mixCard = document.createElement('div');
+  mixCard.className = 'module-card';
+  const vmUnlocked = getVocabMixedUnlockedCount();
+  const vmTotal = VMIX_CURRICULUM.length;
+  const vmMastered = VMIX_CURRICULUM.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const vmPct = Math.round((vmMastered / vmTotal) * 100);
+  const vmWave = Math.ceil(vmUnlocked / VMIX_WAVE_SIZE);
+  const vmTotalWaves = Math.ceil(vmTotal / VMIX_WAVE_SIZE);
+  mixCard.innerHTML = `
+    <div class="module-icon">🧠</div>
+    <h3>Mixed Practice</h3>
+    <p>Adaptive lessons — new words introduced as you master earlier ones</p>
+    <div class="module-progress"><div class="module-progress-fill" style="width:${vmPct}%;background:var(--accent)"></div></div>
+    <div class="progress-label">${vmMastered}/${vmTotal} mastered · Wave ${vmWave}/${vmTotalWaves} unlocked</div>
+  `;
+  mixCard.onclick = () => startMixedVocabPractice();
+  grid.appendChild(mixCard);
+
+  // "All Words" browser card
+  const allCard = document.createElement('div');
+  allCard.className = 'module-card';
+  const totalWords = VOCAB_DATA.length;
+  const masteredWords = VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const allPct = Math.round((masteredWords / totalWords) * 100);
+  allCard.innerHTML = `
+    <div class="module-icon">📖</div>
+    <h3>Browse All Words</h3>
+    <p>Search and browse all ${totalWords} words</p>
+    <div class="module-progress"><div class="module-progress-fill" style="width:${allPct}%;background:var(--accent)"></div></div>
+    <div class="progress-label">${masteredWords}/${totalWords} mastered</div>
+  `;
+  allCard.onclick = () => openVocabBrowse(null);
+  grid.appendChild(allCard);
+
+  // Category cards
+  const cats = Object.keys(VOCAB_CATEGORIES);
+  cats.forEach(catId => {
+    const cat = VOCAB_CATEGORIES[catId];
+    const words = VOCAB_DATA.filter(w => w[3] === catId);
+    if (words.length === 0) return;
+    const mastered = words.filter(w => getVocabMastery(w[0]) >= 3).length;
+    const pct = Math.round((mastered / words.length) * 100);
+
+    const card = document.createElement('div');
+    card.className = 'module-card';
+    card.innerHTML = `
+      <div class="module-icon">${cat.icon}</div>
+      <h3>${cat.title}</h3>
+      <p>${words.length} words</p>
+      <div class="module-progress"><div class="module-progress-fill" style="width:${pct}%;background:${cat.color}"></div></div>
+      <div class="progress-label">${mastered}/${words.length} mastered</div>
+    `;
+    card.onclick = () => startVocabLearn(catId);
+    grid.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════
+//  VOCAB MIXED PRACTICE — ADAPTIVE ALGORITHM
+// ════════════════════════════════════════
+// Words are introduced in waves of VMIX_WAVE_SIZE.  The curriculum
+// interleaves categories so the learner sees variety early: pronouns,
+// greetings, common verbs, food, numbers, etc.  New waves unlock when
+// ≥50 % of the current wave reaches mastery ≥ 2.
+
+const VMIX_WAVE_SIZE  = 10;  // words per wave
+const VMIX_INTRO      = 5;   // new words shown as flashcards per session
+const VMIX_QUIZ_SIZE  = 10;  // questions per quiz round
+const VMIX_UNLOCK_THR = 2;   // mastery needed to count as "familiar"
+
+// Build a deliberate curriculum order.  We round-robin across categories
+// so the learner doesn't get 120 verbs in a row.
+const VMIX_CURRICULUM = (() => {
+  // Priority order: highest-utility categories first
+  const catOrder = [
+    'expressions','pronouns','numbers','verbs','food','family',
+    'adjectives','phrases','time','home','body','places',
+    'adverbs','nature','emotions','education','animals','professions',
+    'grammar','clothing','transport','health','colors','technology',
+    'society','abstract'
+  ];
+  // Build per-category queues
+  const queues = {};
+  catOrder.forEach(c => { queues[c] = []; });
+  VOCAB_DATA.forEach(w => {
+    const c = w[3];
+    if (queues[c]) queues[c].push(w);
+    else {
+      // category not in our list — append to abstract
+      if (!queues['abstract']) queues['abstract'] = [];
+      queues['abstract'].push(w);
+    }
+  });
+  // Round-robin: take one from each non-empty category in order, repeat
+  const result = [];
+  const seen = new Set();
+  let remaining = true;
+  while (remaining) {
+    remaining = false;
+    for (const c of catOrder) {
+      if (queues[c].length > 0) {
+        const w = queues[c].shift();
+        const key = w[0] + '|' + w[2]; // dedup by bengali+english
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push(w);
+        }
+        remaining = true;
+      }
+    }
+  }
+  return result;
+})();
+
+function getVocabMixedUnlockedCount() {
+  let unlocked = VMIX_WAVE_SIZE;
+  while (unlocked < VMIX_CURRICULUM.length) {
+    const waveStart = unlocked - VMIX_WAVE_SIZE;
+    const wave = VMIX_CURRICULUM.slice(waveStart, unlocked);
+    const familiar = wave.filter(w => getVocabMastery(w[0]) >= VMIX_UNLOCK_THR).length;
+    if (familiar >= Math.ceil(wave.length * 0.5)) {
+      unlocked = Math.min(unlocked + VMIX_WAVE_SIZE, VMIX_CURRICULUM.length);
+    } else {
+      break;
+    }
+  }
+  return unlocked;
+}
+
+function buildMixedVocabSession() {
+  const unlocked = getVocabMixedUnlockedCount();
+  const pool = VMIX_CURRICULUM.slice(0, unlocked);
+
+  // Words the user hasn't seen yet
+  const unseen = pool.filter(w => getVocabMastery(w[0]) === 0);
+  const teach = unseen.slice(0, VMIX_INTRO);
+
+  // Prioritise low-mastery words for the quiz
+  const prioritized = [...pool].sort((a, b) => {
+    const ma = getVocabMastery(a[0]), mb = getVocabMastery(b[0]);
+    const sa = ma === 3 ? 3 + Math.random() * 2 : ma === 0 ? 0.5 : ma === 1 ? 0 : 1;
+    const sb = mb === 3 ? 3 + Math.random() * 2 : mb === 0 ? 0.5 : mb === 1 ? 0 : 1;
+    return sa - sb;
+  });
+
+  const quiz = prioritized.slice(0, Math.min(VMIX_QUIZ_SIZE, pool.length));
+  return { teach, quiz, unlocked, total: VMIX_CURRICULUM.length };
+}
+
+let vmixSession = null;
+let vmixIsActive = false;   // track whether we're in mixed-vocab mode
+
+function startMixedVocabPractice() {
+  vmixSession = buildMixedVocabSession();
+  vmixIsActive = true;
+
+  if (vmixSession.teach.length > 0) {
+    // Show flashcards for new words, then quiz
+    vlWords = vmixSession.teach;
+    vlIndex = 0;
+    vlCatId = '__mixed__';
+    document.getElementById('vl-title').textContent = 'New Words';
+    document.getElementById('vl-counter').textContent = '1 / ' + vlWords.length;
+    const qbtn = document.getElementById('vl-quiz-btn');
+    qbtn.textContent = 'Practice Quiz →';
+    qbtn.onclick = () => launchMixedVocabQuiz();
+    showVocabCardAt();
+    showScreen('vocab-learn');
+  } else {
+    launchMixedVocabQuiz();
+  }
+}
+
+function launchMixedVocabQuiz() {
+  if (!vmixSession) vmixSession = buildMixedVocabSession();
+  vmixIsActive = true;
+  vlWords = vmixSession.quiz;
+  vlCatId = '__mixed__';
+  vqCatRef = '__mixed__';
+  generateVocabQuiz(vmixSession.quiz);
+  vqIndex = 0;
+  vqCorrect = 0;
+  document.getElementById('vq-title').textContent = 'Mixed Vocab Practice';
+  showScreen('vocab-quiz');
+  renderVocabQuestion();
+  updateStreak();
+}
+
+// ════════════════════════════════════════
+//  VOCAB BROWSE
+// ════════════════════════════════════════
+let vbFilter = null;
+let vbPage = 0;
+const VB_PAGE_SIZE = 30;
+
+function openVocabBrowse(cat) {
+  vbFilter = cat;
+  vbPage = 0;
+  showScreen('vocab-browse');
+  document.getElementById('vb-search').value = '';
+  renderCatChips();
+  renderVocabList();
+}
+
+function renderCatChips() {
+  const container = document.getElementById('cat-chips');
+  const cats = Object.keys(VOCAB_CATEGORIES);
+  container.innerHTML = `<div class="cat-chip ${vbFilter === null ? 'active' : ''}" onclick="setVocabFilter(null)">All</div>` +
+    cats.map(catId => {
+      const cat = VOCAB_CATEGORIES[catId];
+      const count = VOCAB_DATA.filter(w => w[3] === catId).length;
+      if (count === 0) return '';
+      return `<div class="cat-chip ${vbFilter === catId ? 'active' : ''}" onclick="setVocabFilter('${catId}')">${cat.icon} ${cat.title} (${count})</div>`;
+    }).join('');
+}
+
+function setVocabFilter(cat) {
+  vbFilter = cat;
+  vbPage = 0;
+  renderCatChips();
+  renderVocabList();
+}
+
+function filterVocabList() {
+  vbPage = 0;
+  renderVocabList();
+}
+
+function getFilteredVocab() {
+  const search = (document.getElementById('vb-search')?.value || '').toLowerCase().trim();
+  return VOCAB_DATA.filter(w => {
+    if (vbFilter && w[3] !== vbFilter) return false;
+    if (search) {
+      return w[0].includes(search) || w[1].toLowerCase().includes(search) || w[2].toLowerCase().includes(search);
+    }
+    return true;
+  });
+}
+
+function renderVocabList() {
+  const filtered = getFilteredVocab();
+  const start = vbPage * VB_PAGE_SIZE;
+  const page = filtered.slice(start, start + VB_PAGE_SIZE);
+
+  const container = document.getElementById('vocab-list');
+  container.innerHTML = page.map(w => {
+    const m = getVocabMastery(w[0]);
+    return `<div class="vocab-row" onclick="showVocabDetail('${w[0].replace(/'/g,"\\'")}')">
+      <div class="vr-bengali">${w[0]}</div>
+      <div class="vr-roman">${w[1]}</div>
+      <div class="vr-english">${w[2]}</div>
+      <div class="vr-mastery mastery-${m}"></div>
+    </div>`;
+  }).join('');
+
+  if (page.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px;">No words found</div>';
+  }
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / VB_PAGE_SIZE);
+  const pag = document.getElementById('vocab-pagination');
+  if (totalPages <= 1) { pag.innerHTML = ''; return; }
+  pag.innerHTML = `
+    <button class="nav-btn" ${vbPage === 0 ? 'disabled' : ''} onclick="vbPage--;renderVocabList()">← Prev</button>
+    <span style="color:var(--text-dim)">${vbPage + 1} / ${totalPages}</span>
+    <button class="nav-btn" ${vbPage >= totalPages - 1 ? 'disabled' : ''} onclick="vbPage++;renderVocabList()">Next →</button>
+  `;
+}
+
+function showVocabDetail(bengali) {
+  const w = VOCAB_DATA.find(w => w[0] === bengali);
+  if (!w) return;
+  // Quick inline alert-style detail
+  const cat = VOCAB_CATEGORIES[w[3]];
+  alert(`${w[0]}  (${w[1]})\n\nEnglish: ${w[2]}\nCategory: ${cat ? cat.title : w[3]}\nPart of speech: ${w[4]}`);
+}
+
+// ════════════════════════════════════════
+//  VOCAB LEARN (FLASHCARDS)
+// ════════════════════════════════════════
+let vlWords = [];
+let vlIndex = 0;
+let vlCatId = null;
+
+function startVocabLearn(catId) {
+  vmixIsActive = false;
+  vlCatId = catId;
+  const cat = VOCAB_CATEGORIES[catId];
+  vlWords = VOCAB_DATA.filter(w => w[3] === catId);
+  vlIndex = 0;
+  document.getElementById('vl-title').textContent = cat.title;
+  // Reset quiz button to default (may have been overridden by mixed mode)
+  const qbtn = document.getElementById('vl-quiz-btn');
+  qbtn.textContent = 'Start Quiz →';
+  qbtn.onclick = () => startVocabQuiz();
+  showVocabCardAt();
+  showScreen('vocab-learn');
+}
+
+function showVocabCardAt() {
+  const w = vlWords[vlIndex];
+  document.getElementById('vocab-flashcard').classList.remove('flipped');
+  document.getElementById('vc-bengali').textContent = w[0];
+  document.getElementById('vc-roman').textContent = w[1];
+  document.getElementById('vc-pos').textContent = w[4];
+  document.getElementById('vc-english').textContent = w[2];
+  const cat = VOCAB_CATEGORIES[w[3]];
+  document.getElementById('vc-cat').textContent = cat ? cat.title : w[3];
+  document.getElementById('vl-counter').textContent = (vlIndex + 1) + ' / ' + vlWords.length;
+  document.getElementById('vl-prev').style.visibility = vlIndex === 0 ? 'hidden' : 'visible';
+
+  // Mark as seen
+  if (getVocabMastery(w[0]) === 0) {
+    progress.mastery['v:' + w[0]] = 1;
+    saveProgress();
+  }
+}
+
+function flipVocabCard() {
+  document.getElementById('vocab-flashcard').classList.toggle('flipped');
+}
+function nextVocabCard() {
+  if (vlIndex < vlWords.length - 1) { vlIndex++; showVocabCardAt(); }
+}
+function prevVocabCard() {
+  if (vlIndex > 0) { vlIndex--; showVocabCardAt(); }
+}
+
+// ════════════════════════════════════════
+//  VOCAB QUIZ
+// ════════════════════════════════════════
+let vqQuestions = [];
+let vqIndex = 0;
+let vqCorrect = 0;
+let vqAnswered = false;
+let vqCatRef = null;
+
+function startVocabQuiz() {
+  vqCatRef = vlCatId;
+  const words = vlWords && vlWords.length > 0 ? vlWords : VOCAB_DATA.filter(w => w[3] === vlCatId);
+  generateVocabQuiz(words);
+  vqIndex = 0;
+  vqCorrect = 0;
+  const cat = VOCAB_CATEGORIES[vlCatId];
+  document.getElementById('vq-title').textContent = (cat ? cat.title : 'Vocab') + ' Quiz';
+  showScreen('vocab-quiz');
+  renderVocabQuestion();
+  updateStreak();
+}
+
+function generateVocabQuiz(words) {
+  vqQuestions = [];
+  // Weight by mastery (lower mastery = more likely)
+  const sorted = [...words].sort((a, b) => getVocabMastery(a[0]) - getVocabMastery(b[0]));
+  const count = Math.min(10, sorted.length);
+  const selected = sorted.slice(0, count);
+
+  selected.forEach((w, i) => {
+    const qTypes = ['mc-en', 'mc-bn', 'fib-en', 'fib-bn'];
+    const qtype = qTypes[i % qTypes.length];
+
+    if (qtype === 'mc-en') {
+      // Show Bengali, pick English meaning
+      const correct = w[2];
+      const distractors = words.filter(x => x[0] !== w[0]).map(x => x[2]);
+      const allPool = VOCAB_DATA.filter(x => x[0] !== w[0]).map(x => x[2]);
+      const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
+      const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
+      vqQuestions.push({
+        type: 'mc', bengali: w[0], roman: w[1],
+        prompt: 'What does this word mean?',
+        correct, options: shuffleArr([correct, ...picks]), word: w,
+      });
+    } else if (qtype === 'mc-bn') {
+      // Show English, pick Bengali
+      const correct = w[0];
+      const distractors = words.filter(x => x[0] !== w[0]).map(x => x[0]);
+      const allPool = VOCAB_DATA.filter(x => x[0] !== w[0]).map(x => x[0]);
+      const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
+      const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
+      vqQuestions.push({
+        type: 'mc-reverse', english: w[2],
+        prompt: 'Which Bengali word means "' + w[2] + '"?',
+        correct, options: shuffleArr([correct, ...picks]), word: w,
+      });
+    } else if (qtype === 'fib-en') {
+      // Show Bengali, type English
+      const acceptable = w[2].toLowerCase().split('/').map(s => s.trim());
+      // Also accept individual words for multi-word translations
+      w[2].toLowerCase().split('/').forEach(s => {
+        s.trim().split(' ').forEach(word => { if (word.length > 2) acceptable.push(word); });
+      });
+      vqQuestions.push({
+        type: 'fib', bengali: w[0], roman: w[1],
+        prompt: 'Type the English meaning:',
+        acceptable: [...new Set(acceptable)],
+        answer: w[2], hint: 'Romanized: ' + w[1], word: w,
+      });
+    } else {
+      // Show English, type romanized Bengali
+      const acceptable = [w[1].toLowerCase()];
+      vqQuestions.push({
+        type: 'fib-reverse', english: w[2],
+        prompt: 'Type the romanized Bengali:',
+        acceptable, answer: w[1],
+        hint: 'Category: ' + (VOCAB_CATEGORIES[w[3]]?.title || w[3]), word: w,
+      });
+    }
+  });
+}
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderVocabQuestion() {
+  if (vqIndex >= vqQuestions.length) { showVocabResults(); return; }
+  vqAnswered = false;
+  const q = vqQuestions[vqIndex];
+
+  document.getElementById('vq-progress-fill').style.width =
+    ((vqIndex / vqQuestions.length) * 100) + '%';
+  document.getElementById('vq-score').textContent = vqCorrect + ' / ' + vqIndex;
+
+  const qa = document.getElementById('vq-question-area');
+  if (q.type === 'mc' || q.type === 'fib') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="vq-bengali">${q.bengali}</div>
+      <div class="vq-hint">${q.roman}</div>
+    `;
+  } else {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div style="font-size:2.2rem;font-weight:700;margin:16px 0">${q.english}</div>
+    `;
+  }
+
+  const aa = document.getElementById('vq-answer-area');
+  const fb = document.getElementById('vq-feedback');
+  fb.className = 'quiz-feedback';
+  document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn';
+
+  if (q.type === 'mc' || q.type === 'mc-reverse') {
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" onclick="answerVocabMC(this, '${opt.replace(/'/g,"\\'")}')">${opt}</button>`
+      ).join('') + '</div>';
+  } else {
+    aa.innerHTML = `<div class="fib-area">
+      <input type="text" class="fib-input" id="vq-fib-input" placeholder="Type your answer…"
+        onkeydown="if(event.key==='Enter')answerVocabFIB()" autocomplete="off" autocapitalize="off">
+      <button class="btn-primary fib-submit" onclick="answerVocabFIB()">Check</button>
+      <div class="fib-hint">${q.hint || ''}</div>
+    </div>`;
+    setTimeout(() => document.getElementById('vq-fib-input')?.focus(), 100);
+  }
+}
+
+function answerVocabMC(btn, chosen) {
+  if (vqAnswered) return;
+  vqAnswered = true;
+  const q = vqQuestions[vqIndex];
+  const correct = chosen === q.correct;
+  document.querySelectorAll('#vq-answer-area .mc-btn').forEach(b => {
+    b.classList.add('disabled');
+    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) { vqCorrect++; addXP(10); }
+  addVocabMastery(q.word[0], correct);
+  showVocabFeedback(correct, q.type === 'mc' ? q.correct : q.correct);
+  document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function answerVocabFIB() {
+  if (vqAnswered) return;
+  const input = document.getElementById('vq-fib-input');
+  if (!input) return;
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  vqAnswered = true;
+  const q = vqQuestions[vqIndex];
+  const correct = q.acceptable.some(a => a === val);
+  input.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) { vqCorrect++; addXP(15); }
+  addVocabMastery(q.word[0], correct);
+  showVocabFeedback(correct, q.answer);
+  document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function showVocabFeedback(correct, answer) {
+  const fb = document.getElementById('vq-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? '✓ Correct! ' + answer : '✗ The answer is: ' + answer;
+}
+
+function nextVocabQuestion() {
+  vqIndex++;
+  renderVocabQuestion();
+}
+
+function showVocabResults() {
+  showScreen('vocab-results');
+  const total = vqQuestions.length;
+  const pct = Math.round((vqCorrect / total) * 100);
+  setTimeout(() => {
+    const offset = 452.4 * (1 - pct / 100);
+    document.getElementById('vr-ring').style.strokeDashoffset = offset;
+  }, 100);
+  document.getElementById('vr-pct').textContent = pct + '%';
+  const titles = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  document.getElementById('vr-title').textContent = titles;
+  document.getElementById('vr-sub').textContent = `You scored ${vqCorrect}/${total}`;
+  addXP(5);
+  updateNav();
+}
+
+function retryVocabQuiz() {
+  if (vmixIsActive || vqCatRef === '__mixed__') {
+    startMixedVocabPractice();
+  } else if (vqCatRef) {
+    vlCatId = vqCatRef;
+    vlWords = VOCAB_DATA.filter(w => w[3] === vlCatId);
+    startVocabQuiz();
+  }
+}
+
+// ════════════════════════════════════════
+//  GRAMMAR PROGRESS
+// ════════════════════════════════════════
+function getGrammarMastery(lessonId, questionIdx) {
+  return progress.mastery['g:' + lessonId + ':' + questionIdx] || 0;
+}
+function addGrammarMastery(lessonId, questionIdx, correct) {
+  const key = 'g:' + lessonId + ':' + questionIdx;
+  const cur = progress.mastery[key] || 0;
+  if (correct) {
+    progress.mastery[key] = Math.min(3, cur + 1);
+  } else {
+    progress.mastery[key] = Math.max(1, cur - 1);
+  }
+  saveProgress();
+}
+function getLessonProgress(lesson) {
+  const total = lesson.quiz.length;
+  let mastered = 0, seen = 0;
+  for (let i = 0; i < total; i++) {
+    const m = getGrammarMastery(lesson.id, i);
+    if (m >= 3) mastered++;
+    if (m >= 1) seen++;
+  }
+  return { total, mastered, seen, pct: Math.round((mastered / total) * 100) };
+}
+
+// ════════════════════════════════════════
+//  GRAMMAR HOME
+// ════════════════════════════════════════
+function renderGrammarHome() {
+  const grid = document.getElementById('grammar-module-grid');
+  grid.innerHTML = '';
+  // Remove stale PT card first, then re-add if needed
+  const oldPt = grid.parentElement.querySelector('.pt-cta-card');
+  if (oldPt) oldPt.remove();
+  if (shouldShowPlacementCard()) {
+    const ptCard = document.createElement('div');
+    ptCard.className = 'pt-cta-card';
+    ptCard.innerHTML = '<h3>🎯 Take the Placement Test</h3><p>Already know some Bengali? Skip ahead based on your level.</p>';
+    ptCard.onclick = () => startPlacementTest();
+    grid.parentElement.insertBefore(ptCard, grid);
+  }
+
+  // Mixed practice card
+  const mixCard = document.createElement('div');
+  mixCard.className = 'module-card';
+  const unlocked = getGrammarMixedUnlockedCount();
+  const totalLessons = GRAMMAR_LESSONS.length;
+  const totalQ = GRAMMAR_LESSONS.reduce((s, l) => s + l.quiz.length, 0);
+  let masteredQ = 0;
+  GRAMMAR_LESSONS.forEach(l => {
+    for (let i = 0; i < l.quiz.length; i++) {
+      if (getGrammarMastery(l.id, i) >= 3) masteredQ++;
+    }
+  });
+  const mixPct = Math.round((masteredQ / totalQ) * 100);
+  mixCard.innerHTML = `
+    <div class="module-icon">🧠</div>
+    <h3>Mixed Practice</h3>
+    <p>Adaptive review across all unlocked grammar lessons</p>
+    <div class="module-progress"><div class="module-progress-fill" style="width:${mixPct}%;background:var(--accent)"></div></div>
+    <div class="progress-label">${masteredQ}/${totalQ} mastered · ${unlocked}/${totalLessons} lessons unlocked</div>
+  `;
+  mixCard.onclick = () => startGrammarMixedPractice();
+  grid.appendChild(mixCard);
+
+  // Lesson cards
+  GRAMMAR_LESSONS.forEach(lesson => {
+    const card = document.createElement('div');
+    card.className = 'module-card';
+    const prog = getLessonProgress(lesson);
+    card.innerHTML = `
+      <div class="module-icon">📖</div>
+      <h3>${lesson.number}. ${lesson.title}</h3>
+      <p>${lesson.shortDesc}</p>
+      <div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:var(--accent)"></div></div>
+      <div class="progress-label">${prog.mastered}/${prog.total} mastered</div>
+    `;
+    card.onclick = () => openGrammarLesson(lesson.id);
+    grid.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════
+//  GRAMMAR LESSON VIEW
+// ════════════════════════════════════════
+let currentGrammarLesson = null;
+
+function openGrammarLesson(lessonId) {
+  const lesson = GRAMMAR_LESSONS.find(l => l.id === lessonId);
+  if (!lesson) return;
+  currentGrammarLesson = lesson;
+
+  document.getElementById('gl-title').textContent = lesson.number + '. ' + lesson.title;
+  const content = document.getElementById('gl-content');
+  content.innerHTML = `
+    <h2>${lesson.title}</h2>
+    <div class="grammar-desc">${lesson.shortDesc}</div>
+    <div class="grammar-explanation">${lesson.explanation}</div>
+    <h3 style="margin-bottom:12px;">Examples</h3>
+    ${lesson.examples.map(ex => `
+      <div class="grammar-example">
+        <div class="ge-bengali">${ex.bengali}</div>
+        <div class="ge-roman">${ex.roman}</div>
+        <div class="ge-english">${ex.english}</div>
+      </div>
+    `).join('')}
+    <div class="grammar-lesson-actions">
+      <button class="btn-primary" onclick="startGrammarQuiz()">Start Quiz →</button>
+    </div>
+  `;
+  showScreen('grammar-lesson');
+}
+
+// ════════════════════════════════════════
+//  GRAMMAR QUIZ
+// ════════════════════════════════════════
+let gqQuestions = [];
+let gqIndex = 0;
+let gqCorrect = 0;
+let gqAnswered = false;
+let gqIsMixed = false;
+let gqWordOrder = [];  // current word-order answer
+
+function startGrammarQuiz() {
+  if (!currentGrammarLesson) return;
+  gqIsMixed = false;
+  gqQuestions = [...currentGrammarLesson.quiz];
+  gqIndex = 0;
+  gqCorrect = 0;
+  document.getElementById('gq-title').textContent = currentGrammarLesson.title + ' Quiz';
+  showScreen('grammar-quiz');
+  renderGrammarQuestion();
+  updateStreak();
+}
+
+function renderGrammarQuestion() {
+  if (gqIndex >= gqQuestions.length) {
+    showGrammarResults();
+    return;
+  }
+  gqAnswered = false;
+  gqWordOrder = [];
+  const q = gqQuestions[gqIndex];
+
+  document.getElementById('gq-progress-fill').style.width =
+    ((gqIndex / gqQuestions.length) * 100) + '%';
+  document.getElementById('gq-score').textContent = gqCorrect + ' / ' + gqIndex;
+
+  const qa = document.getElementById('gq-question-area');
+  const aa = document.getElementById('gq-answer-area');
+  const fb = document.getElementById('gq-feedback');
+  fb.className = 'quiz-feedback';
+  fb.textContent = '';
+  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn';
+
+  // Build question area based on type
+  if (q.type === 'translate-mc') {
+    if (q.bengali) {
+      qa.innerHTML = `
+        <div class="quiz-prompt">${q.prompt}</div>
+        <div class="vq-bengali">${q.bengali}</div>
+        ${q.roman ? '<div class="vq-hint">' + q.roman + '</div>' : ''}
+      `;
+    } else {
+      qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
+    }
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map(opt =>
+        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}</button>`
+      ).join('') + '</div>';
+
+  } else if (q.type === 'fib') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div style="font-family:'Noto Sans Bengali',sans-serif;font-size:1.5rem;margin:12px 0">${q.sentence}</div>
+      ${q.roman ? '<div class="vq-hint">' + q.roman + '</div>' : ''}
+      ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
+    `;
+    aa.innerHTML = `<div class="fib-area">
+      <input type="text" class="fib-input" id="gq-fib-input" placeholder="Type your answer…"
+        onkeydown="if(event.key==='Enter')answerGrammarFIB()" autocomplete="off" autocapitalize="off">
+      <button class="btn-primary fib-submit" onclick="answerGrammarFIB()">Check</button>
+    </div>`;
+    setTimeout(() => document.getElementById('gq-fib-input')?.focus(), 100);
+
+  } else if (q.type === 'word-order') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
+    `;
+    const shuffled = shuffleArr([...q.words]);
+    aa.innerHTML = `<div class="word-order-area">
+      <div class="answer-area-wo" id="gq-answer-wo"></div>
+      <div class="word-tiles" id="gq-word-tiles">
+        ${shuffled.map((w, i) => `<div class="word-tile" data-idx="${i}" data-word="${w}" onclick="selectWordTile(this)">${w}</div>`).join('')}
+      </div>
+      <button class="btn-primary wo-check-btn" onclick="checkWordOrder()">Check Order</button>
+    </div>`;
+
+  } else if (q.type === 'error-spot') {
+    qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map(opt =>
+        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}</button>`
+      ).join('') + '</div>';
+  }
+}
+
+function answerGrammarMC(btn, chosen) {
+  if (gqAnswered) return;
+  gqAnswered = true;
+  const q = gqQuestions[gqIndex];
+  const correct = chosen === q.correct;
+  document.querySelectorAll('#gq-answer-area .mc-btn').forEach(b => {
+    b.classList.add('disabled');
+    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) { gqCorrect++; addXP(10); }
+  const lessonId = q._lessonId || currentGrammarLesson.id;
+  const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
+  addGrammarMastery(lessonId, qIdx, correct);
+  showGrammarFeedback(correct, q.explanation || q.correct);
+  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function answerGrammarFIB() {
+  if (gqAnswered) return;
+  const input = document.getElementById('gq-fib-input');
+  if (!input) return;
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  gqAnswered = true;
+  const q = gqQuestions[gqIndex];
+  // Also check with the Bengali script (not lowercased)
+  const correct = q.acceptable.some(a => a.toLowerCase() === val) ||
+                  q.acceptable.some(a => a === input.value.trim());
+  input.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) { gqCorrect++; addXP(15); }
+  const lessonId = q._lessonId || currentGrammarLesson.id;
+  const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
+  addGrammarMastery(lessonId, qIdx, correct);
+  showGrammarFeedback(correct, q.answer);
+  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function selectWordTile(tile) {
+  if (gqAnswered) return;
+  const word = tile.dataset.word;
+  tile.classList.add('used');
+  gqWordOrder.push(word);
+  const ansArea = document.getElementById('gq-answer-wo');
+  const placed = document.createElement('div');
+  placed.className = 'word-tile';
+  placed.textContent = word;
+  placed.dataset.srcIdx = tile.dataset.idx;
+  placed.onclick = function() { removeWordTile(this); };
+  ansArea.appendChild(placed);
+}
+
+function removeWordTile(placed) {
+  if (gqAnswered) return;
+  const srcIdx = placed.dataset.srcIdx;
+  const word = placed.textContent;
+  // Re-enable source tile
+  const tiles = document.querySelectorAll('#gq-word-tiles .word-tile');
+  tiles.forEach(t => { if (t.dataset.idx === srcIdx) t.classList.remove('used'); });
+  gqWordOrder = gqWordOrder.filter((_, i) => {
+    // Remove the first occurrence of this word
+    return true;
+  });
+  // Rebuild gqWordOrder from current answer area
+  placed.remove();
+  gqWordOrder = [];
+  document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => {
+    gqWordOrder.push(t.textContent);
+  });
+}
+
+function checkWordOrder() {
+  if (gqAnswered) return;
+  if (gqWordOrder.length === 0) return;
+  gqAnswered = true;
+  const q = gqQuestions[gqIndex];
+  const correct = gqWordOrder.length === q.correct.length &&
+    gqWordOrder.every((w, i) => w === q.correct[i]);
+  const ansArea = document.getElementById('gq-answer-wo');
+  ansArea.classList.add(correct ? 'correct-wo' : 'wrong-wo');
+  // Disable remaining tiles
+  document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
+  document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
+  if (correct) { gqCorrect++; addXP(15); }
+  const lessonId = q._lessonId || currentGrammarLesson.id;
+  const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
+  addGrammarMastery(lessonId, qIdx, correct);
+  showGrammarFeedback(correct, q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
+  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function showGrammarFeedback(correct, answer) {
+  const fb = document.getElementById('gq-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? '✓ Correct! ' + answer : '✗ Correct answer: ' + answer;
+}
+
+function nextGrammarQuestion() {
+  gqIndex++;
+  renderGrammarQuestion();
+}
+
+// ════════════════════════════════════════
+//  GRAMMAR RESULTS
+// ════════════════════════════════════════
+function showGrammarResults() {
+  showScreen('grammar-results');
+  const total = gqQuestions.length;
+  const pct = Math.round((gqCorrect / total) * 100);
+  setTimeout(() => {
+    const offset = 452.4 * (1 - pct / 100);
+    document.getElementById('gr-ring').style.strokeDashoffset = offset;
+  }, 100);
+  document.getElementById('gr-pct').textContent = pct + '%';
+  const titles = pct === 100 ? 'Perfect!' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  document.getElementById('gr-title').textContent = titles;
+  document.getElementById('gr-sub').textContent = `You scored ${gqCorrect}/${total}`;
+  addXP(5);
+  updateNav();
+}
+
+function retryGrammarQuiz() {
+  if (gqIsMixed) {
+    startGrammarMixedPractice();
+  } else if (currentGrammarLesson) {
+    startGrammarQuiz();
+  }
+}
+
+// ════════════════════════════════════════
+//  GRAMMAR MIXED PRACTICE
+// ════════════════════════════════════════
+function getGrammarMixedUnlockedCount() {
+  // Unlock in waves of 3 lessons. A wave unlocks when 60% of questions
+  // in the previous wave have mastery >= 2.
+  const WAVE = 3;
+  let unlocked = WAVE;
+  while (unlocked < GRAMMAR_LESSONS.length) {
+    const waveStart = unlocked - WAVE;
+    const waveLessons = GRAMMAR_LESSONS.slice(waveStart, unlocked);
+    let totalQ = 0, familiarQ = 0;
+    waveLessons.forEach(l => {
+      for (let i = 0; i < l.quiz.length; i++) {
+        totalQ++;
+        if (getGrammarMastery(l.id, i) >= 2) familiarQ++;
+      }
+    });
+    if (familiarQ >= Math.ceil(totalQ * 0.6)) {
+      unlocked = Math.min(unlocked + WAVE, GRAMMAR_LESSONS.length);
+    } else {
+      break;
+    }
+  }
+  return unlocked;
+}
+
+function startGrammarMixedPractice() {
+  const unlocked = getGrammarMixedUnlockedCount();
+  const pool = GRAMMAR_LESSONS.slice(0, unlocked);
+
+  // Collect all questions with lesson metadata, weighted by mastery
+  let allQs = [];
+  pool.forEach(lesson => {
+    lesson.quiz.forEach((q, i) => {
+      const m = getGrammarMastery(lesson.id, i);
+      allQs.push({ ...q, _lessonId: lesson.id, _qIdx: i, _mastery: m });
+    });
+  });
+
+  // Sort by mastery ascending (lowest first) with some randomness for mastered ones
+  allQs.sort((a, b) => {
+    const sa = a._mastery === 3 ? 3 + Math.random() * 2 : a._mastery === 0 ? 0.5 : a._mastery;
+    const sb = b._mastery === 3 ? 3 + Math.random() * 2 : b._mastery === 0 ? 0.5 : b._mastery;
+    return sa - sb;
+  });
+
+  gqQuestions = allQs.slice(0, 12);
+  gqIndex = 0;
+  gqCorrect = 0;
+  gqIsMixed = true;
+  currentGrammarLesson = currentGrammarLesson || GRAMMAR_LESSONS[0]; // fallback
+  document.getElementById('gq-title').textContent = 'Mixed Grammar Practice';
+  showScreen('grammar-quiz');
+  renderGrammarQuestion();
+  updateStreak();
+}
+
+// ════════════════════════════════════════
+//  PLACEMENT TEST
+// ════════════════════════════════════════
+let ptQuestions = [];
+let ptIndex = 0;
+let ptCorrect = 0;
+let ptAnswered = false;
+let ptWordOrder = [];
+let ptStageResults = {
+  alphabet: { correct: 0, total: 0, waves: {} },
+  vocabulary: { correct: 0, total: 0, waves: {} },
+  grammar: { correct: 0, total: 0, waves: {} },
+};
+let ptPendingMastery = {};
+let ptTotalExpected = 30; // may be less with early termination
+
+function shouldShowPlacementCard() {
+  if (progress.placementTaken) return false;
+  const masteryKeys = Object.keys(progress.mastery);
+  return masteryKeys.length < 10;
+}
+
+function buildPlacementQuestions() {
+  const questions = [];
+
+  // ── ALPHABET: waves 1,3,5,7,9 (0-indexed: 0,2,4,6,8) ──
+  // Each wave is 5 letters. 2 questions per wave = 10 total
+  const alphaWaveIndices = [0, 2, 4, 6, 8];
+  alphaWaveIndices.forEach((waveIdx, wi) => {
+    const start = waveIdx * MIXED_WAVE_SIZE;
+    const waveLetters = MIXED_CURRICULUM.slice(start, start + MIXED_WAVE_SIZE).filter(Boolean);
+    if (waveLetters.length === 0) return;
+
+    // Question 1: MC — name identification
+    const l1 = waveLetters[Math.floor(Math.random() * waveLetters.length)];
+    const correctName = l1.name.split(' ')[0];
+    const distractors = generateDistractors(l1, ALL_LETTERS, 'name');
+    questions.push({
+      stage: 'alphabet', wave: waveIdx, type: 'mc',
+      letter: l1.letter, letterType: l1.type,
+      prompt: 'What is the name of this letter?',
+      correct: correctName,
+      options: shuffle([correctName, ...distractors]),
+      fullAnswer: l1.name, letterObj: l1,
+    });
+
+    // Question 2: FIB — romanized form
+    const l2 = waveLetters[(Math.floor(Math.random() * (waveLetters.length - 1)) + 1) % waveLetters.length];
+    const acceptable = l2.romanized.split('/').map(s => s.trim().toLowerCase());
+    acceptable.forEach(a => {
+      acceptable.push(a.replace(/[ṭḍṇṣṛñ]/g, c =>
+        ({ṭ:'t',ḍ:'d',ṇ:'n',ṣ:'sh',ṛ:'r',ñ:'ny'}[c]||c)));
+    });
+    questions.push({
+      stage: 'alphabet', wave: waveIdx, type: 'fib',
+      letter: l2.letter, letterType: l2.type,
+      prompt: 'Type the romanized form of this letter:',
+      acceptable: [...new Set(acceptable)],
+      answer: l2.romanized,
+      hint: 'Hint: ' + l2.name, letterObj: l2,
+    });
+  });
+
+  // ── VOCABULARY: waves 0,4,9,14,19 ──
+  const vocabWaveIndices = [0, 4, 9, 14, 19];
+  vocabWaveIndices.forEach((waveIdx) => {
+    const start = waveIdx * VMIX_WAVE_SIZE;
+    const waveWords = VMIX_CURRICULUM.slice(start, start + VMIX_WAVE_SIZE);
+    if (waveWords.length === 0) return;
+
+    // Question 1: MC — Bengali to English
+    const w1 = waveWords[Math.floor(Math.random() * waveWords.length)];
+    const correctEn = w1[2];
+    const vocabDistractors = VOCAB_DATA.filter(x => x[0] !== w1[0]).map(x => x[2]);
+    const picks1 = shuffleArr([...new Set(vocabDistractors)].filter(x => x !== correctEn)).slice(0, 3);
+    questions.push({
+      stage: 'vocabulary', wave: waveIdx, type: 'mc',
+      bengali: w1[0], roman: w1[1],
+      prompt: 'What does this word mean?',
+      correct: correctEn,
+      options: shuffleArr([correctEn, ...picks1]),
+      word: w1,
+    });
+
+    // Question 2: FIB — type English meaning
+    const w2 = waveWords[(Math.floor(Math.random() * (waveWords.length - 1)) + 1) % waveWords.length];
+    const fibAcceptable = w2[2].toLowerCase().split('/').map(s => s.trim());
+    w2[2].toLowerCase().split('/').forEach(s => {
+      s.trim().split(' ').forEach(word => { if (word.length > 2) fibAcceptable.push(word); });
+    });
+    questions.push({
+      stage: 'vocabulary', wave: waveIdx, type: 'fib',
+      bengali: w2[0], roman: w2[1],
+      prompt: 'Type the English meaning:',
+      acceptable: [...new Set(fibAcceptable)],
+      answer: w2[2], hint: 'Romanized: ' + w2[1],
+      word: w2,
+    });
+  });
+
+  // ── GRAMMAR: lessons 1,4,7,10,13 (0-indexed: 0,3,6,9,12) ──
+  const grammarLessonIndices = [0, 3, 6, 9, 12];
+  grammarLessonIndices.forEach((lessonIdx) => {
+    const lesson = GRAMMAR_LESSONS[lessonIdx];
+    if (!lesson) return;
+    const quizPool = [...lesson.quiz];
+    const shuffledQ = shuffleArr(quizPool);
+
+    // Pick 2 questions from this lesson
+    for (let i = 0; i < 2 && i < shuffledQ.length; i++) {
+      const q = { ...shuffledQ[i] };
+      q.stage = 'grammar';
+      q.wave = lessonIdx;
+      q._lessonId = lesson.id;
+      q._qIdx = lesson.quiz.indexOf(shuffledQ[i]);
+      questions.push(q);
+    }
+  });
+
+  return questions;
+}
+
+function startPlacementTest() {
+  showScreen('placement-intro');
+}
+
+function beginPlacementQuiz() {
+  ptQuestions = buildPlacementQuestions();
+  ptIndex = 0;
+  ptCorrect = 0;
+  ptAnswered = false;
+  ptWordOrder = [];
+  ptStageResults = {
+    alphabet: { correct: 0, total: 0, waves: {} },
+    vocabulary: { correct: 0, total: 0, waves: {} },
+    grammar: { correct: 0, total: 0, waves: {} },
+  };
+  ptPendingMastery = {};
+  ptTotalExpected = ptQuestions.length;
+
+  document.getElementById('tab-bar').style.display = 'none';
+  showScreen('placement-quiz');
+  renderPlacementQuestion();
+}
+
+function confirmQuitPlacement() {
+  if (confirm('Quit the placement test? Your progress will be lost.')) {
+    document.getElementById('tab-bar').style.display = '';
+    switchTab(currentTab);
+  }
+}
+
+function renderPlacementQuestion() {
+  if (ptIndex >= ptQuestions.length) {
+    showPlacementResults();
+    return;
+  }
+
+  // Check early termination before rendering
+  const q = ptQuestions[ptIndex];
+  if (shouldSkipRemainingStage(q.stage, q.wave)) {
+    skipToNextStage();
+    return;
+  }
+
+  ptAnswered = false;
+  ptWordOrder = [];
+
+  // Update UI
+  const stageNames = { alphabet: 'Alphabet', vocabulary: 'Vocabulary', grammar: 'Grammar' };
+  document.getElementById('pt-stage-label').textContent = stageNames[q.stage] || q.stage;
+  document.getElementById('pt-progress-fill').style.width =
+    ((ptIndex / ptTotalExpected) * 100) + '%';
+  document.getElementById('pt-score').textContent = ptCorrect + ' / ' + ptIndex;
+
+  const qa = document.getElementById('pt-question-area');
+  const aa = document.getElementById('pt-answer-area');
+  const fb = document.getElementById('pt-feedback');
+  fb.className = 'quiz-feedback';
+  fb.textContent = '';
+  document.getElementById('pt-next-btn').className = 'btn-primary quiz-next-btn';
+
+  renderPlacementQuestionByType(q, qa, aa);
+}
+
+function renderPlacementQuestionByType(q, qa, aa) {
+  // ── Alphabet questions ──
+  if (q.stage === 'alphabet') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="quiz-letter">${q.letter}</div>
+    `;
+    if (q.type === 'mc') {
+      aa.innerHTML = '<div class="mc-options">' +
+        q.options.map(opt =>
+          `<button class="mc-btn" onclick="answerPlacementMC(this, '${escapeStr(opt)}')">${opt}</button>`
+        ).join('') + '</div>';
+    } else {
+      aa.innerHTML = `<div class="fib-area">
+        <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
+          onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
+        <button class="btn-primary fib-submit" onclick="answerPlacementFIB()">Check</button>
+        <div class="fib-hint">${q.hint || ''}</div>
+      </div>`;
+      setTimeout(() => document.getElementById('pt-fib-input')?.focus(), 100);
+    }
+    return;
+  }
+
+  // ── Vocabulary questions ──
+  if (q.stage === 'vocabulary') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="vq-bengali">${q.bengali}</div>
+      <div class="vq-hint">${q.roman}</div>
+    `;
+    if (q.type === 'mc') {
+      aa.innerHTML = '<div class="mc-options">' +
+        q.options.map(opt =>
+          `<button class="mc-btn" onclick="answerPlacementMC(this, '${escapeStr(opt)}')">${opt}</button>`
+        ).join('') + '</div>';
+    } else {
+      aa.innerHTML = `<div class="fib-area">
+        <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
+          onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
+        <button class="btn-primary fib-submit" onclick="answerPlacementFIB()">Check</button>
+        <div class="fib-hint">${q.hint || ''}</div>
+      </div>`;
+      setTimeout(() => document.getElementById('pt-fib-input')?.focus(), 100);
+    }
+    return;
+  }
+
+  // ── Grammar questions ──
+  if (q.type === 'translate-mc' || q.type === 'error-spot') {
+    if (q.bengali) {
+      qa.innerHTML = `
+        <div class="quiz-prompt">${q.prompt}</div>
+        <div class="vq-bengali">${q.bengali}</div>
+        ${q.roman ? '<div class="vq-hint">' + q.roman + '</div>' : ''}
+      `;
+    } else {
+      qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
+    }
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map(opt =>
+        `<button class="mc-btn" onclick="answerPlacementMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}</button>`
+      ).join('') + '</div>';
+
+  } else if (q.type === 'fib') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div style="font-family:'Noto Sans Bengali',sans-serif;font-size:1.5rem;margin:12px 0">${q.sentence}</div>
+      ${q.roman ? '<div class="vq-hint">' + q.roman + '</div>' : ''}
+      ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
+    `;
+    aa.innerHTML = `<div class="fib-area">
+      <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
+        onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
+      <button class="btn-primary fib-submit" onclick="answerPlacementFIB()">Check</button>
+    </div>`;
+    setTimeout(() => document.getElementById('pt-fib-input')?.focus(), 100);
+
+  } else if (q.type === 'word-order') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
+    `;
+    const shuffled = shuffleArr([...q.words]);
+    aa.innerHTML = `<div class="word-order-area">
+      <div class="answer-area-wo" id="pt-answer-wo"></div>
+      <div class="word-tiles" id="pt-word-tiles">
+        ${shuffled.map((w, i) => `<div class="word-tile" data-idx="${i}" data-word="${w}" onclick="ptSelectWordTile(this)">${w}</div>`).join('')}
+      </div>
+      <button class="btn-primary wo-check-btn" onclick="checkPlacementWordOrder()">Check Order</button>
+    </div>`;
+  }
+}
+
+function answerPlacementMC(btn, chosen) {
+  if (ptAnswered) return;
+  ptAnswered = true;
+  const q = ptQuestions[ptIndex];
+  const correct = chosen === q.correct;
+  document.querySelectorAll('#pt-answer-area .mc-btn').forEach(b => {
+    b.classList.add('disabled');
+    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) ptCorrect++;
+  const fb = document.getElementById('pt-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct
+    ? '✓ Correct! ' + (q.fullAnswer || q.explanation || q.correct)
+    : '✗ The answer is: ' + (q.fullAnswer || q.explanation || q.correct);
+  document.getElementById('pt-next-btn').className = 'btn-primary quiz-next-btn show';
+  recordPlacementAnswer(q, correct);
+}
+
+function answerPlacementFIB() {
+  if (ptAnswered) return;
+  const input = document.getElementById('pt-fib-input');
+  if (!input) return;
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  ptAnswered = true;
+  const q = ptQuestions[ptIndex];
+  const correct = q.acceptable.some(a => a.toLowerCase() === val) ||
+                  q.acceptable.some(a => a === input.value.trim());
+  input.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) ptCorrect++;
+  const fb = document.getElementById('pt-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct
+    ? '✓ Correct! ' + (q.answer || q.correct)
+    : '✗ The answer is: ' + (q.answer || q.correct);
+  document.getElementById('pt-next-btn').className = 'btn-primary quiz-next-btn show';
+  recordPlacementAnswer(q, correct);
+}
+
+function ptSelectWordTile(tile) {
+  if (ptAnswered) return;
+  tile.classList.add('used');
+  ptWordOrder.push(tile.dataset.word);
+  const ansArea = document.getElementById('pt-answer-wo');
+  const placed = document.createElement('div');
+  placed.className = 'word-tile';
+  placed.textContent = tile.dataset.word;
+  placed.dataset.srcIdx = tile.dataset.idx;
+  placed.onclick = function() { ptRemoveWordTile(this); };
+  ansArea.appendChild(placed);
+}
+
+function ptRemoveWordTile(placed) {
+  if (ptAnswered) return;
+  const srcIdx = placed.dataset.srcIdx;
+  document.querySelectorAll('#pt-word-tiles .word-tile').forEach(t => {
+    if (t.dataset.idx === srcIdx) t.classList.remove('used');
+  });
+  placed.remove();
+  ptWordOrder = [];
+  document.querySelectorAll('#pt-answer-wo .word-tile').forEach(t => {
+    ptWordOrder.push(t.textContent);
+  });
+}
+
+function checkPlacementWordOrder() {
+  if (ptAnswered) return;
+  if (ptWordOrder.length === 0) return;
+  ptAnswered = true;
+  const q = ptQuestions[ptIndex];
+  const correct = ptWordOrder.length === q.correct.length &&
+    ptWordOrder.every((w, i) => w === q.correct[i]);
+  const ansArea = document.getElementById('pt-answer-wo');
+  ansArea.classList.add(correct ? 'correct-wo' : 'wrong-wo');
+  document.querySelectorAll('#pt-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
+  document.querySelectorAll('#pt-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
+  if (correct) ptCorrect++;
+  const fb = document.getElementById('pt-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct
+    ? '✓ Correct! ' + q.correct.join(' ')
+    : '✗ Correct order: ' + q.correct.join(' ');
+  document.getElementById('pt-next-btn').className = 'btn-primary quiz-next-btn show';
+  recordPlacementAnswer(q, correct);
+}
+
+function recordPlacementAnswer(q, correct) {
+  const sr = ptStageResults[q.stage];
+  sr.total++;
+  if (correct) sr.correct++;
+  if (!sr.waves[q.wave]) sr.waves[q.wave] = { correct: 0, total: 0 };
+  sr.waves[q.wave].total++;
+  if (correct) sr.waves[q.wave].correct++;
+}
+
+function shouldSkipRemainingStage(stage, currentWave) {
+  const sr = ptStageResults[stage];
+  // Find the wave just before this one in our question set
+  const stageQuestions = ptQuestions.filter(q => q.stage === stage);
+  const waves = [...new Set(stageQuestions.map(q => q.wave))].sort((a, b) => a - b);
+  const currentWavePos = waves.indexOf(currentWave);
+  if (currentWavePos <= 0) return false; // first wave, can't skip
+
+  const prevWave = waves[currentWavePos - 1];
+  const prevResult = sr.waves[prevWave];
+  if (prevResult && prevResult.total >= 2 && prevResult.correct === 0) {
+    return true; // 0/2 on previous wave => skip remaining
+  }
+  return false;
+}
+
+function skipToNextStage() {
+  const currentStage = ptQuestions[ptIndex].stage;
+  // Skip all remaining questions in this stage
+  while (ptIndex < ptQuestions.length && ptQuestions[ptIndex].stage === currentStage) {
+    ptIndex++;
+  }
+  renderPlacementQuestion();
+}
+
+function nextPlacementQuestion() {
+  ptIndex++;
+  renderPlacementQuestion();
+}
+
+function showPlacementResults() {
+  document.getElementById('tab-bar').style.display = '';
+  computePlacementMastery();
+  showScreen('placement-results');
+  renderPlacementResultsUI();
+}
+
+function computePlacementMastery() {
+  ptPendingMastery = {};
+
+  // ── Alphabet ──
+  const alphaWaves = Object.keys(ptStageResults.alphabet.waves).map(Number).sort((a, b) => a - b);
+  let alphaHighWater = -1;
+  for (const w of alphaWaves) {
+    if (ptStageResults.alphabet.waves[w].correct >= 1) {
+      alphaHighWater = w;
+    }
+  }
+  if (alphaHighWater >= 0) {
+    // Set mastery for all letters in waves up to and including high water mark
+    const endIdx = (alphaHighWater + 1) * MIXED_WAVE_SIZE;
+    for (let i = 0; i < endIdx && i < MIXED_CURRICULUM.length; i++) {
+      const l = MIXED_CURRICULUM[i];
+      if (!l) continue;
+      const waveIdx = Math.floor(i / MIXED_WAVE_SIZE);
+      const waveResult = ptStageResults.alphabet.waves[waveIdx];
+      // Mastered (3) if their wave was tested and got 2/2, learning (2) otherwise
+      const level = (waveResult && waveResult.correct === 2) ? 3 : 2;
+      ptPendingMastery[l.letter] = Math.max(level, getMastery(l.letter));
+    }
+  }
+
+  // ── Vocabulary ──
+  const vocabWaves = Object.keys(ptStageResults.vocabulary.waves).map(Number).sort((a, b) => a - b);
+  let vocabHighWater = -1;
+  for (const w of vocabWaves) {
+    if (ptStageResults.vocabulary.waves[w].correct >= 1) {
+      vocabHighWater = w;
+    }
+  }
+  if (vocabHighWater >= 0) {
+    const endIdx = (vocabHighWater + 1) * VMIX_WAVE_SIZE;
+    for (let i = 0; i < endIdx && i < VMIX_CURRICULUM.length; i++) {
+      const w = VMIX_CURRICULUM[i];
+      if (!w) continue;
+      const waveIdx = Math.floor(i / VMIX_WAVE_SIZE);
+      const waveResult = ptStageResults.vocabulary.waves[waveIdx];
+      const level = (waveResult && waveResult.correct === 2) ? 3 : 2;
+      ptPendingMastery['v:' + w[0]] = Math.max(level, getVocabMastery(w[0]));
+    }
+  }
+
+  // ── Grammar ──
+  const grammarWaves = Object.keys(ptStageResults.grammar.waves).map(Number).sort((a, b) => a - b);
+  let grammarHighWater = -1;
+  for (const w of grammarWaves) {
+    if (ptStageResults.grammar.waves[w].correct >= 1) {
+      grammarHighWater = w;
+    }
+  }
+  if (grammarHighWater >= 0) {
+    // Set mastery for all questions in lessons up to high water mark
+    for (let li = 0; li <= grammarHighWater && li < GRAMMAR_LESSONS.length; li++) {
+      const lesson = GRAMMAR_LESSONS[li];
+      const waveResult = ptStageResults.grammar.waves[li];
+      const level = (waveResult && waveResult.correct === 2) ? 3 : 2;
+      for (let qi = 0; qi < lesson.quiz.length; qi++) {
+        const key = 'g:' + lesson.id + ':' + qi;
+        ptPendingMastery[key] = Math.max(level, getGrammarMastery(lesson.id, qi));
+      }
+    }
+  }
+}
+
+function renderPlacementResultsUI() {
+  const grid = document.getElementById('pt-results-grid');
+  const circumference = 2 * Math.PI * 40;
+
+  const stages = [
+    { key: 'alphabet', label: 'Alphabet', icon: '🔤' },
+    { key: 'vocabulary', label: 'Vocabulary', icon: '📖' },
+    { key: 'grammar', label: 'Grammar', icon: '📝' },
+  ];
+
+  grid.innerHTML = stages.map(s => {
+    const sr = ptStageResults[s.key];
+    const pct = sr.total > 0 ? Math.round((sr.correct / sr.total) * 100) : 0;
+    const offset = circumference * (1 - pct / 100);
+    const waveCount = Object.keys(sr.waves).length;
+    const passedWaves = Object.values(sr.waves).filter(w => w.correct >= 1).length;
+    return `<div class="placement-module-result">
+      <h4>${s.icon} ${s.label}</h4>
+      <div class="pm-ring">
+        <svg viewBox="0 0 100 100">
+          <circle class="bg-ring" cx="50" cy="50" r="40"/>
+          <circle class="fg-ring" cx="50" cy="50" r="40"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+            style="transition-delay:0.3s"/>
+        </svg>
+        <div class="pm-pct">${pct}%</div>
+      </div>
+      <div class="pm-detail">${sr.correct}/${sr.total} correct</div>
+      <div class="pm-detail">${passedWaves}/${waveCount} levels passed</div>
+    </div>`;
+  }).join('');
+
+  // Summary text
+  const totalCorrect = ptStageResults.alphabet.correct + ptStageResults.vocabulary.correct + ptStageResults.grammar.correct;
+  const totalAnswered = ptStageResults.alphabet.total + ptStageResults.vocabulary.total + ptStageResults.grammar.total;
+  const pendingCount = Object.keys(ptPendingMastery).length;
+  document.getElementById('pt-results-summary').textContent =
+    `You answered ${totalCorrect}/${totalAnswered} correctly. ${pendingCount} items will be updated.`;
+}
+
+function applyPlacementResults() {
+  // Bulk-write pending mastery
+  for (const [key, level] of Object.entries(ptPendingMastery)) {
+    progress.mastery[key] = level;
+  }
+  progress.placementTaken = true;
+  saveProgress();
+  updateNav();
+
+  // Show retake button
+  document.getElementById('pt-retake-btn').style.display = '';
+
+  switchTab('alphabet');
+}
+
+function discardPlacementResults() {
+  progress.placementTaken = true;
+  saveProgress();
+  document.getElementById('tab-bar').style.display = '';
+  switchTab('alphabet');
+}
+
+function updatePlacementRetakeButton() {
+  const btn = document.getElementById('pt-retake-btn');
+  if (progress.placementTaken) {
+    btn.style.display = '';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+// ════════════════════════════════════════
+//  PROFILE MANAGEMENT
+// ════════════════════════════════════════
+function showProfileScreen(forceShowPicker) {
+  // Hide main app
+  document.getElementById('main-nav').style.display = 'none';
+  document.getElementById('tab-bar').style.display = 'none';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // Show profile screen
+  document.getElementById('profile-screen').classList.add('active');
+  renderProfileList(forceShowPicker);
+}
+
+function renderProfileList(forceShowPicker) {
+  const users = _listUsers();
+
+  const list = document.getElementById('profile-list');
+  const inputWrap = document.getElementById('profile-input-wrap');
+
+  // If no profiles at all, show create-first input (with no cancel)
+  if (users.length === 0 && !forceShowPicker) {
+    list.innerHTML = '';
+    inputWrap.classList.add('active');
+    document.getElementById('profile-cancel-btn').style.display = 'none';
+    document.getElementById('profile-name-input').focus();
+    document.querySelector('.profile-subtitle').textContent = 'Create your first profile';
+    return;
+  }
+
+  // On first launch with exactly 1 profile, auto-select (skip picker)
+  if (users.length === 1 && !forceShowPicker) {
+    selectProfile(users[0].name);
+    return;
+  }
+
+  // Show profile cards
+  document.querySelector('.profile-subtitle').textContent = users.length > 0
+    ? 'Choose your profile' : 'Create your first profile';
+  inputWrap.classList.remove('active');
+  list.innerHTML = '';
+
+  for (const u of users) {
+    const card = document.createElement('div');
+    card.className = 'profile-card';
+    card.onclick = () => selectProfile(u.name);
+    card.innerHTML = `
+      <div class="pc-name">${escapeHTML(u.name)}</div>
+      <div class="pc-stats">⭐ ${u.xp} XP &nbsp; 🔥 ${u.streak}</div>
+    `;
+    list.appendChild(card);
+  }
+
+  // Add "New Profile" card
+  const add = document.createElement('div');
+  add.className = 'profile-add';
+  add.onclick = showNewProfileInput;
+  add.innerHTML = '<div class="pa-icon">+</div><div class="pa-label">New Profile</div>';
+  list.appendChild(add);
+}
+
+function escapeHTML(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function showNewProfileInput() {
+  document.getElementById('profile-input-wrap').classList.add('active');
+  document.getElementById('profile-cancel-btn').style.display = '';
+  document.getElementById('profile-name-input').value = '';
+  document.getElementById('profile-name-input').focus();
+}
+
+function cancelNewProfile() {
+  document.getElementById('profile-input-wrap').classList.remove('active');
+}
+
+function createProfile() {
+  const input = document.getElementById('profile-name-input');
+  const name = input.value.trim();
+  if (!name) { input.focus(); return; }
+  if (!/^[\w\s\-]+$/u.test(name)) {
+    alert('Name can only contain letters, numbers, spaces, and hyphens.');
+    return;
+  }
+  currentUser = name;
+  progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  saveProgress();
+  enterApp();
+}
+
+function selectProfile(name) {
+  currentUser = name;
+  progress = loadProgress();
+  enterApp();
+}
+
+function enterApp() {
+  // Hide profile screen, show app
+  document.getElementById('profile-screen').classList.remove('active');
+  document.getElementById('main-nav').style.display = '';
+  document.getElementById('tab-bar').style.display = '';
+  document.getElementById('nav-user-name').textContent = currentUser;
+  updateNav();
+  updatePlacementRetakeButton();
+  switchTab('alphabet');
+}
+
+function toggleProfileMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('profile-menu');
+  const open = menu.classList.toggle('open');
+  if (open) {
+    const close = (ev) => {
+      if (!menu.contains(ev.target)) {
+        menu.classList.remove('open');
+        document.removeEventListener('click', close);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+}
+
+function switchProfile() {
+  // Flush pending save, then show profile picker
+  if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
+  currentUser = null;
+  progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  document.getElementById('profile-menu').classList.remove('open');
+  showProfileScreen(true);
+}
+
+function deleteCurrentProfile() {
+  document.getElementById('profile-menu').classList.remove('open');
+  if (!confirm('Delete profile "' + currentUser + '"? All progress will be lost.')) return;
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  _deleteProgressLS(currentUser);
+  currentUser = null;
+  progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  showProfileScreen(true);
+}
+
+// ════════════════════════════════════════
+//  EXPORT / IMPORT
+// ════════════════════════════════════════
+function exportProgress() {
+  document.getElementById('profile-menu').classList.remove('open');
+  if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
+  const data = {
+    exportedBy: currentUser,
+    exportedAt: new Date().toISOString(),
+    version: 1,
+    progress: progress,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateSuffix = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = 'bengali-progress-' + currentUser.replace(/\s+/g, '-') + '-' + dateSuffix + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importProgress() {
+  document.getElementById('profile-menu').classList.remove('open');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        // Accept either a raw progress object or an exported envelope
+        const data = parsed.version === 1 && parsed.progress ? parsed.progress : parsed;
+        if (!data || typeof data.mastery !== 'object') {
+          alert('Invalid progress file.');
+          return;
+        }
+        if (!confirm('Import this progress data? It will overwrite your current progress for "' + currentUser + '".')) return;
+        progress = data;
+        _flushSave();
+        updateNav();
+        renderHome();
+        alert('Progress imported successfully!');
+      } catch(err) {
+        alert('Could not read file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(input);
+  input.click();
+  document.body.removeChild(input);
+}
+
+// Handle Enter key in profile name input
+document.getElementById('profile-name-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') createProfile();
+});
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+showProfileScreen();
+</script>
+</body>
+</html>
