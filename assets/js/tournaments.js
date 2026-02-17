@@ -1,32 +1,32 @@
 (() => {
-  const storageKey = 'tournaments-v1';
-  const basePath = '/tournaments';
-  const listPanel = document.querySelector('#tournaments-list');
-  const newPanel = document.querySelector('#tournaments-new');
-  const detailPanel = document.querySelector('#tournaments-detail');
-  const listContainer = document.querySelector('#tournament-list');
-  const listEmpty = document.querySelector('#tournament-empty');
-  const form = document.querySelector('#tournament-form');
-  const playerFields = document.querySelector('#player-fields');
-  const tournamentSize = document.querySelector('#tournament-size');
-  const tournamentType = document.querySelector('#tournament-type');
-  const tournamentName = document.querySelector('#tournament-name');
-  const tournamentRounds = document.querySelector('#tournament-rounds');
-  const tournamentRoundsField = document.querySelector('#tournament-rounds-field');
-  const formError = document.querySelector('#tournament-error');
-  const detailName = document.querySelector('#detail-name');
-  const detailMeta = document.querySelector('#detail-meta');
-  const bracketView = document.querySelector('#bracket-view');
-  const standingsTable = document.querySelector('#standings-table');
-  const participantDetail = document.querySelector('#participant-detail');
-  const participantName = document.querySelector('#participant-name');
-  const participantForm = document.querySelector('#participant-form');
-  const participantEdit = document.querySelector('#participant-edit');
-  const participantError = document.querySelector('#participant-error');
-  const participantMatches = document.querySelector('#participant-matches');
-  const upcomingMatches = document.querySelector('#upcoming-matches');
-  const completedMatches = document.querySelector('#completed-matches');
-  const matchesEmpty = document.querySelector('#matches-empty');
+  const storageKey = "tournaments-v1";
+  const basePath = "/tournaments";
+  const listPanel = document.querySelector("#tournaments-list");
+  const newPanel = document.querySelector("#tournaments-new");
+  const detailPanel = document.querySelector("#tournaments-detail");
+  const listContainer = document.querySelector("#tournament-list");
+  const listEmpty = document.querySelector("#tournament-empty");
+  const form = document.querySelector("#tournament-form");
+  const playerFields = document.querySelector("#player-fields");
+  const tournamentSize = document.querySelector("#tournament-size");
+  const tournamentType = document.querySelector("#tournament-type");
+  const tournamentName = document.querySelector("#tournament-name");
+  const tournamentRounds = document.querySelector("#tournament-rounds");
+  const tournamentRoundsField = document.querySelector("#tournament-rounds-field");
+  const formError = document.querySelector("#tournament-error");
+  const detailName = document.querySelector("#detail-name");
+  const detailMeta = document.querySelector("#detail-meta");
+  const bracketView = document.querySelector("#bracket-view");
+  const standingsTable = document.querySelector("#standings-table");
+  const participantDetail = document.querySelector("#participant-detail");
+  const participantName = document.querySelector("#participant-name");
+  const participantForm = document.querySelector("#participant-form");
+  const participantEdit = document.querySelector("#participant-edit");
+  const participantError = document.querySelector("#participant-error");
+  const participantMatches = document.querySelector("#participant-matches");
+  const upcomingMatches = document.querySelector("#upcoming-matches");
+  const completedMatches = document.querySelector("#completed-matches");
+  const matchesEmpty = document.querySelector("#matches-empty");
   let activeTournament = null;
   let activeParticipant = null;
 
@@ -50,22 +50,22 @@
     value
       .trim()
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   const getRoute = () => {
-    const path = window.location.pathname.replace(/\/+$/, '');
-    const hash = window.location.hash.replace('#', '').trim();
+    const path = window.location.pathname.replace(/\/+$/, "");
+    const hash = window.location.hash.replace("#", "").trim();
     if (path !== basePath && path !== `${basePath}/index.html`) {
-      return { view: 'list' };
+      return { view: "list" };
     }
-    if (hash === 'new') {
-      return { view: 'new' };
+    if (hash === "new") {
+      return { view: "new" };
     }
     if (hash) {
-      return { view: 'detail', slug: hash };
+      return { view: "detail", slug: hash };
     }
-    return { view: 'list' };
+    return { view: "list" };
   };
 
   const showPanel = (panel) => {
@@ -80,15 +80,15 @@
     if (!tournamentRounds || !tournamentRoundsField) {
       return;
     }
-    const isSwiss = tournamentType.value === 'swiss';
+    const isSwiss = tournamentType.value === "swiss";
     tournamentRoundsField.hidden = !isSwiss;
     tournamentRounds.required = isSwiss;
     if (!isSwiss) {
-      tournamentRounds.dataset.manual = 'false';
+      tournamentRounds.dataset.manual = "false";
       return;
     }
     const count = Math.max(2, Number.parseInt(tournamentSize.value, 10) || 2);
-    if (tournamentRounds.dataset.manual !== 'true') {
+    if (tournamentRounds.dataset.manual !== "true") {
       tournamentRounds.value = getSwissDefaultRounds(count);
     }
   };
@@ -97,10 +97,10 @@
     const count = Math.max(2, Number.parseInt(tournamentSize.value, 10) || 2);
     tournamentSize.value = count;
     updateSwissRounds();
-    playerFields.innerHTML = '';
+    playerFields.innerHTML = "";
     for (let i = 0; i < count; i += 1) {
-      const field = document.createElement('label');
-      field.className = 'tournaments__field';
+      const field = document.createElement("label");
+      field.className = "tournaments__field";
       field.innerHTML = `
         <span class="tournaments__label">Player ${i + 1}</span>
         <input type="text" required placeholder="Player ${i + 1}" />
@@ -131,7 +131,7 @@
   const createSeededPairs = (players, seedMap) => {
     const ordered = sortBySeed(players, seedMap);
     if (ordered.length % 2 !== 0) {
-      ordered.push('Bye');
+      ordered.push("Bye");
     }
     const pairs = [];
     for (let i = 0; i < ordered.length / 2; i += 1) {
@@ -144,16 +144,16 @@
     const matches = [];
     let matchId = startingId;
     pairs.forEach(([player1, player2]) => {
-      if (player2 === 'Bye') {
+      if (player2 === "Bye") {
         matches.push({
           id: matchId,
           round,
           bracket,
           player1,
-          player2: 'Bye',
+          player2: "Bye",
           score1: 1,
           score2: 0,
-          status: 'complete',
+          status: "complete",
         });
       } else {
         matches.push({
@@ -164,7 +164,7 @@
           player2,
           score1: null,
           score2: null,
-          status: 'pending',
+          status: "pending",
         });
       }
       matchId += 1;
@@ -173,7 +173,7 @@
   };
 
   const createMatches = (type, players, seedMap) => {
-    if (type === 'round robin') {
+    if (type === "round robin") {
       const matches = [];
       let matchId = 1;
       let round = 1;
@@ -186,7 +186,7 @@
             player2: players[j],
             score1: null,
             score2: null,
-            status: 'pending',
+            status: "pending",
           });
           matchId += 1;
           round += 1;
@@ -196,14 +196,14 @@
     }
 
     const pairs = createSeededPairs(players, seedMap);
-    const bracket = type === 'double elimination' ? 'winners' : null;
+    const bracket = type === "double elimination" ? "winners" : null;
     return buildMatchesFromPairs(pairs, 1, 1, bracket).matches;
   };
 
   const createSwissPairs = (tournament) => {
     const seedMap = getSeedMap(tournament);
     const opponents = tournament.matches.reduce((acc, match) => {
-      if (match.player2 === 'Bye') {
+      if (match.player2 === "Bye") {
         return acc;
       }
       acc[match.player1] = acc[match.player1] || new Set();
@@ -256,17 +256,16 @@
     });
 
     if (carryOver) {
-      pairs.push([carryOver, 'Bye']);
+      pairs.push([carryOver, "Bye"]);
     }
 
     return pairs;
   };
 
-  const getSwissRoundsLimit = (tournament) =>
-    tournament.rounds || getSwissDefaultRounds(tournament.players.length);
+  const getSwissRoundsLimit = (tournament) => tournament.rounds || getSwissDefaultRounds(tournament.players.length);
 
   const getWinner = (match) => {
-    if (match.player2 === 'Bye') {
+    if (match.player2 === "Bye") {
       return match.player1;
     }
     const score1 = Number(match.score1);
@@ -281,7 +280,7 @@
   };
 
   const getLoser = (match) => {
-    if (match.player2 === 'Bye') {
+    if (match.player2 === "Bye") {
       return null;
     }
     const winner = getWinner(match);
@@ -300,7 +299,7 @@
   const computeLossCounts = (tournament) => {
     const losses = getLossCounts(tournament);
     tournament.matches
-      .filter((match) => match.status === 'complete')
+      .filter((match) => match.status === "complete")
       .forEach((match) => {
         const loser = getLoser(match);
         if (loser && losses[loser] !== undefined) {
@@ -312,18 +311,13 @@
 
   const ensureDoubleEliminationRounds = (tournament) => {
     const seedMap = getSeedMap(tournament);
-    const getBracket = (match) => match.bracket || 'winners';
-    const winnersMatches = tournament.matches.filter((match) => getBracket(match) === 'winners');
-    const losersMatches = tournament.matches.filter((match) => getBracket(match) === 'losers');
-    const finalsMatches = tournament.matches.filter((match) => getBracket(match) === 'final');
-    const pendingMatches = tournament.matches.filter((match) => match.status === 'pending');
-    const pendingPlayers = new Set(
-      pendingMatches.flatMap((match) => [match.player1, match.player2]).filter(Boolean),
-    );
-    const hasPendingInBracket = (bracket) =>
-      tournament.matches.some(
-        (match) => match.status === 'pending' && getBracket(match) === bracket,
-      );
+    const getBracket = (match) => match.bracket || "winners";
+    const winnersMatches = tournament.matches.filter((match) => getBracket(match) === "winners");
+    const losersMatches = tournament.matches.filter((match) => getBracket(match) === "losers");
+    const finalsMatches = tournament.matches.filter((match) => getBracket(match) === "final");
+    const pendingMatches = tournament.matches.filter((match) => match.status === "pending");
+    const pendingPlayers = new Set(pendingMatches.flatMap((match) => [match.player1, match.player2]).filter(Boolean));
+    const hasPendingInBracket = (bracket) => tournament.matches.some((match) => match.status === "pending" && getBracket(match) === bracket);
     let nextMatchId = Math.max(0, ...tournament.matches.map((match) => match.id)) + 1;
 
     const addRound = (players, round, bracket) => {
@@ -331,12 +325,7 @@
         return;
       }
       const pairs = createSeededPairs(players, seedMap);
-      const { matches, nextMatchId: updatedId } = buildMatchesFromPairs(
-        pairs,
-        round,
-        nextMatchId,
-        bracket,
-      );
+      const { matches, nextMatchId: updatedId } = buildMatchesFromPairs(pairs, round, nextMatchId, bracket);
       tournament.matches.push(...matches);
       nextMatchId = updatedId;
     };
@@ -344,43 +333,30 @@
     if (winnersMatches.length > 0) {
       const latestWinnersRound = Math.max(...winnersMatches.map((match) => match.round));
       const latestWinnersMatches = winnersMatches.filter((match) => match.round === latestWinnersRound);
-      const allComplete = latestWinnersMatches.every((match) => match.status === 'complete');
+      const allComplete = latestWinnersMatches.every((match) => match.status === "complete");
       const alreadyExists = winnersMatches.some((match) => match.round === latestWinnersRound + 1);
       if (allComplete && !alreadyExists) {
         const winners = latestWinnersMatches.map(getWinner).filter(Boolean);
-        addRound(winners, latestWinnersRound + 1, 'winners');
+        addRound(winners, latestWinnersRound + 1, "winners");
       }
     }
 
-    if (!losersMatches.some((match) => match.status === 'pending')) {
+    if (!losersMatches.some((match) => match.status === "pending")) {
       const losses = computeLossCounts(tournament);
-      const eligible = tournament.players
-        .filter((player) => losses[player] === 1)
-        .filter((player) => !pendingPlayers.has(player));
+      const eligible = tournament.players.filter((player) => losses[player] === 1).filter((player) => !pendingPlayers.has(player));
       if (eligible.length >= 2) {
-        const nextLosersRound = (losersMatches.length
-          ? Math.max(...losersMatches.map((match) => match.round))
-          : 0) + 1;
-        addRound(eligible, nextLosersRound, 'losers');
+        const nextLosersRound = (losersMatches.length ? Math.max(...losersMatches.map((match) => match.round)) : 0) + 1;
+        addRound(eligible, nextLosersRound, "losers");
       }
     }
 
-    if (!hasPendingInBracket('final')) {
+    if (!hasPendingInBracket("final")) {
       const losses = computeLossCounts(tournament);
-      const winnersFinalists = tournament.players
-        .filter((player) => losses[player] === 0)
-        .filter((player) => !pendingPlayers.has(player));
-      const losersFinalists = tournament.players
-        .filter((player) => losses[player] === 1)
-        .filter((player) => !pendingPlayers.has(player));
-      const noPendingElimRounds = !hasPendingInBracket('winners') && !hasPendingInBracket('losers');
-      if (
-        noPendingElimRounds &&
-        finalsMatches.length === 0 &&
-        winnersFinalists.length === 1 &&
-        losersFinalists.length === 1
-      ) {
-        addRound([winnersFinalists[0], losersFinalists[0]], 1, 'final');
+      const winnersFinalists = tournament.players.filter((player) => losses[player] === 0).filter((player) => !pendingPlayers.has(player));
+      const losersFinalists = tournament.players.filter((player) => losses[player] === 1).filter((player) => !pendingPlayers.has(player));
+      const noPendingElimRounds = !hasPendingInBracket("winners") && !hasPendingInBracket("losers");
+      if (noPendingElimRounds && finalsMatches.length === 0 && winnersFinalists.length === 1 && losersFinalists.length === 1) {
+        addRound([winnersFinalists[0], losersFinalists[0]], 1, "final");
         return;
       }
       const remaining = tournament.players.filter((player) => losses[player] < 2);
@@ -393,16 +369,16 @@
         remaining.length === 2 &&
         remaining.every((player) => losses[player] === 1)
       ) {
-        addRound(remaining, 2, 'final');
+        addRound(remaining, 2, "final");
       }
     }
   };
 
   const ensureNextRound = (tournament) => {
-    if (tournament.type === 'round robin') {
+    if (tournament.type === "round robin") {
       return;
     }
-    if (tournament.type === 'double elimination') {
+    if (tournament.type === "double elimination") {
       ensureDoubleEliminationRounds(tournament);
       return;
     }
@@ -415,7 +391,7 @@
     if (latestMatches.length === 0) {
       return;
     }
-    const allComplete = latestMatches.every((match) => match.status === 'complete');
+    const allComplete = latestMatches.every((match) => match.status === "complete");
     if (!allComplete) {
       return;
     }
@@ -424,11 +400,11 @@
     if (alreadyExists) {
       return;
     }
-    if (tournament.type === 'swiss' && nextRound > getSwissRoundsLimit(tournament)) {
+    if (tournament.type === "swiss" && nextRound > getSwissRoundsLimit(tournament)) {
       return;
     }
     const nextMatchId = Math.max(0, ...tournament.matches.map((match) => match.id)) + 1;
-    if (tournament.type === 'swiss') {
+    if (tournament.type === "swiss") {
       const pairs = createSwissPairs(tournament);
       const { matches } = buildMatchesFromPairs(pairs, nextRound, nextMatchId);
       tournament.matches.push(...matches);
@@ -451,9 +427,9 @@
     }, {});
 
     tournament.matches
-      .filter((match) => match.status === 'complete')
+      .filter((match) => match.status === "complete")
       .forEach((match) => {
-        if (match.player2 === 'Bye') {
+        if (match.player2 === "Bye") {
           standings[match.player1].wins += 1;
           standings[match.player1].points += 1;
           return;
@@ -506,9 +482,9 @@
           <td>${row.draws}</td>
           <td>${row.points}</td>
         </tr>
-      `,
+      `
       )
-      .join('');
+      .join("");
 
     standingsTable.innerHTML = `
       <table>
@@ -539,11 +515,9 @@
     participantDetail.hidden = false;
     participantName.textContent = player;
     participantEdit.value = player;
-    participantError.textContent = '';
+    participantError.textContent = "";
 
-    const matches = tournament.matches
-      .filter((match) => match.player1 === player || match.player2 === player)
-      .sort((a, b) => a.round - b.round);
+    const matches = tournament.matches.filter((match) => match.player1 === player || match.player2 === player).sort((a, b) => a.round - b.round);
 
     if (matches.length === 0) {
       participantMatches.innerHTML = '<p class="tournaments__empty">No matches yet.</p>';
@@ -553,24 +527,10 @@
     participantMatches.innerHTML = matches
       .map((match) => {
         const opponent = match.player1 === player ? match.player2 : match.player1;
-        const scoreline =
-          match.status === 'complete'
-            ? `${match.score1 ?? '-'} - ${match.score2 ?? '-'}`
-            : 'Scheduled';
-        const playerScore =
-          match.status === 'complete'
-            ? match.player1 === player
-              ? match.score1
-              : match.score2
-            : null;
-        const opponentScore =
-          match.status === 'complete'
-            ? match.player1 === player
-              ? match.score2
-              : match.score1
-            : null;
-        const displayScore =
-          match.status === 'complete' ? `${playerScore ?? '-'} - ${opponentScore ?? '-'}` : scoreline;
+        const scoreline = match.status === "complete" ? `${match.score1 ?? "-"} - ${match.score2 ?? "-"}` : "Scheduled";
+        const playerScore = match.status === "complete" ? (match.player1 === player ? match.score1 : match.score2) : null;
+        const opponentScore = match.status === "complete" ? (match.player1 === player ? match.score2 : match.score1) : null;
+        const displayScore = match.status === "complete" ? `${playerScore ?? "-"} - ${opponentScore ?? "-"}` : scoreline;
         return `
           <div class="tournaments__participant-match">
             <div class="tournaments__participant-opponent">
@@ -581,22 +541,22 @@
           </div>
         `;
       })
-      .join('');
+      .join("");
   };
 
   const renameParticipant = (tournament, oldName, newName) => {
     const trimmed = newName.trim();
     if (!trimmed) {
-      return 'Please enter a valid name.';
+      return "Please enter a valid name.";
     }
-    if (trimmed.toLowerCase() === 'bye') {
+    if (trimmed.toLowerCase() === "bye") {
       return 'The name "Bye" is reserved.';
     }
     if (oldName === trimmed) {
-      return '';
+      return "";
     }
     if (tournament.players.includes(trimmed)) {
-      return 'That name is already taken.';
+      return "That name is already taken.";
     }
 
     tournament.players = tournament.players.map((player) => (player === oldName ? trimmed : player));
@@ -613,20 +573,20 @@
         match.player2 = trimmed;
       }
     });
-    return '';
+    return "";
   };
 
   const renderBracket = (tournament) => {
     if (!bracketView) {
       return;
     }
-    if (tournament.type === 'round robin') {
+    if (tournament.type === "round robin") {
       bracketView.innerHTML = '<p class="tournaments__bracket-empty">Bracket view is available for elimination formats.</p>';
       return;
     }
-    if (tournament.type === 'double elimination') {
+    if (tournament.type === "double elimination") {
       const bracketGroups = tournament.matches.reduce((acc, match) => {
-        const bracket = match.bracket || 'winners';
+        const bracket = match.bracket || "winners";
         if (!acc[bracket]) {
           acc[bracket] = [];
         }
@@ -651,12 +611,12 @@
               .map(
                 (match) => `
                 <div class="tournaments__bracket-match">
-                  <span>${match.player1}<strong>${match.score1 ?? '-'}</strong></span>
-                  <span>${match.player2}<strong>${match.score2 ?? '-'}</strong></span>
+                  <span>${match.player1}<strong>${match.score1 ?? "-"}</strong></span>
+                  <span>${match.player2}<strong>${match.score2 ?? "-"}</strong></span>
                 </div>
-              `,
+              `
               )
-              .join('');
+              .join("");
             return `
               <div class="tournaments__bracket-round">
                 <h4>Round ${round}</h4>
@@ -664,12 +624,12 @@
               </div>
             `;
           })
-          .join('');
+          .join("");
       };
 
       const winnersHtml = renderBracketRounds(bracketGroups.winners || []);
       const losersHtml = renderBracketRounds(bracketGroups.losers || []);
-      const finalsHtml = bracketGroups.final ? renderBracketRounds(bracketGroups.final) : '';
+      const finalsHtml = bracketGroups.final ? renderBracketRounds(bracketGroups.final) : "";
 
       bracketView.innerHTML = `
         <div class="tournaments__bracket-group">
@@ -680,7 +640,7 @@
           <h4>Losers bracket</h4>
           ${losersHtml}
         </div>
-        ${finalsHtml ? `<div class="tournaments__bracket-group"><h4>Finals</h4>${finalsHtml}</div>` : ''}
+        ${finalsHtml ? `<div class="tournaments__bracket-group"><h4>Finals</h4>${finalsHtml}</div>` : ""}
       `;
       return;
     }
@@ -702,12 +662,12 @@
           .map(
             (match) => `
             <div class="tournaments__bracket-match">
-              <span>${match.player1}<strong>${match.score1 ?? '-'}</strong></span>
-              <span>${match.player2}<strong>${match.score2 ?? '-'}</strong></span>
+              <span>${match.player1}<strong>${match.score1 ?? "-"}</strong></span>
+              <span>${match.player2}<strong>${match.score2 ?? "-"}</strong></span>
             </div>
-          `,
+          `
           )
-          .join('');
+          .join("");
         return `
           <div class="tournaments__bracket-round">
             <h4>Round ${round}</h4>
@@ -715,35 +675,35 @@
           </div>
         `;
       })
-      .join('');
+      .join("");
   };
 
   const renderMatches = (tournament) => {
-    const upcoming = tournament.matches.filter((match) => match.status === 'pending');
-    const completed = tournament.matches.filter((match) => match.status === 'complete');
+    const upcoming = tournament.matches.filter((match) => match.status === "pending");
+    const completed = tournament.matches.filter((match) => match.status === "complete");
 
     matchesEmpty.hidden = upcoming.length > 0;
-    upcomingMatches.innerHTML = '';
-    completedMatches.innerHTML = '';
+    upcomingMatches.innerHTML = "";
+    completedMatches.innerHTML = "";
 
     const formatBracket = (match) => {
-      if (tournament.type !== 'double elimination') {
-        return '';
+      if (tournament.type !== "double elimination") {
+        return "";
       }
-      const bracket = match.bracket || 'winners';
+      const bracket = match.bracket || "winners";
       const label = bracket.charAt(0).toUpperCase() + bracket.slice(1);
       return `${label} bracket`;
     };
 
     upcoming.forEach((match) => {
-      const matchEl = document.createElement('div');
-      matchEl.className = 'tournaments__match';
+      const matchEl = document.createElement("div");
+      matchEl.className = "tournaments__match";
       const bracketLabel = formatBracket(match);
       matchEl.innerHTML = `
         <div class="tournaments__match-header">
           <span>Round ${match.round}</span>
           <span>Match #${match.id}</span>
-          ${bracketLabel ? `<span>${bracketLabel}</span>` : ''}
+          ${bracketLabel ? `<span>${bracketLabel}</span>` : ""}
         </div>
         <div class="tournaments__scoreline">
           <strong>${match.player1}</strong>
@@ -755,8 +715,8 @@
         </div>
       `;
 
-      const [score1, score2, button] = matchEl.querySelectorAll('input, button');
-      button.addEventListener('click', () => {
+      const [score1, score2, button] = matchEl.querySelectorAll("input, button");
+      button.addEventListener("click", () => {
         const scoreValue1 = Number(score1.value);
         const scoreValue2 = Number(score2.value);
         if (Number.isNaN(scoreValue1) || Number.isNaN(scoreValue2)) {
@@ -764,7 +724,7 @@
         }
         match.score1 = scoreValue1;
         match.score2 = scoreValue2;
-        match.status = 'complete';
+        match.status = "complete";
         ensureNextRound(tournament);
         persistTournament(tournament);
         renderTournament(tournament.slug);
@@ -773,14 +733,14 @@
     });
 
     completed.forEach((match) => {
-      const matchEl = document.createElement('div');
-      matchEl.className = 'tournaments__match';
+      const matchEl = document.createElement("div");
+      matchEl.className = "tournaments__match";
       const bracketLabel = formatBracket(match);
       matchEl.innerHTML = `
         <div class="tournaments__match-header">
           <span>Round ${match.round}</span>
           <span>Match #${match.id}</span>
-          ${bracketLabel ? `<span>${bracketLabel}</span>` : ''}
+          ${bracketLabel ? `<span>${bracketLabel}</span>` : ""}
         </div>
         <div class="tournaments__scoreline">
           <strong>${match.player1}</strong>
@@ -807,12 +767,12 @@
 
   const renderList = () => {
     const tournaments = getTournaments();
-    listContainer.innerHTML = '';
+    listContainer.innerHTML = "";
     listEmpty.hidden = tournaments.length > 0;
 
     tournaments.forEach((tournament) => {
-      const card = document.createElement('div');
-      card.className = 'tournaments__card';
+      const card = document.createElement("div");
+      card.className = "tournaments__card";
       card.innerHTML = `
         <h3>${tournament.name}</h3>
         <div class="tournaments__meta">
@@ -830,11 +790,11 @@
     const tournament = getTournaments().find((entry) => entry.slug === slug);
     if (!tournament) {
       activeTournament = null;
-      detailName.textContent = 'Tournament not found';
-      detailMeta.textContent = 'Create a new tournament to get started.';
-      standingsTable.innerHTML = '';
-      upcomingMatches.innerHTML = '';
-      completedMatches.innerHTML = '';
+      detailName.textContent = "Tournament not found";
+      detailMeta.textContent = "Create a new tournament to get started.";
+      standingsTable.innerHTML = "";
+      upcomingMatches.innerHTML = "";
+      completedMatches.innerHTML = "";
       matchesEmpty.hidden = false;
       if (participantDetail) {
         participantDetail.hidden = true;
@@ -852,55 +812,52 @@
 
   const setupForm = () => {
     renderPlayerFields();
-    tournamentSize.addEventListener('change', renderPlayerFields);
+    tournamentSize.addEventListener("change", renderPlayerFields);
     if (tournamentType) {
-      tournamentType.addEventListener('change', () => {
+      tournamentType.addEventListener("change", () => {
         if (tournamentRounds) {
-          tournamentRounds.dataset.manual = 'false';
+          tournamentRounds.dataset.manual = "false";
         }
         updateSwissRounds();
       });
     }
     if (tournamentRounds) {
-      tournamentRounds.addEventListener('input', () => {
-        tournamentRounds.dataset.manual = 'true';
+      tournamentRounds.addEventListener("input", () => {
+        tournamentRounds.dataset.manual = "true";
       });
     }
     updateSwissRounds();
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener("submit", (event) => {
       event.preventDefault();
-      formError.textContent = '';
+      formError.textContent = "";
       const name = tournamentName.value.trim();
       const type = tournamentType.value;
       const count = Number.parseInt(tournamentSize.value, 10);
-      const swissRounds =
-        type === 'swiss'
-          ? Number.parseInt(tournamentRounds ? tournamentRounds.value : '', 10)
-          : null;
+      const swissRounds = type === "swiss" ? Number.parseInt(tournamentRounds ? tournamentRounds.value : "", 10) : null;
       if (!name || !count || count < 2) {
-        formError.textContent = 'Please provide a valid name and at least two players.';
+        formError.textContent = "Please provide a valid name and at least two players.";
         return;
       }
-      if (type === 'swiss' && (!swissRounds || swissRounds < 1)) {
-        formError.textContent = 'Please provide a valid number of swiss rounds.';
+      if (type === "swiss" && (!swissRounds || swissRounds < 1)) {
+        formError.textContent = "Please provide a valid number of swiss rounds.";
         return;
       }
-      const players = Array.from(playerFields.querySelectorAll('input'))
+      const players = Array.from(playerFields.querySelectorAll("input"))
         .map((input) => input.value.trim())
         .filter(Boolean);
       if (players.length !== count) {
-        formError.textContent = 'Please enter every player name.';
+        formError.textContent = "Please enter every player name.";
         return;
       }
       const slug = slugify(name);
       if (!slug) {
-        formError.textContent = 'Please enter a valid tournament name.';
+        formError.textContent = "Please enter a valid tournament name.";
         return;
       }
       const existing = getTournaments().some((entry) => entry.slug === slug);
       if (existing) {
-        formError.textContent = 'A tournament with this name already exists.';
+        formError.textContent = "A tournament with this name already exists.";
         return;
       }
 
@@ -916,7 +873,7 @@
         players,
         seeds,
         matches: createMatches(type, players, seeds),
-        rounds: type === 'swiss' ? swissRounds || getSwissDefaultRounds(players.length) : null,
+        rounds: type === "swiss" ? swissRounds || getSwissDefaultRounds(players.length) : null,
         createdAt: new Date().toISOString(),
       };
       ensureNextRound(tournament);
@@ -927,30 +884,30 @@
 
   const renderRoute = () => {
     const route = getRoute();
-    if (route.view === 'list') {
+    if (route.view === "list") {
       showPanel(listPanel);
       renderList();
-    } else if (route.view === 'new') {
+    } else if (route.view === "new") {
       showPanel(newPanel);
       setupForm();
-    } else if (route.view === 'detail') {
+    } else if (route.view === "detail") {
       showPanel(detailPanel);
       renderTournament(route.slug);
     }
   };
 
   if (standingsTable) {
-    standingsTable.addEventListener('click', (event) => {
-      const target = event.target.closest('[data-player]');
+    standingsTable.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-player]");
       if (!target || !activeTournament) {
         return;
       }
-      renderParticipant(activeTournament, target.getAttribute('data-player'));
+      renderParticipant(activeTournament, target.getAttribute("data-player"));
     });
   }
 
   if (participantForm) {
-    participantForm.addEventListener('submit', (event) => {
+    participantForm.addEventListener("submit", (event) => {
       event.preventDefault();
       if (!activeTournament || !activeParticipant) {
         return;
@@ -960,12 +917,12 @@
         participantError.textContent = error;
         return;
       }
-      participantError.textContent = '';
+      participantError.textContent = "";
       persistTournament(activeTournament);
       renderTournament(activeTournament.slug);
     });
   }
 
-  window.addEventListener('hashchange', renderRoute);
+  window.addEventListener("hashchange", renderRoute);
   renderRoute();
 })();

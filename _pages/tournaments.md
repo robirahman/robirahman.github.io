@@ -18,6 +18,7 @@ permalink: /tournaments/
 
     <div id="tournament-list" class="tournaments__grid"></div>
     <p id="tournament-empty" class="tournaments__empty">No tournaments yet. Create one to get started.</p>
+
   </section>
 
   <section id="tournaments-new" class="tournaments__panel" hidden>
@@ -65,6 +66,7 @@ permalink: /tournaments/
       <button class="tournaments__button" type="submit">Create tournament</button>
       <p id="tournament-error" class="tournaments__error" role="alert"></p>
     </form>
+
   </section>
 
   <section id="tournaments-detail" class="tournaments__panel" hidden>
@@ -122,6 +124,7 @@ permalink: /tournaments/
       <h3>Completed results</h3>
       <div id="completed-matches" class="tournaments__matches"></div>
     </section>
+
   </section>
 </div>
 
