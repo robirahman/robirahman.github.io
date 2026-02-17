@@ -124,6 +124,13 @@ nav_order: 6
   border-radius: 14px;
   padding: 1rem;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.travel-map-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
 }
 
 .travel-map-card img {
@@ -138,6 +145,58 @@ nav_order: 6
   text-align: center;
   color: #555;
   font-size: 0.95rem;
+}
+
+.travel-map-hint {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 0.35rem;
+}
+
+/* ── Map modal / lightbox ── */
+.map-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.map-modal.open {
+  display: flex;
+}
+
+.map-modal img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 10px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.map-modal-close {
+  position: fixed;
+  top: 1rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 </style>
 
@@ -160,18 +219,43 @@ nav_order: 6
 <div id="travel-content" class="travel-content travel-hidden">
   <p>This is a quick look at where I've been.</p>
   <div class="travel-map-grid">
-    <figure class="travel-map-card">
+    <figure class="travel-map-card" onclick="openMapModal(this)" role="button" tabindex="0" aria-label="Click to enlarge US states map" onkeydown="if(event.key==='Enter'||event.key===' ')openMapModal(this)">
       <img src="{{ '/assets/Highlighted US states map.svg' | relative_url }}" alt="Highlighted map of the United States showing visited states." loading="lazy" />
       <figcaption>Where I've been across the United States.</figcaption>
+      <p class="travel-map-hint">Click to enlarge</p>
     </figure>
-    <figure class="travel-map-card">
+    <figure class="travel-map-card" onclick="openMapModal(this)" role="button" tabindex="0" aria-label="Click to enlarge world map" onkeydown="if(event.key==='Enter'||event.key===' ')openMapModal(this)">
       <img src="{{ '/assets/Highlighted world countries map.svg' | relative_url }}" alt="Highlighted world map showing visited countries." loading="lazy" />
       <figcaption>Countries I've visited around the world.</figcaption>
+      <p class="travel-map-hint">Click to enlarge</p>
     </figure>
   </div>
 </div>
 
+<div id="map-modal" class="map-modal" role="dialog" aria-modal="true" aria-label="Enlarged map" onclick="if(event.target===this)closeMapModal()">
+  <button class="map-modal-close" onclick="closeMapModal()" aria-label="Close enlarged map">&times;</button>
+  <img id="map-modal-img" src="" alt="" />
+</div>
+
 <script>
+  function openMapModal(card) {
+    var img = card.querySelector('img');
+    var modal = document.getElementById('map-modal');
+    document.getElementById('map-modal-img').src = img.src;
+    document.getElementById('map-modal-img').alt = img.alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMapModal() {
+    document.getElementById('map-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMapModal();
+  });
+
   document.addEventListener("DOMContentLoaded", () => {
     const PASSWORD_HASH = "7703ae1976ddbe96ed84ab2c23bfbdd3ec22278b94ad8ad0fc67ab4260039510"; // sha256 of the travel password ("wanderlust")
     const lock = document.getElementById("travel-lock");
