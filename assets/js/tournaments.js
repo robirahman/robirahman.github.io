@@ -320,6 +320,10 @@
     const pendingPlayers = new Set(
       pendingMatches.flatMap((match) => [match.player1, match.player2]).filter(Boolean),
     );
+    const hasPendingInBracket = (bracket) =>
+      tournament.matches.some(
+        (match) => match.status === 'pending' && getBracket(match) === bracket,
+      );
     let nextMatchId = Math.max(0, ...tournament.matches.map((match) => match.id)) + 1;
 
     const addRound = (players, round, bracket) => {
@@ -361,13 +365,35 @@
       }
     }
 
-    if (!finalsMatches.some((match) => match.status === 'pending')) {
+    if (!hasPendingInBracket('final')) {
       const losses = computeLossCounts(tournament);
-      const remaining = tournament.players
-        .filter((player) => losses[player] < 2)
+      const winnersFinalists = tournament.players
+        .filter((player) => losses[player] === 0)
         .filter((player) => !pendingPlayers.has(player));
-      if (remaining.length === 2 && finalsMatches.length === 0) {
-        addRound(remaining, 1, 'final');
+      const losersFinalists = tournament.players
+        .filter((player) => losses[player] === 1)
+        .filter((player) => !pendingPlayers.has(player));
+      const noPendingElimRounds = !hasPendingInBracket('winners') && !hasPendingInBracket('losers');
+      if (
+        noPendingElimRounds &&
+        finalsMatches.length === 0 &&
+        winnersFinalists.length === 1 &&
+        losersFinalists.length === 1
+      ) {
+        addRound([winnersFinalists[0], losersFinalists[0]], 1, 'final');
+        return;
+      }
+      const remaining = tournament.players.filter((player) => losses[player] < 2);
+      const finalsRounds = finalsMatches.map((match) => match.round);
+      const hasFinalsReset = finalsRounds.includes(2);
+      if (
+        noPendingElimRounds &&
+        finalsMatches.length > 0 &&
+        !hasFinalsReset &&
+        remaining.length === 2 &&
+        remaining.every((player) => losses[player] === 1)
+      ) {
+        addRound(remaining, 2, 'final');
       }
     }
   };
