@@ -1,6 +1,6 @@
 ---
 layout: none
-title: Bengali Flashcards
+title: Learn Bengali
 nav: true
 nav_order: 8
 permalink: /bengali/
@@ -141,6 +141,29 @@ nav h1 span { color: var(--accent); }
   background: linear-gradient(145deg, #2f221e, #442a24);
   border: 2px solid rgba(255,255,255,0.06);
   transform: rotateY(180deg);
+}
+.card-sound-btn {
+  margin-top: 1rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+.card-sound-btn:hover {
+  background: rgba(255,255,255,0.18);
+  transform: scale(1.1);
+}
+.card-sound-btn:active {
+  transform: scale(0.95);
 }
 .letter-display {
   font-size: 8rem; line-height: 1;
@@ -803,6 +826,7 @@ nav h1 span { color: var(--accent); }
         <div class="vocab-card-pos" id="vc-pos">noun</div>
         <div class="vocab-card-english" id="vc-english">word</div>
         <div class="vocab-card-cat" id="vc-cat">Education</div>
+        <button class="card-sound-btn" id="vc-sound-btn" onclick="event.stopPropagation(); speakCurrentVocab();" aria-label="Play pronunciation">🔊</button>
       </div>
     </div>
   </div>
@@ -866,6 +890,7 @@ nav h1 span { color: var(--accent); }
         <div class="letter-translit" id="card-translit">Romanized: ô / o</div>
         <div class="letter-sound" id="card-sound">Sound: /ɔ/ like "o" in "hot"</div>
         <div class="letter-example" id="card-example">Example: অজ (ôj) — indigestion</div>
+        <button class="card-sound-btn" id="card-sound-btn" onclick="event.stopPropagation(); speakCurrentLetter();" aria-label="Play pronunciation">🔊</button>
       </div>
     </div>
   </div>
@@ -1421,6 +1446,26 @@ function startLearn(mod) {
   qbtn.onclick = () => startQuiz();
   showCard();
   showScreen('learn');
+}
+
+// ── Audio ──────────────────────────────────────────────────────────────────
+function speakBengali(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'bn-BD';
+  utt.rate = 0.85;
+  speechSynthesis.speak(utt);
+}
+
+function speakCurrentLetter() {
+  const card = currentModule && currentModule.letters && currentModule.letters[currentCardIndex];
+  if (card) speakBengali(card.letter);
+}
+
+function speakCurrentVocab() {
+  const entry = typeof vlWords !== 'undefined' && vlWords[vlIndex];
+  if (entry) speakBengali(entry[0]);
 }
 
 function showCard() {
