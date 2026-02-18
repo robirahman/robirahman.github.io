@@ -724,6 +724,26 @@ nav h1 span { color: var(--accent); }
   .word-tile { padding: 8px 14px; font-size: 1rem; }
   .profile-card { min-width: 120px; padding: 18px 20px; }
   .profile-input { width: 220px; }
+
+  /* Nav: hide back link and XP bar to prevent overflow on narrow phones */
+  .back-to-site-nav { display: none; }
+  .streak-bar { display: none; }
+  .nav-stats { gap: 12px; }
+
+  /* Tabs: fill the bar evenly */
+  .tab-btn { flex: 1; text-align: center; }
+
+  /* Learn nav: shrink buttons so all three fit on a 320px screen */
+  .learn-nav { gap: 8px; }
+  .learn-nav .nav-btn { min-width: 76px; padding: 8px 10px; font-size: 0.85rem; }
+  .learn-nav .btn-primary { padding: 10px 18px; }
+
+  /* Vocab browse: drop romanization column, keep Bengali + English + mastery dot */
+  .vocab-row { grid-template-columns: 72px 1fr auto; }
+  .vocab-row .vr-roman { display: none; }
+
+  /* Search: allow shrinking below 200px default */
+  .vb-search { min-width: 0; }
 }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
