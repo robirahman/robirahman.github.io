@@ -678,7 +678,7 @@ nav h1 span { color: var(--accent); }
 .profile-menu {
   display: none; position: absolute; top: 100%; right: 0; margin-top: 8px;
   background: var(--card); border-radius: 12px; overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5); min-width: 180px; z-index: 300;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); min-width: 220px; z-index: 300;
   border: 1px solid rgba(255,255,255,0.08);
 }
 .profile-menu.open { display: block; }
@@ -690,6 +690,127 @@ nav h1 span { color: var(--accent); }
 }
 .profile-menu button:hover { background: rgba(255,255,255,0.06); }
 .profile-menu button.danger { color: var(--wrong); }
+.profile-menu-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.pmh-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+.pmh-stats { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-dim); }
+.profile-menu-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+.profile-menu button .pm-icon { margin-right: 8px; }
+
+/* Progress overlay — mirrors search-overlay */
+.progress-overlay {
+  display: none; position: fixed; inset: 0; z-index: 450;
+  background: rgba(0,0,0,0.72);
+  align-items: flex-start; justify-content: center;
+  padding: 40px 16px 16px; overflow-y: auto;
+}
+.progress-overlay.open { display: flex; }
+
+.progress-panel {
+  background: var(--card); border-radius: 16px;
+  width: 100%; max-width: 640px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  display: flex; flex-direction: column;
+  max-height: 85vh; overflow: hidden;
+}
+
+.progress-panel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+}
+.progress-panel-title { margin: 0; font-size: 1.1rem; }
+.progress-close-btn {
+  background: rgba(255,255,255,0.08); border: none; color: var(--text-dim);
+  border-radius: 50%; width: 1.75rem; height: 1.75rem; font-size: 0.8rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.progress-close-btn:hover { background: rgba(255,255,255,0.16); }
+
+.progress-pt-cta {
+  padding: 12px 20px; flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 14px;
+}
+.progress-pt-btn { padding: 10px 20px; font-size: 0.9rem; white-space: nowrap; }
+.progress-pt-hint { font-size: 0.82rem; color: var(--text-dim); margin: 0; }
+
+.progress-body { overflow-y: auto; flex: 1; }
+
+/* Section accordion */
+.prog-section { border-bottom: 1px solid rgba(255,255,255,0.06); }
+.prog-section-hdr {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px; cursor: pointer;
+  transition: background 0.15s;
+}
+.prog-section-hdr:hover { background: rgba(255,255,255,0.04); }
+.prog-section-icon { font-size: 1rem; }
+.prog-section-label { flex: 1; font-weight: 600; font-size: 0.95rem; }
+.prog-section-summary { font-size: 0.8rem; color: var(--text-dim); }
+.prog-section-arrow { font-size: 0.75rem; color: var(--text-dim); transition: transform 0.2s; }
+.prog-section-arrow.open { transform: rotate(180deg); }
+
+/* Group (module / vocab category) */
+.prog-group { border-top: 1px solid rgba(255,255,255,0.04); }
+.prog-group-hdr {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px 10px 32px; cursor: pointer;
+  transition: background 0.15s;
+}
+.prog-group-hdr:hover { background: rgba(255,255,255,0.03); }
+.prog-group-label { flex: 1; font-size: 0.88rem; }
+.prog-group-bar {
+  width: 60px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.1); overflow: hidden;
+}
+.prog-group-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+.prog-group-count { font-size: 0.78rem; color: var(--text-dim); min-width: 50px; text-align: right; }
+.prog-group-arrow { font-size: 0.7rem; color: var(--text-dim); transition: transform 0.2s; }
+.prog-group-arrow.open { transform: rotate(180deg); }
+
+/* Chip grid */
+.prog-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 10px 20px 14px 32px;
+}
+.prog-chip {
+  width: 2.6rem; height: 2.6rem; border-radius: 8px;
+  border: 2px solid transparent; cursor: pointer;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 1rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; position: relative;
+}
+.prog-chip[data-level="0"] { border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.3); }
+.prog-chip[data-level="1"] { border-color: var(--text-dim); color: var(--text-dim); background: rgba(255,255,255,0.04); }
+.prog-chip[data-level="2"] { border-color: var(--accent-dim); color: var(--text); background: rgba(244,165,50,0.08); }
+.prog-chip[data-level="3"] { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.15); }
+.prog-chip:hover { transform: scale(1.1); }
+
+/* Grammar lesson rows */
+.prog-grammar-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.04);
+}
+.prog-grammar-num { font-size: 0.75rem; color: var(--text-dim); min-width: 22px; text-align: right; }
+.prog-grammar-info { flex: 1; min-width: 0; }
+.prog-grammar-title { font-size: 0.88rem; font-weight: 600; }
+.prog-grammar-desc { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prog-grammar-bar { width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); overflow: hidden; flex-shrink: 0; }
+.prog-grammar-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+.prog-grammar-btns { display: flex; gap: 4px; flex-shrink: 0; }
+.prog-grammar-btn {
+  background: rgba(255,255,255,0.06); border: none; color: var(--text-dim);
+  border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.prog-grammar-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.prog-grammar-btn.done { color: var(--accent); }
+.prog-grammar-btn.done:hover { background: rgba(244,165,50,0.12); }
 
 /* ─── BACK TO SITE LINKS ─── */
 .back-to-site {
@@ -745,6 +866,94 @@ nav h1 span { color: var(--accent); }
   /* Search: allow shrinking below 200px default */
   .vb-search { min-width: 0; }
 }
+
+/* ── Global Search ─────────────────────────────── */
+.nav-search-btn {
+  background: rgba(255,255,255,0.08);
+  border: none; border-radius: 50%;
+  width: 2rem; height: 2rem;
+  font-size: 0.95rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+.nav-search-btn:hover { background: rgba(255,255,255,0.18); }
+
+.search-overlay {
+  display: none; position: fixed; inset: 0; z-index: 450;
+  background: rgba(0,0,0,0.72);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 16px 16px;
+  overflow-y: auto;
+}
+.search-overlay.open { display: flex; }
+
+.search-panel {
+  background: var(--card);
+  border-radius: 16px;
+  width: 100%; max-width: 560px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+
+.search-input-row {
+  display: flex; align-items: center;
+  padding: 14px 16px; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.search-icon-lead { font-size: 1rem; opacity: 0.5; flex-shrink: 0; }
+.search-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-size: 1rem;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.search-input::placeholder { color: var(--text-dim); }
+.search-close-btn {
+  background: rgba(255,255,255,0.08); border: none;
+  color: var(--text-dim); border-radius: 50%;
+  width: 1.75rem; height: 1.75rem; font-size: 0.8rem;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.search-close-btn:hover { background: rgba(255,255,255,0.16); }
+
+.search-results { padding: 8px 0; max-height: 70vh; overflow-y: auto; }
+.search-prompt, .search-empty {
+  padding: 20px 20px; color: var(--text-dim);
+  font-size: 0.9rem; text-align: center; margin: 0;
+}
+.search-group { margin-bottom: 4px; }
+.search-group-title {
+  padding: 8px 16px 4px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.search-result-item {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 10px 16px; cursor: pointer;
+  transition: background 0.15s ease;
+}
+.search-result-item:hover { background: rgba(255,255,255,0.05); }
+.sri-bengali {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 1.15rem; font-weight: 600;
+  color: var(--text); flex-shrink: 0;
+}
+.sri-detail { font-size: 0.85rem; color: var(--text-dim); }
+.sri-tag {
+  font-size: 0.72rem; padding: 2px 7px; border-radius: 10px;
+  background: rgba(255,255,255,0.08); color: var(--text-dim);
+  flex-shrink: 0; align-self: center;
+}
+.search-more {
+  padding: 8px 16px; font-size: 0.85rem;
+  color: var(--accent); cursor: pointer;
+}
+.search-more:hover { text-decoration: underline; }
+.search-divider {
+  height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0;
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -780,12 +989,21 @@ nav h1 span { color: var(--accent); }
       <span class="user-icon">👤</span>
       <span id="nav-user-name"></span>
       <div class="profile-menu" id="profile-menu">
-        <button onclick="switchProfile()">Switch Profile</button>
-        <button onclick="exportProgress()">Export Progress</button>
-        <button onclick="importProgress()">Import Progress</button>
-        <button class="danger" onclick="deleteCurrentProfile()">Delete Profile</button>
+        <div class="profile-menu-header">
+          <div class="pmh-name" id="pmh-name"></div>
+          <div class="pmh-stats" id="pmh-stats"></div>
+        </div>
+        <button onclick="openProgressPanel()"><span class="pm-icon">📊</span>Adjust Progress</button>
+        <button onclick="closeProfileMenu();startPlacementTest()"><span class="pm-icon">🎯</span>Retake Placement Test</button>
+        <div class="profile-menu-divider"></div>
+        <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
+        <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
+        <button onclick="importProgress()"><span class="pm-icon">⬆</span>Import Progress</button>
+        <div class="profile-menu-divider"></div>
+        <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
       </div>
     </button>
+    <button class="nav-search-btn" onclick="openSearch()" aria-label="Search">🔍</button>
   </div>
 </nav>
 
@@ -1424,6 +1642,7 @@ function updateNav() {
   // streak bar: fills based on days toward 7-day streak
   const pct = Math.min(100, (progress.streak / 7) * 100);
   document.getElementById('streak-bar-fill').style.width = pct + '%';
+  updateProfileMenuHeader();
 }
 
 // ════════════════════════════════════════
@@ -3721,12 +3940,12 @@ function switchProfile() {
   if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
   currentUser = null;
   progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
-  document.getElementById('profile-menu').classList.remove('open');
+  closeProfileMenu();
   showProfileScreen(true);
 }
 
 function deleteCurrentProfile() {
-  document.getElementById('profile-menu').classList.remove('open');
+  closeProfileMenu();
   if (!confirm('Delete profile "' + currentUser + '"? All progress will be lost.')) return;
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
   _deleteProgressLS(currentUser);
@@ -3739,7 +3958,7 @@ function deleteCurrentProfile() {
 //  EXPORT / IMPORT
 // ════════════════════════════════════════
 function exportProgress() {
-  document.getElementById('profile-menu').classList.remove('open');
+  closeProfileMenu();
   if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
   const data = {
     exportedBy: currentUser,
@@ -3760,7 +3979,7 @@ function exportProgress() {
 }
 
 function importProgress() {
-  document.getElementById('profile-menu').classList.remove('open');
+  closeProfileMenu();
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json,application/json';
@@ -3800,6 +4019,207 @@ document.getElementById('profile-name-input').addEventListener('keydown', (e) =>
 });
 
 // ════════════════════════════════════════
+//  PROFILE MENU HELPERS
+// ════════════════════════════════════════
+function closeProfileMenu() {
+  document.getElementById('profile-menu').classList.remove('open');
+}
+
+function updateProfileMenuHeader() {
+  const el = document.getElementById('pmh-name');
+  const st = document.getElementById('pmh-stats');
+  if (el) el.textContent = currentUser || '';
+  if (st) st.innerHTML = `<span>⭐ ${progress.xp} XP</span><span>🔥 ${progress.streak}</span>`;
+}
+
+// ════════════════════════════════════════
+//  PROGRESS ADJUSTMENT PANEL
+// ════════════════════════════════════════
+let _progOpenSections = new Set(['alphabet']); // alphabet expanded by default
+let _progOpenGroups   = new Set();
+
+function openProgressPanel() {
+  renderProgressPanel();
+  closeProfileMenu();
+  document.getElementById('progress-overlay').classList.add('open');
+  document.addEventListener('keydown', _progressEsc);
+}
+function closeProgressPanel() {
+  document.getElementById('progress-overlay').classList.remove('open');
+  document.removeEventListener('keydown', _progressEsc);
+}
+function _progressEsc(e) { if (e.key === 'Escape') closeProgressPanel(); }
+
+function toggleProgSection(id) {
+  _progOpenSections.has(id) ? _progOpenSections.delete(id) : _progOpenSections.add(id);
+  renderProgressPanel();
+}
+function toggleProgGroup(id) {
+  _progOpenGroups.has(id) ? _progOpenGroups.delete(id) : _progOpenGroups.add(id);
+  renderProgressPanel();
+}
+
+function cycleLetterMastery(letter) {
+  const cur = getMastery(letter);
+  progress.mastery[letter] = (cur + 1) % 4;
+  saveProgress();
+  renderProgressPanel();
+}
+function cycleVocabChipMastery(bengali) {
+  const cur = getVocabMastery(bengali);
+  progress.mastery['v:' + bengali] = (cur + 1) % 4;
+  saveProgress();
+  renderProgressPanel();
+}
+function setGrammarLessonLevel(lessonId, level) {
+  const lesson = GRAMMAR_LESSONS.find(l => l.id === lessonId);
+  if (!lesson) return;
+  lesson.quiz.forEach((_, i) => { progress.mastery['g:' + lessonId + ':' + i] = level; });
+  saveProgress();
+  renderProgressPanel();
+}
+
+function renderProgressPanel() {
+  document.getElementById('progress-body').innerHTML =
+    _buildAlphabetSection() + _buildVocabSection() + _buildGrammarSection();
+}
+
+function _buildAlphabetSection() {
+  const allLetters = ALL_LETTERS;
+  const totalAll = allLetters.length;
+  const masteredAll = allLetters.filter(l => getMastery(l.letter) >= 3).length;
+  const isOpen = _progOpenSections.has('alphabet');
+  const arrowCls = isOpen ? 'open' : '';
+
+  let html = `<div class="prog-section">
+    <div class="prog-section-hdr" onclick="toggleProgSection('alphabet')">
+      <span class="prog-section-icon">🔤</span>
+      <span class="prog-section-label">Alphabet</span>
+      <span class="prog-section-summary">${masteredAll}/${totalAll} mastered</span>
+      <span class="prog-section-arrow ${arrowCls}">▼</span>
+    </div>`;
+
+  if (isOpen) {
+    MODULES.forEach(mod => {
+      if (mod.isChart || mod.isMixed || !mod.letters) return;
+      const letters = mod.letters;
+      const masteredCount = letters.filter(l => getMastery(l.letter) >= 3).length;
+      const total = letters.length;
+      const pct = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
+      const grpOpen = _progOpenGroups.has(mod.id);
+      const grpArrowCls = grpOpen ? 'open' : '';
+
+      html += `<div class="prog-group">
+        <div class="prog-group-hdr" onclick="toggleProgGroup('${mod.id}')">
+          <span class="prog-group-label">${mod.title}</span>
+          <div class="prog-group-bar"><div class="prog-group-bar-fill" style="width:${pct}%"></div></div>
+          <span class="prog-group-count">${masteredCount}/${total}</span>
+          <span class="prog-group-arrow ${grpArrowCls}">▼</span>
+        </div>`;
+
+      if (grpOpen) {
+        html += `<div class="prog-chips">`;
+        letters.forEach(l => {
+          const lvl = getMastery(l.letter);
+          const safeL = l.letter.replace(/'/g, "\\'");
+          html += `<div class="prog-chip" data-level="${lvl}" onclick="cycleLetterMastery('${safeL}')" title="${l.roman || ''}">${l.letter}</div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+function _buildVocabSection() {
+  const cats = [...new Set(VOCAB_DATA.map(w => w[3]))];
+  const totalVocab = VOCAB_DATA.length;
+  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const isOpen = _progOpenSections.has('vocab');
+  const arrowCls = isOpen ? 'open' : '';
+
+  let html = `<div class="prog-section">
+    <div class="prog-section-hdr" onclick="toggleProgSection('vocab')">
+      <span class="prog-section-icon">📖</span>
+      <span class="prog-section-label">Vocabulary</span>
+      <span class="prog-section-summary">${masteredVocab}/${totalVocab} mastered</span>
+      <span class="prog-section-arrow ${arrowCls}">▼</span>
+    </div>`;
+
+  if (isOpen) {
+    cats.forEach(cat => {
+      const words = VOCAB_DATA.filter(w => w[3] === cat);
+      const masteredCount = words.filter(w => getVocabMastery(w[0]) >= 3).length;
+      const total = words.length;
+      const pct = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
+      const grpId = 'vocab:' + cat;
+      const grpOpen = _progOpenGroups.has(grpId);
+      const grpArrowCls = grpOpen ? 'open' : '';
+
+      html += `<div class="prog-group">
+        <div class="prog-group-hdr" onclick="toggleProgGroup('${grpId.replace(/'/g, "\\'")}')">
+          <span class="prog-group-label">${cat}</span>
+          <div class="prog-group-bar"><div class="prog-group-bar-fill" style="width:${pct}%"></div></div>
+          <span class="prog-group-count">${masteredCount}/${total}</span>
+          <span class="prog-group-arrow ${grpArrowCls}">▼</span>
+        </div>`;
+
+      if (grpOpen) {
+        html += `<div class="prog-chips">`;
+        words.forEach(w => {
+          const lvl = getVocabMastery(w[0]);
+          const safeB = w[0].replace(/'/g, "\\'");
+          const eng = (w[2] || '').replace(/"/g, '&quot;');
+          html += `<div class="prog-chip" data-level="${lvl}" onclick="cycleVocabChipMastery('${safeB}')" title="${eng}">${w[0]}</div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+function _buildGrammarSection() {
+  const totalLessons = GRAMMAR_LESSONS.length;
+  const masteredLessons = GRAMMAR_LESSONS.filter(l => getLessonProgress(l).pct === 100).length;
+  const isOpen = _progOpenSections.has('grammar');
+  const arrowCls = isOpen ? 'open' : '';
+
+  let html = `<div class="prog-section">
+    <div class="prog-section-hdr" onclick="toggleProgSection('grammar')">
+      <span class="prog-section-icon">📝</span>
+      <span class="prog-section-label">Grammar</span>
+      <span class="prog-section-summary">${masteredLessons}/${totalLessons} complete</span>
+      <span class="prog-section-arrow ${arrowCls}">▼</span>
+    </div>`;
+
+  if (isOpen) {
+    GRAMMAR_LESSONS.forEach(lesson => {
+      const lp = getLessonProgress(lesson);
+      const safeId = lesson.id.replace(/'/g, "\\'");
+      html += `<div class="prog-grammar-row">
+        <span class="prog-grammar-num">${lesson.number}</span>
+        <div class="prog-grammar-info">
+          <div class="prog-grammar-title">${lesson.title}</div>
+          <div class="prog-grammar-desc">${lesson.shortDesc || ''}</div>
+        </div>
+        <div class="prog-grammar-bar"><div class="prog-grammar-bar-fill" style="width:${lp.pct}%"></div></div>
+        <div class="prog-grammar-btns">
+          <button class="prog-grammar-btn" onclick="setGrammarLessonLevel('${safeId}', 0)">Reset</button>
+          <button class="prog-grammar-btn done" onclick="setGrammarLessonLevel('${safeId}', 3)">Done ✓</button>
+        </div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+// ════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════
 showProfileScreen();
@@ -3823,5 +4243,170 @@ showProfileScreen();
     <p class="word-modal-hint">Tap card to flip</p>
   </div>
 </div>
+
+<!-- ── Global Search Overlay ─────────────────────────────── -->
+<div id="search-overlay" class="search-overlay" onclick="if(event.target===this)closeSearch()">
+  <div class="search-panel">
+    <div class="search-input-row">
+      <span class="search-icon-lead">🔍</span>
+      <input id="search-input" class="search-input" type="search"
+             placeholder="Search letters, words, grammar…"
+             autocomplete="off" oninput="scheduleSearch()" />
+      <button class="search-close-btn" onclick="closeSearch()" aria-label="Close">✕</button>
+    </div>
+    <div id="search-results" class="search-results">
+      <p class="search-prompt">Search across letters, vocabulary, and grammar lessons.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Global Search ──────────────────────────────────────────
+let _searchTimer = null;
+function scheduleSearch() {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(() => {
+    runSearch(document.getElementById('search-input').value.trim());
+  }, 180);
+}
+
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('search-input').focus(), 50);
+  document.addEventListener('keydown', _searchEsc);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.removeEventListener('keydown', _searchEsc);
+}
+function _searchEsc(e) { if (e.key === 'Escape') closeSearch(); }
+
+const MAX_LETTERS = 6, MAX_VOCAB = 8, MAX_GRAMMAR = 5;
+
+function runSearch(q) {
+  const box = document.getElementById('search-results');
+  if (!q) {
+    box.innerHTML = '<p class="search-prompt">Search across letters, vocabulary, and grammar lessons.</p>';
+    return;
+  }
+  const ql = q.toLowerCase();
+
+  // 1. Letters — match Bengali character, name, or romanized
+  const letterHits = ALL_LETTERS.filter(l =>
+    l.letter.includes(q) ||
+    l.name.toLowerCase().includes(ql) ||
+    l.romanized.toLowerCase().includes(ql)
+  );
+
+  // 2. Vocabulary — match Bengali, romanized, or English
+  const vocabHits = VOCAB_DATA.filter(w =>
+    w[0].includes(q) ||
+    w[1].toLowerCase().includes(ql) ||
+    w[2].toLowerCase().includes(ql)
+  );
+
+  // 3. Grammar lessons — match title or shortDesc
+  const grammarHits = GRAMMAR_LESSONS.filter(l =>
+    l.title.toLowerCase().includes(ql) ||
+    l.shortDesc.toLowerCase().includes(ql)
+  );
+
+  if (!letterHits.length && !vocabHits.length && !grammarHits.length) {
+    box.innerHTML = `<p class="search-empty">No results for "<strong>${escHtml(q)}</strong>".</p>`;
+    return;
+  }
+
+  let html = '';
+
+  if (letterHits.length) {
+    html += `<div class="search-group">
+      <div class="search-group-title">Letters</div>`;
+    letterHits.slice(0, MAX_LETTERS).forEach(l => {
+      html += `<div class="search-result-item" onclick="openLetterResult(${JSON.stringify(l.letter)});closeSearch()">
+        <span class="sri-bengali">${escHtml(l.letter)}</span>
+        <span class="sri-detail">${escHtml(l.name)} · ${escHtml(l.romanized)}</span>
+        <span class="sri-tag">${l.type}</span>
+      </div>`;
+    });
+    html += '</div><div class="search-divider"></div>';
+  }
+
+  if (vocabHits.length) {
+    html += `<div class="search-group">
+      <div class="search-group-title">Vocabulary</div>`;
+    vocabHits.slice(0, MAX_VOCAB).forEach(w => {
+      html += `<div class="search-result-item" onclick="closeSearch();showVocabDetail(${JSON.stringify(w[0])})">
+        <span class="sri-bengali">${escHtml(w[0])}</span>
+        <span class="sri-detail">${escHtml(w[1])} · ${escHtml(w[2])}</span>
+        <span class="sri-tag">${escHtml(w[4])}</span>
+      </div>`;
+    });
+    if (vocabHits.length > MAX_VOCAB) {
+      html += `<div class="search-more" onclick="openVocabBrowseSearch(${JSON.stringify(q)})">See all ${vocabHits.length} vocabulary results →</div>`;
+    }
+    html += '</div><div class="search-divider"></div>';
+  }
+
+  if (grammarHits.length) {
+    html += `<div class="search-group">
+      <div class="search-group-title">Grammar</div>`;
+    grammarHits.slice(0, MAX_GRAMMAR).forEach(l => {
+      html += `<div class="search-result-item" onclick="openGrammarResult(${JSON.stringify(l.id)})">
+        <span class="sri-detail"><strong>${l.number}. ${escHtml(l.title)}</strong> — ${escHtml(l.shortDesc)}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  box.innerHTML = html;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openLetterResult(letterChar) {
+  const mod = MODULES.find(m => !m.isMixed && !m.isChart && m.letters &&
+    m.letters.some(l => l.letter === letterChar));
+  if (!mod) return;
+  switchTab('alphabet');
+  startLearn(mod);
+  const idx = mod.letters.findIndex(l => l.letter === letterChar);
+  if (idx >= 0) { currentCardIndex = idx; showCard(); }
+}
+
+function openGrammarResult(lessonId) {
+  closeSearch();
+  switchTab('grammar');
+  openGrammarLesson(lessonId);
+}
+
+function openVocabBrowseSearch(query) {
+  closeSearch();
+  switchTab('vocabulary');
+  openVocabBrowse(null);
+  const inp = document.getElementById('vb-search');
+  if (inp) { inp.value = query; renderVocabList(); }
+}
+</script>
+
+<div id="progress-overlay" class="progress-overlay" onclick="if(event.target===this)closeProgressPanel()">
+  <div class="progress-panel">
+    <div class="progress-panel-hdr">
+      <h2 class="progress-panel-title">Your Progress</h2>
+      <button class="progress-close-btn" onclick="closeProgressPanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="progress-pt-cta">
+      <button class="btn-primary progress-pt-btn" onclick="closeProgressPanel();startPlacementTest()">
+        🎯 Retake Placement Test
+      </button>
+      <p class="progress-pt-hint">Automatically calibrate your levels with a quiz</p>
+    </div>
+    <div class="progress-body" id="progress-body">
+      <!-- rendered by renderProgressPanel() -->
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
