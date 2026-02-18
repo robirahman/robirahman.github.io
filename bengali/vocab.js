@@ -1,5 +1,13 @@
 // Bengali Vocabulary — 1000 most common words
 // Format: [bengali, romanized, english, category, partOfSpeech]
+
+// TODO: Add example sentences as the 6th element of each word entry.
+// Format: ["bengali", "roman", "english", "category", "pos", "example sentence in Bengali (optional romanization)"]
+// Example: ["আমি","ami","I / me","pronouns","pronoun","আমি বাংলা শিখছি। (ami bangla shikhchi — I am learning Bengali.)"],
+//
+// Once added, update showVocabDetail() and the vocab flashcard back face in index.html
+// to render w[5] as an example sentence row.
+
 const VOCAB_DATA = [
 // ─── PRONOUNS & DEMONSTRATIVES (25) ───
 ["আমি","ami","I / me","pronouns","pronoun"],
