@@ -13,12 +13,12 @@
       institution: College of William & Mary
       year: 2013–2016
       description:
-        - # TODO: major, thesis, honors, etc.
+        -  # TODO: major, thesis, honors, etc.
     - title: # TODO: Graduate degree or program
       institution: Harvard University
       year: 2020–2022
       description:
-        - # TODO: program, research focus
+        -  # TODO: program, research focus
 
 - title: Experience
   type: time_table
@@ -27,22 +27,22 @@
       institution: Froehling & Robertson
       year: 2017–2020
       description:
-        - # TODO: brief description of role and accomplishments
+        -  # TODO: brief description of role and accomplishments
     - title: Data Scientist
       institution: Epoch AI
       year: 2023–2025
       description:
-        - # TODO: brief description of role and accomplishments
+        -  # TODO: brief description of role and accomplishments
     - title: # TODO: title
       institution: MIRI / TGT (AI Governance)
       year: 2025–present
       description:
-        - # TODO: brief description
+        -  # TODO: brief description
 
 - title: Skills
   type: list
   contents:
-    - # TODO: e.g. Python, R, machine learning, etc.
+    -  # TODO: e.g. Python, R, machine learning, etc.
 
 - title: Open Source Projects
   type: list
@@ -54,7 +54,7 @@
   contents:
     - title: Academic
       items:
-        - # TODO: research interests
+        -  # TODO: research interests
     - title: Personal
       items:
         - Chess (USCF ~1900)

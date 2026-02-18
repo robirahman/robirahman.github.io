@@ -7,6 +7,7 @@ tags: [projects, web-dev, bengali]
 ---
 
 TODO: Write post. Key topics to cover:
+
 - Motivation for building vs using an existing platform
 - Architecture decisions (single-file app, localStorage, no build step)
 - Adaptive algorithm: mastery levels, mixed curriculum waves
