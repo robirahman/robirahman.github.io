@@ -142,6 +142,50 @@ nav h1 span { color: var(--accent); }
   border: 2px solid rgba(255,255,255,0.06);
   transform: rotateY(180deg);
 }
+.word-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0,0,0,0.78);
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.word-modal.open { display: flex; }
+.word-modal-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 360px;
+}
+.word-modal-close {
+  position: absolute;
+  top: -0.75rem;
+  right: -0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+.word-modal-close:hover { background: rgba(255,255,255,0.3); }
+.word-modal-hint {
+  color: rgba(255,255,255,0.45);
+  font-size: 0.85rem;
+  margin: 0;
+}
 .card-sound-btn {
   margin-top: 1rem;
   background: rgba(255,255,255,0.08);
@@ -2303,9 +2347,26 @@ function renderVocabList() {
 function showVocabDetail(bengali) {
   const w = VOCAB_DATA.find(w => w[0] === bengali);
   if (!w) return;
-  // Quick inline alert-style detail
   const cat = VOCAB_CATEGORIES[w[3]];
-  alert(`${w[0]}  (${w[1]})\n\nEnglish: ${w[2]}\nCategory: ${cat ? cat.title : w[3]}\nPart of speech: ${w[4]}`);
+  document.getElementById('wm-bengali').textContent = w[0];
+  document.getElementById('wm-roman').textContent = w[1];
+  document.getElementById('wm-pos').textContent = w[4];
+  document.getElementById('wm-english').textContent = w[2];
+  document.getElementById('wm-cat').textContent = cat ? cat.title : w[3];
+  document.getElementById('word-modal-card').classList.remove('flipped');
+  document.getElementById('word-modal').classList.add('open');
+  document.addEventListener('keydown', _wordModalEsc);
+}
+
+function closeWordModal() {
+  document.getElementById('word-modal').classList.remove('open');
+  document.removeEventListener('keydown', _wordModalEsc);
+}
+
+function _wordModalEsc(e) { if (e.key === 'Escape') closeWordModal(); }
+
+function flipWordModal() {
+  document.getElementById('word-modal-card').classList.toggle('flipped');
 }
 
 // ════════════════════════════════════════
@@ -3723,5 +3784,24 @@ document.getElementById('profile-name-input').addEventListener('keydown', (e) =>
 // ════════════════════════════════════════
 showProfileScreen();
 </script>
+
+<div id="word-modal" class="word-modal" onclick="if(event.target===this)closeWordModal()">
+  <div class="word-modal-inner">
+    <button class="word-modal-close" onclick="closeWordModal()" aria-label="Close">&#x2715;</button>
+    <div class="flashcard word-modal-card" id="word-modal-card" onclick="flipWordModal()">
+      <div class="flashcard-face flashcard-front">
+        <div class="vocab-card-bengali" id="wm-bengali"></div>
+        <div class="vocab-card-roman" id="wm-roman"></div>
+      </div>
+      <div class="flashcard-face flashcard-back">
+        <div class="vocab-card-pos" id="wm-pos"></div>
+        <div class="vocab-card-english" id="wm-english"></div>
+        <div class="vocab-card-cat" id="wm-cat"></div>
+        <button class="card-sound-btn" onclick="event.stopPropagation(); speakBengali(document.getElementById('wm-bengali').textContent);" aria-label="Play pronunciation">🔊</button>
+      </div>
+    </div>
+    <p class="word-modal-hint">Tap card to flip</p>
+  </div>
+</div>
 </body>
 </html>
