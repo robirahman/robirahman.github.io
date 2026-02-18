@@ -954,6 +954,209 @@ nav h1 span { color: var(--accent); }
 .search-divider {
   height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0;
 }
+
+/* ─── LIGHT MODE ─── */
+[data-theme="light"] {
+  --bg: #f5f0e8;
+  --card: #ffffff;
+  --card-hover: #f0ebe0;
+  --text: #1a1208;
+  --text-dim: #6b5e4a;
+  --accent: #c87a10;
+  --accent-dim: #e09040;
+  --gold: #c87a10;
+  --wrong: #c0392b;
+}
+[data-theme="light"] .flashcard-front {
+  background: linear-gradient(145deg, #fff8f0, #f0e8d8);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .flashcard-back {
+  background: linear-gradient(145deg, #fef3e2, #f5e6cc);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .profile-menu {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+[data-theme="light"] .search-panel,
+[data-theme="light"] .progress-panel,
+[data-theme="light"] .stats-panel { box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+
+/* ─── NAV THEME BUTTON ─── */
+.nav-theme-btn {
+  background: rgba(255,255,255,0.08); border: none; color: var(--text);
+  border-radius: 50%; width: 2rem; height: 2rem; font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease; flex-shrink: 0;
+}
+.nav-theme-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* ─── GRAMMAR LOCK BADGE ─── */
+.lock-badge {
+  position: absolute; top: 10px; right: 12px;
+  font-size: 0.85rem; opacity: 0.55; pointer-events: none;
+}
+
+/* ─── MASTERY LEGEND ─── */
+.mastery-legend-btn {
+  background: none; border: none; cursor: pointer; font-size: 1rem;
+  color: var(--text-dim); padding: 2px 4px; border-radius: 4px;
+  transition: color 0.15s;
+}
+.mastery-legend-btn:hover { color: var(--text); }
+.mastery-legend {
+  padding: 10px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+  font-size: 0.8rem; flex-shrink: 0;
+}
+.ml-item { display: flex; align-items: center; gap: 6px; }
+.ml-chip {
+  width: 1.6rem; height: 1.6rem; border-radius: 5px;
+  border: 2px solid transparent; display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700;
+}
+.ml-chip.lvl0 { border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.3); }
+.ml-chip.lvl1 { border-color: var(--text-dim); color: var(--text-dim); background: rgba(255,255,255,0.04); }
+.ml-chip.lvl2 { border-color: var(--accent-dim); color: var(--text); background: rgba(244,165,50,0.08); }
+.ml-chip.lvl3 { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.15); }
+.ml-label { color: var(--text-dim); }
+
+/* ─── MC KEYBOARD HINTS ─── */
+.mc-btn { position: relative; }
+.mc-key-hint {
+  position: absolute; top: 4px; right: 7px;
+  font-size: 0.62rem; opacity: 0.38; font-family: monospace;
+}
+
+/* ─── CHART PRACTICE BUTTON ─── */
+.chart-practice-btn {
+  margin-top: 10px; padding: 6px 14px;
+  background: var(--accent); border: none; border-radius: 8px;
+  color: #1a0f0e; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  width: 100%; transition: opacity 0.15s;
+}
+.chart-practice-btn:hover { opacity: 0.85; }
+
+/* ─── ACHIEVEMENT TOAST ─── */
+.achievement-toast {
+  position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-120px);
+  background: var(--card); border: 1px solid var(--accent);
+  border-radius: 12px; padding: 12px 20px; z-index: 600;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); min-width: 260px;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+}
+.achievement-toast.show { transform: translateX(-50%) translateY(0); }
+.ach-icon { font-size: 1.6rem; }
+.ach-text { flex: 1; }
+.ach-label { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+.ach-name { font-size: 0.95rem; font-weight: 700; }
+
+/* ─── STATISTICS OVERLAY ─── */
+.stats-overlay {
+  display: none; position: fixed; inset: 0; z-index: 450;
+  background: rgba(0,0,0,0.72);
+  align-items: flex-start; justify-content: center;
+  padding: 40px 16px 16px; overflow-y: auto;
+}
+.stats-overlay.open { display: flex; }
+.stats-panel {
+  background: var(--card); border-radius: 16px;
+  width: 100%; max-width: 640px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  display: flex; flex-direction: column;
+  max-height: 85vh; overflow: hidden;
+}
+.stats-panel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+}
+.stats-panel-title { margin: 0; font-size: 1.1rem; }
+.stats-body { overflow-y: auto; flex: 1; padding: 20px; }
+.stats-summary {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.04); border-radius: 10px;
+  padding: 12px 14px; text-align: center;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.stat-card-val { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+.stat-card-lbl { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+.stats-section-title {
+  font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 10px;
+}
+/* Heatmap */
+.heatmap-wrap { overflow-x: auto; margin-bottom: 24px; }
+.heatmap-grid {
+  display: grid; grid-template-rows: repeat(7, 12px);
+  grid-auto-flow: column; gap: 3px;
+  width: max-content;
+}
+.heatmap-cell {
+  width: 12px; height: 12px; border-radius: 2px;
+  background: rgba(255,255,255,0.06);
+}
+.heatmap-cell[data-level="1"] { background: rgba(244,165,50,0.2); }
+.heatmap-cell[data-level="2"] { background: rgba(244,165,50,0.5); }
+.heatmap-cell[data-level="3"] { background: var(--accent); }
+.heatmap-months {
+  display: flex; font-size: 0.68rem; color: var(--text-dim);
+  margin-bottom: 4px; gap: 0;
+}
+/* Mastery bars */
+.mastery-bar-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.mastery-bar-lbl { font-size: 0.82rem; min-width: 80px; }
+.mastery-bar-track {
+  flex: 1; height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.08); overflow: hidden;
+}
+.mastery-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s; }
+.mastery-bar-pct { font-size: 0.78rem; color: var(--text-dim); min-width: 36px; text-align: right; }
+/* Category insights */
+.cat-insight {
+  display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;
+}
+.cat-insight-card {
+  flex: 1; min-width: 140px; background: rgba(255,255,255,0.04);
+  border-radius: 10px; padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.cat-insight-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 4px; }
+.cat-insight-name { font-size: 0.9rem; font-weight: 600; }
+.cat-insight-pct { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
+/* Achievements grid */
+.ach-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px; margin-top: 8px;
+}
+.ach-card {
+  background: rgba(255,255,255,0.04); border-radius: 10px;
+  padding: 12px; text-align: center;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.ach-card.earned { border-color: var(--accent); background: rgba(244,165,50,0.06); }
+.ach-card-icon { font-size: 1.6rem; margin-bottom: 4px; opacity: 0.35; }
+.ach-card.earned .ach-card-icon { opacity: 1; }
+.ach-card-name { font-size: 0.78rem; font-weight: 600; color: var(--text-dim); }
+.ach-card.earned .ach-card-name { color: var(--text); }
+
+/* ─── REVIEW DUE BUTTON ─── */
+.review-due-btn {
+  background: rgba(244,165,50,0.15); border: 1.5px solid var(--accent);
+  color: var(--accent); border-radius: 20px; padding: 6px 14px;
+  font-size: 0.78rem; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.review-due-btn:hover { background: rgba(244,165,50,0.28); }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -991,9 +1194,12 @@ nav h1 span { color: var(--accent); }
       <div class="profile-menu" id="profile-menu">
         <div class="profile-menu-header">
           <div class="pmh-name" id="pmh-name"></div>
-          <div class="pmh-stats" id="pmh-stats"></div>
+          <div class="pmh-stats" id="pmh-stats">
+            <span>⭐ 0 XP</span><span>🔥 0</span><span>🏅 0</span>
+          </div>
         </div>
         <button onclick="openProgressPanel()"><span class="pm-icon">📊</span>Adjust Progress</button>
+        <button onclick="openStatsPanel()"><span class="pm-icon">📈</span>Statistics</button>
         <button onclick="closeProfileMenu();startPlacementTest()"><span class="pm-icon">🎯</span>Retake Placement Test</button>
         <div class="profile-menu-divider"></div>
         <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
@@ -1003,6 +1209,7 @@ nav h1 span { color: var(--accent); }
         <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
       </div>
     </button>
+    <button class="nav-theme-btn" id="nav-theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
     <button class="nav-search-btn" onclick="openSearch()" aria-label="Search">🔍</button>
   </div>
 </nav>
@@ -1012,6 +1219,7 @@ nav h1 span { color: var(--accent); }
   <button class="tab-btn" onclick="switchTab('vocabulary')">Vocabulary</button>
   <button class="tab-btn" onclick="switchTab('grammar')">Grammar</button>
   <button class="pt-retake-btn" id="pt-retake-btn" style="display:none" onclick="startPlacementTest()">Retake Placement</button>
+  <button class="review-due-btn" id="review-due-btn" style="display:none" onclick="startReviewSession()">🔔 Review Due (<span id="review-due-count">0</span>)</button>
 </div>
 
 <!-- PLACEMENT TEST: INTRO -->
@@ -1632,6 +1840,10 @@ function updateStreak() {
 
 function addXP(amount) {
   progress.xp += amount;
+  // Track daily XP for activity heatmap
+  const today = new Date().toISOString().slice(0, 10);
+  if (!progress.practiceLog) progress.practiceLog = {};
+  progress.practiceLog[today] = (progress.practiceLog[today] || 0) + amount;
   saveProgress();
   updateNav();
 }
@@ -1643,6 +1855,7 @@ function updateNav() {
   const pct = Math.min(100, (progress.streak / 7) * 100);
   document.getElementById('streak-bar-fill').style.width = pct + '%';
   updateProfileMenuHeader();
+  updateReviewDueBadge();
 }
 
 // ════════════════════════════════════════
@@ -2006,8 +2219,9 @@ function renderQuestion() {
   if (q.type === 'mc') {
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
-        `<button class="mc-btn" data-idx="${i}" onclick="answerMC(this, '${escapeStr(opt)}')">${opt}</button>`
+        `<button class="mc-btn" data-idx="${i}" onclick="answerMC(this, '${escapeStr(opt)}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>';
+    attachQuizKeyHandler('quiz');
   } else if (q.type === 'spell') {
     spellTileOrder = [];
     aa.innerHTML = `<div class="word-order-area">
@@ -2052,6 +2266,8 @@ function answerMC(btn, chosen) {
     showFeedback(false, q.fullAnswer || q.correct);
   }
   addMastery(q.letter, correct);
+  _trackLastSeen(q.letter);
+  checkAchievements();
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -2100,7 +2316,8 @@ function answerSpell() {
   } else {
     showFeedback(false, q.correct);
   }
-  q.letters.forEach(l => addMastery(l.letter, correct));
+  q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
+  checkAchievements();
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -2123,10 +2340,12 @@ function answerFIB() {
     showFeedback(false, q.answer);
   }
   if (q.letters) {
-    q.letters.forEach(l => addMastery(l.letter, correct));
+    q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
   } else {
     addMastery(q.letter, correct);
+    _trackLastSeen(q.letter);
   }
+  checkAchievements();
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -2164,7 +2383,9 @@ function showResults() {
 
   // bonus XP for completion
   addXP(5);
+  detachQuizKeyHandler();
   updateNav();
+  checkAchievements(); // catches 'first-quiz' and 'century' etc.
 }
 
 function retryQuiz() {
@@ -2224,11 +2445,13 @@ function showChartDetail(el) {
   detail.style.cssText = `position:absolute;left:50%;top:100%;transform:translateX(-50%);
     background:#442a24;border-radius:10px;padding:12px;z-index:10;min-width:200px;
     box-shadow:0 8px 32px rgba(0,0,0,0.5);margin-top:8px;font-size:0.8rem;text-align:left;`;
+  const safeL = (d.letter || '').replace(/'/g, "\\'");
   detail.innerHTML = `
     <div style="font-size:1rem;font-weight:600;margin-bottom:4px;">${d.name}</div>
     <div style="color:var(--text-dim)">Romanized: ${d.romanized}</div>
     <div style="color:var(--gold)">Sound: ${d.ipa} — ${d.sound}</div>
     <div style="color:var(--text-dim);margin-top:4px">${d.example}</div>
+    <button class="chart-practice-btn" onclick="navigateToLetter('${safeL}')">Practice →</button>
   `;
   el.style.position = 'relative';
   el.appendChild(detail);
@@ -2782,8 +3005,9 @@ function renderVocabQuestion() {
   if (q.type === 'mc' || q.type === 'mc-reverse') {
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
-        `<button class="mc-btn" onclick="answerVocabMC(this, '${opt.replace(/'/g,"\\'")}')">${opt}</button>`
+        `<button class="mc-btn" onclick="answerVocabMC(this, '${opt.replace(/'/g,"\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>';
+    attachQuizKeyHandler('vq');
   } else {
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="vq-fib-input" placeholder="Type your answer…"
@@ -2807,6 +3031,8 @@ function answerVocabMC(btn, chosen) {
   btn.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(10); }
   addVocabMastery(q.word[0], correct);
+  _trackLastSeen('v:' + q.word[0]);
+  checkAchievements();
   showVocabFeedback(correct, q.type === 'mc' ? q.correct : q.correct);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -2823,6 +3049,8 @@ function answerVocabFIB() {
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
   addVocabMastery(q.word[0], correct);
+  _trackLastSeen('v:' + q.word[0]);
+  checkAchievements();
   showVocabFeedback(correct, q.answer);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -2851,7 +3079,9 @@ function showVocabResults() {
   document.getElementById('vr-title').textContent = titles;
   document.getElementById('vr-sub').textContent = `You scored ${vqCorrect}/${total}`;
   addXP(5);
+  detachQuizKeyHandler();
   updateNav();
+  checkAchievements();
 }
 
 function retryVocabQuiz() {
@@ -2932,11 +3162,15 @@ function renderGrammarHome() {
   grid.appendChild(mixCard);
 
   // Lesson cards
-  GRAMMAR_LESSONS.forEach(lesson => {
+  GRAMMAR_LESSONS.forEach((lesson, idx) => {
     const card = document.createElement('div');
     card.className = 'module-card';
     const prog = getLessonProgress(lesson);
+    // Cosmetic lock: show if this is not the first lesson and the previous lesson has 0 mastered
+    const prevLesson = idx > 0 ? GRAMMAR_LESSONS[idx - 1] : null;
+    const locked = prevLesson && getLessonProgress(prevLesson).mastered === 0;
     card.innerHTML = `
+      ${locked ? '<span class="lock-badge">🔒</span>' : ''}
       <div class="module-icon">📖</div>
       <h3>${lesson.number}. ${lesson.title}</h3>
       <p>${lesson.shortDesc}</p>
@@ -3033,9 +3267,10 @@ function renderGrammarQuestion() {
       qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
     }
     aa.innerHTML = '<div class="mc-options">' +
-      q.options.map(opt =>
-        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}</button>`
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>';
+    attachQuizKeyHandler('gq');
 
   } else if (q.type === 'fib') {
     qa.innerHTML = `
@@ -3068,9 +3303,10 @@ function renderGrammarQuestion() {
   } else if (q.type === 'error-spot') {
     qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
     aa.innerHTML = '<div class="mc-options">' +
-      q.options.map(opt =>
-        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}</button>`
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>';
+    attachQuizKeyHandler('gq');
   }
 }
 
@@ -3088,6 +3324,8 @@ function answerGrammarMC(btn, chosen) {
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
+  _trackLastSeen('g:' + lessonId);
+  checkAchievements();
   showGrammarFeedback(correct, q.explanation || q.correct);
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -3108,6 +3346,8 @@ function answerGrammarFIB() {
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
+  _trackLastSeen('g:' + lessonId);
+  checkAchievements();
   showGrammarFeedback(correct, q.answer);
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -3192,7 +3432,9 @@ function showGrammarResults() {
   document.getElementById('gr-title').textContent = titles;
   document.getElementById('gr-sub').textContent = `You scored ${gqCorrect}/${total}`;
   addXP(5);
+  detachQuizKeyHandler();
   updateNav();
+  checkAchievements();
 }
 
 function retryGrammarQuiz() {
@@ -3915,6 +4157,7 @@ function enterApp() {
   document.getElementById('main-nav').style.display = '';
   document.getElementById('tab-bar').style.display = '';
   document.getElementById('nav-user-name').textContent = currentUser;
+  migrateProgress();
   updateNav();
   updatePlacementRetakeButton();
   switchTab('alphabet');
@@ -4029,7 +4272,7 @@ function updateProfileMenuHeader() {
   const el = document.getElementById('pmh-name');
   const st = document.getElementById('pmh-stats');
   if (el) el.textContent = currentUser || '';
-  if (st) st.innerHTML = `<span>⭐ ${progress.xp} XP</span><span>🔥 ${progress.streak}</span>`;
+  if (st) st.innerHTML = `<span>⭐ ${progress.xp} XP</span><span>🔥 ${progress.streak}</span><span>🏅 ${(progress.achievements||[]).length}</span>`;
 }
 
 // ════════════════════════════════════════
@@ -4220,6 +4463,359 @@ function _buildGrammarSection() {
 }
 
 // ════════════════════════════════════════
+//  LIGHT MODE TOGGLE
+// ════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.documentElement.dataset.theme === 'light';
+  document.documentElement.dataset.theme = isLight ? '' : 'light';
+  document.getElementById('nav-theme-btn').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('bengali_theme', isLight ? 'dark' : 'light');
+}
+(function initTheme() {
+  const saved = localStorage.getItem('bengali_theme');
+  if (saved === 'light') {
+    document.documentElement.dataset.theme = 'light';
+    const btn = document.getElementById('nav-theme-btn');
+    if (btn) btn.textContent = '🌙';
+  }
+})();
+
+// ════════════════════════════════════════
+//  MASTERY LEGEND TOGGLE
+// ════════════════════════════════════════
+function toggleMasteryLegend() {
+  const leg = document.getElementById('mastery-legend');
+  if (leg) leg.style.display = leg.style.display === 'none' ? '' : 'none';
+}
+
+// ════════════════════════════════════════
+//  PROGRESS OBJECT MIGRATION
+// (called after loading progress from localStorage)
+// ════════════════════════════════════════
+function migrateProgress() {
+  if (!progress.achievements) progress.achievements = [];
+  if (!progress.practiceLog) progress.practiceLog = {};
+  if (!progress.lastSeen) progress.lastSeen = {};
+}
+
+// ════════════════════════════════════════
+//  ACHIEVEMENTS
+// ════════════════════════════════════════
+const ACHIEVEMENTS = [
+  { id: 'first-quiz',       icon: '🎯', label: 'First Quiz',         test: () => true },
+  { id: 'vowel-master',     icon: '🔤', label: 'Vowel Master',       test: () => VOWELS.every(v => getMastery(v.letter) >= 3) },
+  { id: 'alphabet-complete',icon: '📚', label: 'Full Alphabet',      test: () => ALL_LETTERS.every(l => getMastery(l.letter) >= 3) },
+  { id: 'century',          icon: '⭐', label: 'Century',            test: () => progress.xp >= 100 },
+  { id: 'word-collector',   icon: '📖', label: 'Word Collector',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length >= 50 },
+  { id: 'vocab-champion',   icon: '🏆', label: 'Vocab Champion',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length >= 500 },
+  { id: 'grammar-start',    icon: '📝', label: 'Grammar Beginner',   test: () => GRAMMAR_LESSONS.some(l => getLessonProgress(l).pct === 100) },
+  { id: 'grammar-graduate', icon: '🎓', label: 'Grammar Graduate',   test: () => GRAMMAR_LESSONS.every(l => getLessonProgress(l).pct === 100) },
+  { id: 'streak-3',         icon: '🔥', label: 'On a Roll',          test: () => progress.streak >= 3 },
+  { id: 'streak-7',         icon: '💪', label: 'Week Warrior',       test: () => progress.streak >= 7 },
+];
+
+let _achToastTimer = null;
+function checkAchievements() {
+  const earned = progress.achievements || [];
+  ACHIEVEMENTS.forEach(ach => {
+    if (earned.includes(ach.id)) return;
+    if (ach.test()) {
+      earned.push(ach.id);
+      progress.achievements = earned;
+      _flushSave();
+      showAchievementToast(ach);
+    }
+  });
+}
+
+function showAchievementToast(ach) {
+  const toast = document.getElementById('achievement-toast');
+  if (!toast) return;
+  document.getElementById('ach-toast-icon').textContent = ach.icon;
+  document.getElementById('ach-toast-name').textContent = ach.label;
+  toast.classList.add('show');
+  if (_achToastTimer) clearTimeout(_achToastTimer);
+  _achToastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════
+//  STATISTICS PANEL
+// ════════════════════════════════════════
+function openStatsPanel() {
+  closeProfileMenu();
+  renderStatsPanel();
+  document.getElementById('stats-overlay').classList.add('open');
+  document.addEventListener('keydown', _statsEsc);
+}
+function closeStatsPanel() {
+  document.getElementById('stats-overlay').classList.remove('open');
+  document.removeEventListener('keydown', _statsEsc);
+}
+function _statsEsc(e) { if (e.key === 'Escape') closeStatsPanel(); }
+
+function renderStatsPanel() {
+  const totalLetters = ALL_LETTERS.length;
+  const masteredLetters = ALL_LETTERS.filter(l => getMastery(l.letter) >= 3).length;
+  const totalVocab = VOCAB_DATA.length;
+  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const totalLessons = GRAMMAR_LESSONS.length;
+  const masteredLessons = GRAMMAR_LESSONS.filter(l => getLessonProgress(l).pct === 100).length;
+
+  // Summary
+  let html = `<div class="stats-summary">
+    <div class="stat-card"><div class="stat-card-val">${progress.xp}</div><div class="stat-card-lbl">Total XP</div></div>
+    <div class="stat-card"><div class="stat-card-val">${progress.streak}</div><div class="stat-card-lbl">Day Streak</div></div>
+    <div class="stat-card"><div class="stat-card-val">${masteredLetters}/${totalLetters}</div><div class="stat-card-lbl">Letters</div></div>
+    <div class="stat-card"><div class="stat-card-val">${masteredVocab}/${totalVocab}</div><div class="stat-card-lbl">Words</div></div>
+    <div class="stat-card"><div class="stat-card-val">${masteredLessons}/${totalLessons}</div><div class="stat-card-lbl">Lessons</div></div>
+    <div class="stat-card"><div class="stat-card-val">${(progress.achievements||[]).length}</div><div class="stat-card-lbl">Badges</div></div>
+  </div>`;
+
+  // Activity heatmap
+  html += `<div class="stats-section-title">Activity — Past 13 Weeks</div>`;
+  html += _buildHeatmap();
+
+  // Mastery breakdown bars
+  const letterPct = Math.round((masteredLetters / totalLetters) * 100);
+  const vocabPct = Math.round((masteredVocab / totalVocab) * 100);
+  const grammarPct = Math.round((masteredLessons / totalLessons) * 100);
+  html += `<div class="stats-section-title" style="margin-top:20px">Mastery Breakdown</div>
+  <div class="mastery-bar-row"><span class="mastery-bar-lbl">🔤 Alphabet</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${letterPct}%"></div></div><span class="mastery-bar-pct">${letterPct}%</span></div>
+  <div class="mastery-bar-row"><span class="mastery-bar-lbl">📖 Vocabulary</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${vocabPct}%"></div></div><span class="mastery-bar-pct">${vocabPct}%</span></div>
+  <div class="mastery-bar-row"><span class="mastery-bar-lbl">📝 Grammar</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${grammarPct}%"></div></div><span class="mastery-bar-pct">${grammarPct}%</span></div>`;
+
+  // Strongest/weakest vocab category
+  const cats = [...new Set(VOCAB_DATA.map(w => w[3]))];
+  let bestCat = null, worstCat = null, bestPct = -1, worstPct = 101;
+  cats.forEach(cat => {
+    const words = VOCAB_DATA.filter(w => w[3] === cat);
+    if (words.length < 3) return;
+    const pct = Math.round((words.filter(w => getVocabMastery(w[0]) >= 3).length / words.length) * 100);
+    if (pct > bestPct) { bestPct = pct; bestCat = cat; }
+    if (pct < worstPct) { worstPct = pct; worstCat = cat; }
+  });
+  if (bestCat && worstCat) {
+    html += `<div class="stats-section-title" style="margin-top:20px">Vocabulary Insights</div>
+    <div class="cat-insight">
+      <div class="cat-insight-card"><div class="cat-insight-tag">💪 Strongest</div><div class="cat-insight-name">${bestCat}</div><div class="cat-insight-pct">${bestPct}% mastered</div></div>
+      <div class="cat-insight-card"><div class="cat-insight-tag">📚 Needs Work</div><div class="cat-insight-name">${worstCat}</div><div class="cat-insight-pct">${worstPct}% mastered</div></div>
+    </div>`;
+  }
+
+  // Achievements grid
+  html += `<div class="stats-section-title" style="margin-top:20px">Achievements</div>
+  <div class="ach-grid">`;
+  ACHIEVEMENTS.forEach(ach => {
+    const earned = (progress.achievements||[]).includes(ach.id);
+    html += `<div class="ach-card${earned ? ' earned' : ''}">
+      <div class="ach-card-icon">${ach.icon}</div>
+      <div class="ach-card-name">${ach.label}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  document.getElementById('stats-body').innerHTML = html;
+}
+
+function _buildHeatmap() {
+  const log = progress.practiceLog || {};
+  const today = new Date();
+  // Build 91 days (13 weeks) ending today
+  const days = [];
+  for (let i = 90; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  // Find max XP for scaling
+  const maxXP = Math.max(1, ...days.map(d => log[d] || 0));
+
+  // Month labels: determine which columns start a new month
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let monthHtml = '<div class="heatmap-months" style="gap:0;margin-bottom:4px;">';
+  let lastMonth = -1;
+  for (let col = 0; col < 13; col++) {
+    const dayIdx = col * 7;
+    if (dayIdx < days.length) {
+      const m = new Date(days[dayIdx]).getMonth();
+      if (m !== lastMonth) {
+        monthHtml += `<span style="width:${(13-col)*15}px;flex-shrink:0">${monthNames[m]}</span>`;
+        lastMonth = m;
+      }
+    }
+  }
+  monthHtml += '</div>';
+
+  let gridHtml = '<div class="heatmap-grid">';
+  days.forEach(date => {
+    const xp = log[date] || 0;
+    let level = 0;
+    if (xp > 0) level = xp >= 25 ? 3 : xp >= 10 ? 2 : 1;
+    const today10 = today.toISOString().slice(0,10);
+    const outline = date === today10 ? ' style="outline:1.5px solid var(--accent);outline-offset:1px"' : '';
+    gridHtml += `<div class="heatmap-cell" data-level="${level}" title="${date}: ${xp} XP"${outline}></div>`;
+  });
+  gridHtml += '</div>';
+
+  return `<div class="heatmap-wrap">${monthHtml}${gridHtml}</div>`;
+}
+
+// ════════════════════════════════════════
+//  SPACED REPETITION REVIEW
+// ════════════════════════════════════════
+const REVIEW_INTERVALS_MS = {
+  0: 0,                    // unseen: always due
+  1: 1 * 24*60*60*1000,    // seen: after 1 day
+  2: 3 * 24*60*60*1000,    // learning: after 3 days
+  3: 7 * 24*60*60*1000,    // mastered: after 7 days
+};
+
+function getDueItems() {
+  const now = Date.now();
+  const lastSeen = progress.lastSeen || {};
+  const due = { letters: [], vocab: [], grammar: [] };
+  // Letters
+  ALL_LETTERS.forEach(l => {
+    const key = l.letter;
+    const mastery = getMastery(key);
+    if (mastery === 0) return; // never seen — not in review queue, discovered via modules
+    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
+    if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.letters.push(l);
+  });
+  // Vocab
+  VOCAB_DATA.forEach(w => {
+    const key = 'v:' + w[0];
+    const mastery = getVocabMastery(w[0]);
+    if (mastery === 0) return;
+    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
+    if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.vocab.push(w);
+  });
+  // Grammar (per-lesson level: average mastery of questions)
+  GRAMMAR_LESSONS.forEach(lesson => {
+    const prog = getLessonProgress(lesson);
+    if (prog.seen === 0) return;
+    const key = 'g:' + lesson.id;
+    const avgMastery = Math.round(prog.mastered / prog.total * 3);
+    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
+    const interval = REVIEW_INTERVALS_MS[Math.max(1, avgMastery)];
+    if (now - ls >= interval) due.grammar.push(lesson);
+  });
+  return due;
+}
+
+function updateReviewDueBadge() {
+  if (!currentUser) return; // not logged in yet
+  const due = getDueItems();
+  const count = due.letters.length + due.vocab.length + due.grammar.length;
+  const btn = document.getElementById('review-due-btn');
+  const cntEl = document.getElementById('review-due-count');
+  if (!btn) return;
+  if (count > 0) {
+    btn.style.display = '';
+    if (cntEl) cntEl.textContent = count;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function startReviewSession() {
+  const due = getDueItems();
+  // Start with the type that has the most due items
+  if (due.letters.length >= due.vocab.length && due.letters.length >= due.grammar.length && due.letters.length > 0) {
+    // Alphabet review
+    const mod = { id: 'review', title: 'Review Session', letters: due.letters.slice(0, 10), isMixed: true };
+    currentModule = mod;
+    quizModuleRef = mod;
+    generateQuiz(mod.letters);
+    quizIndex = 0; quizCorrect = 0;
+    document.getElementById('quiz-title').textContent = '🔔 Review Session';
+    showScreen('quiz');
+    renderQuestion();
+  } else if (due.vocab.length >= due.grammar.length && due.vocab.length > 0) {
+    // Vocab review
+    const words = due.vocab.slice(0, 10);
+    generateVocabQuiz(words);
+    vqIndex = 0; vqCorrect = 0;
+    document.getElementById('vq-title').textContent = '🔔 Review Session';
+    showScreen('vocab-quiz');
+    renderVocabQuestion();
+  } else if (due.grammar.length > 0) {
+    // Grammar review — open first due lesson
+    openGrammarLesson(due.grammar[0].id);
+  }
+}
+
+// Track lastSeen for review system
+function _trackLastSeen(key) {
+  if (!progress.lastSeen) progress.lastSeen = {};
+  progress.lastSeen[key] = new Date().toISOString();
+}
+
+// ════════════════════════════════════════
+//  QUIZ KEYBOARD SHORTCUTS
+// ════════════════════════════════════════
+let _quizKeyHandler = null;
+
+function attachQuizKeyHandler(screenPrefix) {
+  detachQuizKeyHandler();
+  _quizKeyHandler = function(e) {
+    // Number keys 1-4: select MC option
+    if (['1','2','3','4'].includes(e.key)) {
+      const idx = parseInt(e.key) - 1;
+      const btns = document.querySelectorAll(`#${screenPrefix}-answer-area .mc-btn:not(.disabled)`);
+      if (btns[idx]) btns[idx].click();
+      return;
+    }
+    // Enter: advance after answered, or check word order
+    if (e.key === 'Enter') {
+      // If next button is visible, click it
+      const nextBtn = document.getElementById(`${screenPrefix}-next-btn`);
+      if (nextBtn && nextBtn.classList.contains('show')) { nextBtn.click(); return; }
+      // If a check button is visible (word order / spell), click it
+      const checkBtn = document.querySelector(`#${screenPrefix}-answer-area .wo-check-btn`);
+      if (checkBtn) { checkBtn.click(); return; }
+    }
+  };
+  document.addEventListener('keydown', _quizKeyHandler);
+}
+
+function detachQuizKeyHandler() {
+  if (_quizKeyHandler) {
+    document.removeEventListener('keydown', _quizKeyHandler);
+    _quizKeyHandler = null;
+  }
+}
+
+// Add key hints to MC buttons after rendering
+function addMCKeyHints(containerSelector) {
+  const btns = document.querySelectorAll(containerSelector + ' .mc-btn');
+  btns.forEach((btn, i) => {
+    if (i >= 4) return;
+    if (!btn.querySelector('.mc-key-hint')) {
+      const hint = document.createElement('span');
+      hint.className = 'mc-key-hint';
+      hint.textContent = `[${i+1}]`;
+      btn.appendChild(hint);
+    }
+  });
+}
+
+// ════════════════════════════════════════
+//  CHART → FLASHCARD
+// ════════════════════════════════════════
+function navigateToLetter(letterChar) {
+  // Close any open chart detail popup
+  document.querySelectorAll('.chart-detail').forEach(e => e.remove());
+  const mod = MODULES.find(m => !m.isMixed && !m.isChart && m.letters &&
+    m.letters.some(l => l.letter === letterChar));
+  if (!mod) return;
+  switchTab('alphabet');
+  startLearn(mod);
+  const idx = mod.letters.findIndex(l => l.letter === letterChar);
+  if (idx >= 0) { currentCardIndex = idx; showCard(); }
+}
+
+// ════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════
 showProfileScreen();
@@ -4390,11 +4986,39 @@ function openVocabBrowseSearch(query) {
 }
 </script>
 
+<div id="achievement-toast" class="achievement-toast" aria-live="polite">
+  <div class="ach-icon" id="ach-toast-icon">🎯</div>
+  <div class="ach-text">
+    <div class="ach-label">Achievement Unlocked</div>
+    <div class="ach-name" id="ach-toast-name"></div>
+  </div>
+</div>
+
+<div id="stats-overlay" class="stats-overlay" onclick="if(event.target===this)closeStatsPanel()">
+  <div class="stats-panel">
+    <div class="stats-panel-hdr">
+      <h2 class="stats-panel-title">Statistics</h2>
+      <button class="progress-close-btn" onclick="closeStatsPanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="stats-body" id="stats-body">
+      <!-- rendered by renderStatsPanel() -->
+    </div>
+  </div>
+</div>
+
 <div id="progress-overlay" class="progress-overlay" onclick="if(event.target===this)closeProgressPanel()">
   <div class="progress-panel">
     <div class="progress-panel-hdr">
       <h2 class="progress-panel-title">Your Progress</h2>
+      <button class="mastery-legend-btn" id="mastery-legend-btn" onclick="toggleMasteryLegend()" title="What do the levels mean?">ℹ️</button>
       <button class="progress-close-btn" onclick="closeProgressPanel()" aria-label="Close">✕</button>
+    </div>
+    <div class="mastery-legend" id="mastery-legend" style="display:none">
+      <div class="ml-item"><div class="ml-chip lvl0">অ</div><span class="ml-label">Unseen</span></div>
+      <div class="ml-item"><div class="ml-chip lvl1">অ</div><span class="ml-label">Seen once</span></div>
+      <div class="ml-item"><div class="ml-chip lvl2">অ</div><span class="ml-label">Learning</span></div>
+      <div class="ml-item"><div class="ml-chip lvl3">অ</div><span class="ml-label">Mastered</span></div>
+      <span class="ml-label" style="font-size:0.75rem;opacity:0.7">Click any chip to cycle its level</span>
     </div>
     <div class="progress-pt-cta">
       <button class="btn-primary progress-pt-btn" onclick="closeProgressPanel();startPlacementTest()">
