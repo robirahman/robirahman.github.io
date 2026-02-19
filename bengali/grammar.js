@@ -1106,4 +1106,149 @@ When consonants combine in a conjunct, the first consonant often adapts to match
       { type: 'translate-mc', prompt: 'Which pair correctly shows the formal (written/careful) vs. informal (spoken) contrast?', bengali: 'formal vs. informal', roman: 'formal vs. spoken', correct: 'তোমাকে (formal) / তোমায় (informal)', options: ['তোমাকে (formal) / তোমায় (informal)', 'আমার (formal) / আমায় (informal)', 'তুমি (formal) / তুই (informal)', 'বলেছেন (formal) / বলল (informal)'] },
     ]
   },
+
+  // ═══════════════════════════════════════
+  //  READING PASSAGES (Lessons 32–36)
+  // ═══════════════════════════════════════
+  {
+    id: 'reading-1',
+    number: 32,
+    title: 'আমার পরিবার — My Family',
+    shortDesc: '📖 Reading passage — Beginner',
+    explanation: `<span class="reading-level">📖 Beginner Reading</span>
+<div class="reading-bengali">আমার নাম রিয়া। আমার একটি ছোট পরিবার আছে। আমার বাবার নাম করিম এবং মায়ের নাম শিরিন। আমার একটি ভাই আছে। তার নাম রাহুল। আমরা ঢাকায় থাকি। বাবা প্রতিদিন কাজে যান। মা বাড়িতে থাকেন। রাহুল স্কুলে পড়ে।</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp1-roman')">▼ Show romanization</button>
+<div class="reading-sub" id="rp1-roman">Amar nam Riya. Amar ekti choto paribār achhe. Amar babar nam Karim ebong mayer nam Shirin. Amar ekti bhai achhe. Tar nam Rahul. Amra Dhakay thaki. Baba protidin kaje jan. Ma barite thaken. Rahul shukule pore.</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp1-english')">▼ Show English translation</button>
+<div class="reading-sub" id="rp1-english">My name is Riya. I have a small family. My father's name is Karim and my mother's name is Shirin. I have one brother. His name is Rahul. We live in Dhaka. Father goes to work every day. Mother stays at home. Rahul studies at school.</div>`,
+    examples: [
+      { bengali: 'আমার পরিবার আছে', roman: 'amar paribār achhe', english: 'I have a family (lit. my family exists)' },
+      { bengali: 'বাবা কাজে যান', roman: 'baba kaje jan', english: 'Father goes to work (formal verb যান for elders)' },
+      { bengali: 'মা বাড়িতে থাকেন', roman: 'ma barite thaken', english: 'Mother stays at home (থাকেন — formal/honorific)' },
+      { bengali: 'রাহুল স্কুলে পড়ে', roman: 'Rahul shukule pore', english: 'Rahul studies at school (পড়ে — informal, as for peers)' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What is the name of the narrator?', bengali: 'আমার নাম ___', roman: 'amar nam ___', correct: 'রিয়া (Riya)', options: ['রিয়া (Riya)', 'করিম (Karim)', 'শিরিন (Shirin)', 'রাহুল (Rahul)'] },
+      { type: 'translate-mc', prompt: 'কোথায় এই পরিবার থাকে? (Where does this family live?)', bengali: 'আমরা ___ থাকি', roman: 'amra ___ thaki', correct: 'ঢাকায় (in Dhaka)', options: ['ঢাকায় (in Dhaka)', 'চট্টগ্রামে (in Chittagong)', 'স্কুলে (at school)', 'কাজে (at work)'] },
+      { type: 'translate-mc', prompt: 'Who stays at home?', bengali: '___ বাড়িতে থাকেন', roman: '___ barite thaken', correct: 'মা (Mother)', options: ['মা (Mother)', 'বাবা (Father)', 'রাহুল (Rahul)', 'রিয়া (Riya)'] },
+      { type: 'translate-mc', prompt: 'Why is যান used for বাবা but পড়ে for রাহুল?', bengali: 'বাবা যান / রাহুল পড়ে', roman: 'baba jan / Rahul pore', correct: 'যান is the formal/honorific form; পড়ে is informal (for peers/juniors)', options: ['যান is the formal/honorific form; পড়ে is informal (for peers/juniors)', 'যান is future tense; পড়ে is present', 'বাবা is plural; রাহুল is singular', 'যান is passive; পড়ে is active'] },
+      { type: 'fib', prompt: 'Complete: "আমার ___ নাম রাহুল।" (My brother\'s name is Rahul.)', sentence: 'আমার ___ নাম রাহুল।', roman: 'amar ___ nam Rahul.', english: 'brother\'s', acceptable: ['ভাইয়ের', 'bhai er', 'bhaier'], answer: 'ভাইয়ের' },
+    ]
+  },
+
+  {
+    id: 'reading-2',
+    number: 33,
+    title: 'আমার দিন — My Day',
+    shortDesc: '📖 Reading passage — Beginner',
+    explanation: `<span class="reading-level">📖 Beginner Reading</span>
+<div class="reading-bengali">আমি প্রতিদিন সকাল সাতটায় উঠি। উঠে দাঁত মাজি এবং মুখ ধুই। তারপর সকালের চা খাই। আমি রুটি এবং ডিম খাই। আটটায় অফিসে যাই। অফিস বাসা থেকে দূরে। বাসে করে যাই। সন্ধ্যায় বাড়ি ফিরি। রাতে বই পড়ি এবং ঘুমাই।</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp2-roman')">▼ Show romanization</button>
+<div class="reading-sub" id="rp2-roman">Ami protidin shokal shattr ay uthi. Uthe dant maji ebong mukh dhui. Tarpar shokaler cha khai. Ami ruti ebong dim khai. Attar ay office-e jai. Office basha theke dure. Bashe kore jai. Shandhyay bari phiri. Rate boi pori ebong ghumai.</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp2-english')">▼ Show English translation</button>
+<div class="reading-sub" id="rp2-english">I wake up every day at 7 o'clock. After waking, I brush my teeth and wash my face. Then I drink morning tea. I eat bread and egg. At 8 o'clock I go to the office. The office is far from home. I go by bus. In the evening I return home. At night I read books and sleep.</div>`,
+    examples: [
+      { bengali: 'সাতটায় উঠি', roman: 'shattr ay uthi', english: 'I wake up at seven' },
+      { bengali: 'বাসে করে যাই', roman: 'bashe kore jai', english: 'I go by bus (করে = instrumental particle)' },
+      { bengali: 'বাসা থেকে দূরে', roman: 'basha theke dure', english: 'far from home (থেকে = from; দূরে = far/at a distance)' },
+      { bengali: 'সন্ধ্যায় বাড়ি ফিরি', roman: 'shandhyay bari phiri', english: 'I return home in the evening' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'কখন লেখক উঠে? (When does the writer wake up?)', bengali: 'আমি ___ উঠি', roman: 'ami ___ uthi', correct: 'সাতটায় (at seven)', options: ['সাতটায় (at seven)', 'আটটায় (at eight)', 'সন্ধ্যায় (in the evening)', 'রাতে (at night)'] },
+      { type: 'translate-mc', prompt: 'সকালে কী খান লেখক? (What does the writer eat in the morning?)', bengali: 'আমি ___ খাই', roman: 'ami ___ khai', correct: 'রুটি এবং ডিম (bread and egg)', options: ['রুটি এবং ডিম (bread and egg)', 'চা এবং বিস্কুট (tea and biscuits)', 'ভাত এবং মাছ (rice and fish)', 'ফল এবং দুধ (fruit and milk)'] },
+      { type: 'translate-mc', prompt: '"বাসে করে যাই" — what does করে indicate here?', bengali: 'বাসে করে যাই', roman: 'bashe kore jai', correct: 'The means/instrument of travel (by bus)', options: ['The means/instrument of travel (by bus)', 'A causal relationship (because of the bus)', 'A causative verb (make the bus go)', 'A repeated action (go and go by bus)'] },
+      { type: 'translate-mc', prompt: 'রাতে লেখক কী করে? (What does the writer do at night?)', bengali: 'রাতে আমি ___', roman: 'rate ami ___', correct: 'বই পড়ি এবং ঘুমাই (reads books and sleeps)', options: ['বই পড়ি এবং ঘুমাই (reads books and sleeps)', 'অফিসে যাই (goes to the office)', 'চা খাই (drinks tea)', 'বাসে করে যাই (goes by bus)'] },
+    ]
+  },
+
+  {
+    id: 'reading-3',
+    number: 34,
+    title: 'বাজারে — At the Market',
+    shortDesc: '📖 Reading passage — Intermediate',
+    explanation: `<span class="reading-level">📖 Intermediate Reading</span>
+<div class="reading-bengali">গতকাল আমি বাজারে গিয়েছিলাম। বাজারে অনেক রকমের জিনিস পাওয়া যায়। আমি সবজি, মাছ এবং ফল কিনেছি। আলু এবং পেঁয়াজের দাম কম ছিল কিন্তু আমের দাম বেশি ছিল। এক কেজি আম কিনতে একশো টাকা লেগেছে। দোকানদার বললেন যে এখন আমের মৌসুম তাই দাম বেশি। আমি দর কষাকষি করে আশি টাকায় কিনলাম।</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp3-roman')">▼ Show romanization</button>
+<div class="reading-sub" id="rp3-roman">Gotokal ami bajare giyechhilam. Bajare onek rokom-er jinish pawa jay. Ami shobji, mach ebong phol kinechhi. Alu ebong peyajer dam kom chhilo kintu amer dam beshi chhilo. Ek keji am kinte ekshho taka legeche. Dokāndar bollem je ekhon amer mousum tai dam beshi. Ami dor koshakoshi kore ashi takar kinlam.</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp3-english')">▼ Show English translation</button>
+<div class="reading-sub" id="rp3-english">Yesterday I went to the market. Many kinds of things are found at the market. I bought vegetables, fish, and fruit. The price of potatoes and onions was low but the price of mangoes was high. It cost one hundred taka to buy one kilogram of mangoes. The shopkeeper said that it is mango season now so the price is high. I bargained and bought (them) for eighty taka.</div>`,
+    examples: [
+      { bengali: 'গতকাল বাজারে গিয়েছিলাম', roman: 'gotokal bajare giyechhilam', english: 'Yesterday I went to the market (past perfect tense)' },
+      { bengali: 'দাম বেশি / দাম কম', roman: 'dam beshi / dam kom', english: 'price is high / price is low' },
+      { bengali: 'দর কষাকষি করা', roman: 'dor koshakoshi kora', english: 'to bargain (lit. to push and pull the price)' },
+      { bengali: 'দোকানদার বললেন যে…', roman: 'dokāndar bollem je…', english: 'The shopkeeper said that… (reported speech with যে)' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'কোন জিনিসের দাম বেশি ছিল? (Which item had a high price?)', bengali: '___ দাম বেশি ছিল', roman: '___ dam beshi chhilo', correct: 'আম (mango)', options: ['আম (mango)', 'আলু (potato)', 'পেঁয়াজ (onion)', 'মাছ (fish)'] },
+      { type: 'translate-mc', prompt: 'শেষে কত টাকায় আম কিনলাম? (At what price was the mango finally bought?)', bengali: '___ টাকায় কিনলাম', roman: '___ taka-y kinlam', correct: 'আশি টাকায় — ৮০ taka', options: ['আশি টাকায় — ৮০ taka', 'একশো টাকায় — ১০০ taka', 'পঞ্চাশ টাকায় — ৫০ taka', 'দুইশো টাকায় — ২০০ taka'] },
+      { type: 'translate-mc', prompt: 'দোকানদার কেন বললেন দাম বেশি? (Why did the shopkeeper say the price is high?)', bengali: 'দোকানদার বললেন যে ___', roman: 'dokāndar bollem je ___', correct: 'এখন আমের মৌসুম (it is mango season now)', options: ['এখন আমের মৌসুম (it is mango season now)', 'আম অনেক দূর থেকে এসেছে (mangoes came from far away)', 'আজ বাজারে লোক কম (few people at market today)', 'আমের গুণ অনেক ভালো (mango quality is very good)'] },
+      { type: 'translate-mc', prompt: '"গতকাল গিয়েছিলাম" uses which tense?', bengali: 'গতকাল গিয়েছিলাম', roman: 'gotokal giyechhilam', correct: 'Past perfect — action completed before the present moment', options: ['Past perfect — action completed before the present moment', 'Simple past — action that just happened', 'Continuous past — ongoing past action', 'Future perfect — action to be completed'] },
+    ]
+  },
+
+  {
+    id: 'reading-4',
+    number: 35,
+    title: 'বাংলাদেশের প্রকৃতি — Nature of Bangladesh',
+    shortDesc: '📖 Reading passage — Intermediate',
+    explanation: `<span class="reading-level">📖 Intermediate Reading</span>
+<div class="reading-bengali">বাংলাদেশ একটি সবুজ ও সুন্দর দেশ। এই দেশে অনেক নদী আছে। পদ্মা, মেঘনা এবং যমুনা বাংলাদেশের তিনটি বড় নদী। বর্ষাকালে অনেক বৃষ্টি হয় এবং নদীতে পানি বাড়ে। শীতকালে আবহাওয়া ঠান্ডা এবং শুষ্ক থাকে। সুন্দরবন পৃথিবীর বৃহত্তম ম্যানগ্রোভ বন। সেখানে রয়েল বেঙ্গল টাইগার এবং অনেক প্রজাতির পাখি পাওয়া যায়। বাংলাদেশের জাতীয় ফুল শাপলা এবং জাতীয় পাখি দোয়েল।</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp4-roman')">▼ Show romanization</button>
+<div class="reading-sub" id="rp4-roman">Bangladesh ekti shobuj o shundor desh. Ei deshe onek nodi achhe. Padma, Meghna ebong Jamuna Bangladesh-er tinti boro nodi. Borshakale onek brishti hoy ebong nodite pani bare. Shitokale abohawa thanda ebong shushko thake. Shundarbon prithibir brihottom Mangrove bon. Shekhane Royal Bengal Tiger ebong onek projatir pakhi pawa jay. Bangladesh-er jatīyo phul shapla ebong jatīyo pakhi doyel.</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp4-english')">▼ Show English translation</button>
+<div class="reading-sub" id="rp4-english">Bangladesh is a green and beautiful country. This country has many rivers. The Padma, Meghna, and Jamuna are three big rivers of Bangladesh. In the rainy season it rains a lot and the water in the rivers rises. In winter the weather stays cold and dry. The Sundarbans is the world's largest mangrove forest. There the Royal Bengal Tiger and many species of birds are found. The national flower of Bangladesh is the shapla (water lily) and the national bird is the doyel (magpie robin).</div>`,
+    examples: [
+      { bengali: 'বর্ষাকালে বৃষ্টি হয়', roman: 'borshakale brishti hoy', english: 'It rains in the rainy season (বর্ষাকাল = rainy season)' },
+      { bengali: 'পানি বাড়ে', roman: 'pani bare', english: 'The water rises (বাড়া = to increase/rise)' },
+      { bengali: 'পাওয়া যায়', roman: 'pawa jay', english: 'Are found / can be found (passive construction)' },
+      { bengali: 'জাতীয় ফুল শাপলা', roman: 'jatīyo phul shapla', english: 'National flower is the shapla (জাতীয় = national)' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'বাংলাদেশের তিনটি বড় নদী কোনগুলো? (What are three big rivers of Bangladesh?)', bengali: 'পদ্মা, ___ এবং যমুনা', roman: 'Padma, ___ ebong Jamuna', correct: 'মেঘনা (Meghna)', options: ['মেঘনা (Meghna)', 'তিস্তা (Teesta)', 'কর্ণফুলী (Karnaphuli)', 'সুরমা (Surma)'] },
+      { type: 'translate-mc', prompt: 'সুন্দরবন কীসের জন্য বিখ্যাত? (What is the Sundarbans famous for?)', bengali: 'সুন্দরবনে ___ পাওয়া যায়', roman: 'Shundarbone ___ pawa jay', correct: 'রয়েল বেঙ্গল টাইগার (Royal Bengal Tiger)', options: ['রয়েল বেঙ্গল টাইগার (Royal Bengal Tiger)', 'শাপলা ফুল (shapla flower)', 'পদ্মা নদী (Padma River)', 'দোয়েল পাখি (doyel bird)'] },
+      { type: 'translate-mc', prompt: 'What is Bangladesh\'s national bird?', bengali: 'জাতীয় পাখি ___', roman: 'jatīyo pakhi ___', correct: 'দোয়েল (doyel — magpie robin)', options: ['দোয়েল (doyel — magpie robin)', 'শাপলা (shapla — water lily)', 'বাঘ (bagh — tiger)', 'ময়ূর (moyur — peacock)'] },
+      { type: 'translate-mc', prompt: '"পাওয়া যায়" is a Bengali passive construction. What does it mean literally?', bengali: 'পাওয়া যায়', roman: 'pawa jay', correct: 'Goes to be found / can be found (passive with যাওয়া)', options: ['Goes to be found / can be found (passive with যাওয়া)', 'I found it (first person past)', 'They are searching (continuous)', 'It will be found (future)'] },
+    ]
+  },
+
+  {
+    id: 'reading-5',
+    number: 36,
+    title: 'একটি চিঠি — A Letter',
+    shortDesc: '📖 Reading passage — Advanced',
+    explanation: `<span class="reading-level">📖 Advanced Reading</span>
+<div class="reading-bengali">প্রিয় সাবিনা,
+
+অনেকদিন তোমার সাথে কথা হয়নি। আশা করি তুমি এবং তোমার পরিবার ভালো আছ। আমি এখন ঢাকায় একটি বিশ্ববিদ্যালয়ে পড়াশোনা করছি। পড়াশোনার চাপ অনেক বেশি, তবে আমি উপভোগ করছি। এখানকার বন্ধুরা খুব ভালো এবং সহায়ক। গত সপ্তাহে আমরা সবাই মিলে বাংলাদেশের জাতীয় জাদুঘরে গিয়েছিলাম। সেটি সত্যিই অসাধারণ ছিল। তুমি কি এই মাসে ঢাকায় আসতে পারবে? আমরা একসাথে ঘুরতে যেতে পারব।
+
+তোমার বন্ধু,
+নিলুফার</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp5-roman')">▼ Show romanization</button>
+<div class="reading-sub" id="rp5-roman">Priyo Sabina,
+
+Onek din tomar shathe kotha hoyni. Asha kori tumi ebong tomar paribār bhalo achho. Ami ekhon Dhakay ekti bishwobidyalay-e porashona korchhi. Porashona-r chap onek beshi, tobe ami upovog korchhi. Ekhankār bōndhurarā khub bhalo ebong shahayok. Got shoptahe amra shobai mile Bangladesh-er jatīyo jadughor-e giyechhilam. Sheti shatyoi oshādharon chhilo. Tumi ki ei mashe Dhakay ashte parbe? Amra ekshāthe ghurte jete parbo.
+
+Tomar bōndhu,
+Nilufar</div>
+<button class="reading-toggle" onclick="toggleReadingSection(this,'rp5-english')">▼ Show English translation</button>
+<div class="reading-sub" id="rp5-english">Dear Sabina,
+
+It has been a long time since we spoke. I hope you and your family are well. I am currently studying at a university in Dhaka. The study pressure is a lot, but I am enjoying it. The friends here are very good and helpful. Last week we all went together to Bangladesh's national museum. It was truly remarkable. Can you come to Dhaka this month? We can go sightseeing together.
+
+Your friend,
+Nilufar</div>`,
+    examples: [
+      { bengali: 'অনেকদিন কথা হয়নি', roman: 'onek din kotha hoyni', english: 'We haven\'t spoken in a long time (হওয়া + -নি = hasn\'t happened)' },
+      { bengali: 'পড়াশোনার চাপ', roman: 'porashona-r chap', english: 'academic pressure (চাপ = pressure; পড়াশোনা = studying)' },
+      { bengali: 'আসতে পারবে?', roman: 'ashte parbe?', english: 'Can you come? (potential form: verb root + তে + পারা)' },
+      { bengali: 'একসাথে ঘুরতে যেতে পারব', roman: 'ekshāthe ghurte jete parbo', english: 'We can go sightseeing together (double infinitive + potential)' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'Who wrote the letter?', bengali: 'তোমার বন্ধু, ___', roman: 'tomar bondhu, ___', correct: 'নিলুফার (Nilufar)', options: ['নিলুফার (Nilufar)', 'সাবিনা (Sabina)', 'রিয়া (Riya)', 'করিম (Karim)'] },
+      { type: 'translate-mc', prompt: 'নিলুফার গত সপ্তাহে কোথায় গিয়েছিল? (Where did Nilufar go last week?)', bengali: 'আমরা ___ গিয়েছিলাম', roman: 'amra ___ giyechhilam', correct: 'জাতীয় জাদুঘরে (national museum)', options: ['জাতীয় জাদুঘরে (national museum)', 'সুন্দরবনে (Sundarbans)', 'বাজারে (market)', 'স্কুলে (school)'] },
+      { type: 'translate-mc', prompt: '"আসতে পারবে?" — what grammar structure is this?', bengali: 'আসতে পারবে?', roman: 'ashte parbe?', correct: 'Potential future: verb infinitive (আসতে) + পারা (to be able)', options: ['Potential future: verb infinitive (আসতে) + পারা (to be able)', 'Passive construction with হওয়া', 'Causative verb form with করা', 'Conditional with যদি...তাহলে'] },
+      { type: 'translate-mc', prompt: '"কথা হয়নি" — what does this construction mean?', bengali: 'কথা হয়নি', roman: 'kotha hoyni', correct: '(We) haven\'t spoken — impersonal construction using হওয়া + -নি', options: ['(We) haven\'t spoken — impersonal construction using হওয়া + -নি', 'There is no language — simple negative', 'I didn\'t say anything — first person negative', 'The words have not arrived — literal'] },
+      { type: 'fib', prompt: 'Complete Nilufar\'s invitation: "আমরা একসাথে ঘুরতে ___ পারব।"', sentence: 'আমরা একসাথে ঘুরতে ___ পারব।', roman: 'amra ekshāthe ghurte ___ parbo.', english: 'We can go sightseeing together.', acceptable: ['যেতে', 'jete'], answer: 'যেতে' },
+    ]
+  },
 ];
