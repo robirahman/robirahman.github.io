@@ -345,6 +345,24 @@ nav h1 span { color: var(--accent); }
   transition: background 0.2s, border-color 0.2s;
 }
 .idk-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); }
+.missed-section { margin-top: 28px; text-align: left; max-width: 460px; margin-left: auto; margin-right: auto; }
+.missed-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 10px; }
+.missed-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.missed-item:last-child { border-bottom: none; }
+.missed-bengali { font-family: 'Noto Sans Bengali', sans-serif; font-size: 1.5rem; min-width: 2rem; }
+.missed-answer { font-size: 0.9rem; color: var(--text-dim); flex: 1; }
+.missed-sound-btn {
+  margin-top: 0; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%; width: 2rem; height: 2rem;
+  font-size: 0.9rem; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  transition: background 0.2s;
+}
+.missed-sound-btn:hover { background: rgba(255,255,255,0.15); }
 
 /* ─── RESULTS SCREEN ─── */
 #results { text-align: center; padding-top: 60px; }
@@ -1009,6 +1027,7 @@ nav h1 span { color: var(--accent); }
 [data-theme="light"] .search-panel,
 [data-theme="light"] .progress-panel,
 [data-theme="light"] .stats-panel { box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+[data-theme="light"] .idk-btn { border-color: rgba(0,0,0,0.15); }
 
 /* ─── NAV THEME BUTTON ─── */
 .nav-theme-btn {
@@ -1391,6 +1410,7 @@ nav h1 span { color: var(--accent); }
     <button class="btn-primary" onclick="retryVocabQuiz()">Try Again</button>
     <button class="nav-btn" onclick="showScreen('vocab-home')">Home</button>
   </div>
+  <div id="vr-missed"></div>
 </div>
 
 <!-- LEARN -->
@@ -1455,6 +1475,7 @@ nav h1 span { color: var(--accent); }
     <button class="btn-primary" onclick="retryQuiz()">Try Again</button>
     <button class="nav-btn" onclick="showScreen('home')">Home</button>
   </div>
+  <div id="results-missed"></div>
 </div>
 
 <!-- CHART -->
@@ -1517,6 +1538,7 @@ nav h1 span { color: var(--accent); }
     <button class="btn-primary" onclick="retryGrammarQuiz()">Try Again</button>
     <button class="nav-btn" onclick="showScreen('grammar-home')">Home</button>
   </div>
+  <div id="gr-missed"></div>
 </div>
 
 <script src="grammar.js"></script>
@@ -2049,12 +2071,14 @@ let quizIndex = 0;
 let quizCorrect = 0;
 let quizAnswered = false;
 let quizModuleRef = null;
+let quizMissed = [];
 
 function startQuiz() {
   quizModuleRef = currentModule;
   generateQuiz(currentModule.letters);
   quizIndex = 0;
   quizCorrect = 0;
+  quizMissed = [];
   document.getElementById('quiz-title').textContent = currentModule.title + ' Quiz';
   showScreen('quiz');
   renderQuestion();
@@ -2076,8 +2100,17 @@ function generateQuiz(letters) {
   quizQuestions = [];
   const shuffled = [...letters].sort(() => Math.random() - 0.5);
 
-  // Weight toward letters with lower mastery
-  const weighted = [...shuffled].sort((a, b) => getMastery(a.letter) - getMastery(b.letter));
+  // Weight by urgency: overdue ratio = time-since-last-seen / review-interval
+  // Unseen items (mastery 0) get high priority; recently-seen mastered items get low priority
+  const ls = progress.lastSeen || {};
+  const now = Date.now();
+  const urgency = l => {
+    const m = getMastery(l.letter);
+    if (m === 0) return 500; // never practised — high priority
+    const seenAgo = ls[l.letter] ? now - new Date(ls[l.letter]).getTime() : Infinity;
+    return seenAgo / REVIEW_INTERVALS_MS[m];
+  };
+  const weighted = [...shuffled].sort((a, b) => urgency(b) - urgency(a));
 
   // Take up to 10 questions, mixing question types
   const count = Math.min(10, weighted.length);
@@ -2252,7 +2285,7 @@ function renderQuestion() {
   if (q.type === 'mc') {
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
-        `<button class="mc-btn" data-idx="${i}" onclick="answerMC(this, '${escapeStr(opt)}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
+        `<button class="mc-btn" data-idx="${i}" data-answer="${escapeStr(opt)}" onclick="answerMC(this, '${escapeStr(opt)}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
       '<button class="idk-btn" onclick="dontKnowQuiz()">I don\'t know</button>';
     attachQuizKeyHandler('quiz');
@@ -2287,19 +2320,20 @@ function answerMC(btn, chosen) {
   quizAnswered = true;
   const q = quizQuestions[quizIndex];
   const correct = chosen === q.correct;
-  const btns = document.querySelectorAll('.mc-btn');
-  btns.forEach(b => {
+  document.querySelectorAll('#quiz-answer-area .mc-btn').forEach(b => {
     b.classList.add('disabled');
-    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+    if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
   });
   if (correct) {
     btn.classList.add('correct');
     quizCorrect++;
     addXP(10);
     showFeedback(true, q.fullAnswer || q.correct);
+    setTimeout(() => { const nb = document.getElementById('quiz-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
   } else {
     btn.classList.add('wrong');
     showFeedback(false, q.fullAnswer || q.correct);
+    _recordMiss(quizMissed, q);
   }
   addMastery(q.letter, correct);
   _trackLastSeen(q.letter);
@@ -2351,6 +2385,7 @@ function answerSpell() {
     showFeedback(true, q.correct);
   } else {
     showFeedback(false, q.correct);
+    _recordMiss(quizMissed, q);
   }
   q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
   checkAchievements();
@@ -2374,6 +2409,7 @@ function answerFIB() {
   } else {
     input.classList.add('wrong');
     showFeedback(false, q.answer);
+    _recordMiss(quizMissed, q);
   }
   if (q.letters) {
     q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
@@ -2391,6 +2427,12 @@ function showFeedback(correct, answer) {
   fb.textContent = correct ? '✓ Correct! ' + answer : '✗ The answer is: ' + answer;
 }
 
+function _recordMiss(arr, q) {
+  if (q.letter) arr.push({ bengali: q.letter, answer: q.fullAnswer || q.correct });
+  else if (q.bengali) arr.push({ bengali: q.bengali, answer: q.answer || q.correct });
+  else arr.push({ bengali: null, answer: Array.isArray(q.correct) ? q.correct.join(' ') : (q.answer || q.correct) });
+}
+
 function dontKnowQuiz() {
   if (quizAnswered) return;
   quizAnswered = true;
@@ -2398,7 +2440,7 @@ function dontKnowQuiz() {
   if (q.type === 'mc') {
     document.querySelectorAll('#quiz-answer-area .mc-btn').forEach(b => {
       b.classList.add('disabled');
-      if (b.textContent === q.correct) b.classList.add('reveal-correct');
+      if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
     });
     showFeedback(false, q.fullAnswer || q.correct);
   } else if (q.type === 'spell') {
@@ -2410,6 +2452,7 @@ function dontKnowQuiz() {
     if (input) { input.disabled = true; input.classList.add('wrong'); }
     showFeedback(false, q.answer);
   }
+  _recordMiss(quizMissed, q);
   if (q.letters) {
     q.letters.forEach(l => { addMastery(l.letter, false); _trackLastSeen(l.letter); });
   } else {
@@ -2451,6 +2494,7 @@ function showResults() {
   detachQuizKeyHandler();
   updateNav();
   checkAchievements(); // catches 'first-quiz' and 'century' etc.
+  _renderMissedSection(quizMissed, 'results-missed');
 }
 
 function retryQuiz() {
@@ -2783,6 +2827,7 @@ function launchMixedVocabQuiz() {
   generateVocabQuiz(vmixSession.quiz);
   vqIndex = 0;
   vqCorrect = 0;
+  vqMissed = [];
   document.getElementById('vq-title').textContent = 'Mixed Vocab Practice';
   showScreen('vocab-quiz');
   renderVocabQuestion();
@@ -2955,6 +3000,7 @@ let vqIndex = 0;
 let vqCorrect = 0;
 let vqAnswered = false;
 let vqCatRef = null;
+let vqMissed = [];
 
 function startVocabQuiz() {
   vqCatRef = vlCatId;
@@ -2962,6 +3008,7 @@ function startVocabQuiz() {
   generateVocabQuiz(words);
   vqIndex = 0;
   vqCorrect = 0;
+  vqMissed = [];
   const cat = VOCAB_CATEGORIES[vlCatId];
   document.getElementById('vq-title').textContent = (cat ? cat.title : 'Vocab') + ' Quiz';
   showScreen('vocab-quiz');
@@ -2971,8 +3018,16 @@ function startVocabQuiz() {
 
 function generateVocabQuiz(words) {
   vqQuestions = [];
-  // Weight by mastery (lower mastery = more likely)
-  const sorted = [...words].sort((a, b) => getVocabMastery(a[0]) - getVocabMastery(b[0]));
+  // Weight by urgency: overdue ratio = time-since-last-seen / review-interval
+  const ls = progress.lastSeen || {};
+  const now = Date.now();
+  const urgency = w => {
+    const m = getVocabMastery(w[0]);
+    if (m === 0) return 500;
+    const seenAgo = ls['v:' + w[0]] ? now - new Date(ls['v:' + w[0]]).getTime() : Infinity;
+    return seenAgo / REVIEW_INTERVALS_MS[m];
+  };
+  const sorted = [...words].sort((a, b) => urgency(b) - urgency(a));
   const count = Math.min(10, sorted.length);
   const selected = sorted.slice(0, count);
 
@@ -3071,7 +3126,7 @@ function renderVocabQuestion() {
   if (q.type === 'mc' || q.type === 'mc-reverse') {
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
-        `<button class="mc-btn" onclick="answerVocabMC(this, '${opt.replace(/'/g,"\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerVocabMC(this, '${opt.replace(/'/g,"\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
       '<button class="idk-btn" onclick="dontKnowVocab()">I don\'t know</button>';
     attachQuizKeyHandler('vq');
@@ -3094,14 +3149,19 @@ function answerVocabMC(btn, chosen) {
   const correct = chosen === q.correct;
   document.querySelectorAll('#vq-answer-area .mc-btn').forEach(b => {
     b.classList.add('disabled');
-    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+    if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
   });
   btn.classList.add(correct ? 'correct' : 'wrong');
-  if (correct) { vqCorrect++; addXP(10); }
+  if (correct) {
+    vqCorrect++; addXP(10);
+    setTimeout(() => { const nb = document.getElementById('vq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
+  } else {
+    _recordMiss(vqMissed, q);
+  }
   addVocabMastery(q.word[0], correct);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
-  showVocabFeedback(correct, q.type === 'mc' ? q.correct : q.correct);
+  showVocabFeedback(correct, q.correct);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -3116,6 +3176,7 @@ function answerVocabFIB() {
   const correct = q.acceptable.some(a => a === val);
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
+  else { _recordMiss(vqMissed, q); }
   addVocabMastery(q.word[0], correct);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
@@ -3136,12 +3197,13 @@ function dontKnowVocab() {
   if (q.type === 'mc' || q.type === 'mc-reverse') {
     document.querySelectorAll('#vq-answer-area .mc-btn').forEach(b => {
       b.classList.add('disabled');
-      if (b.textContent === q.correct) b.classList.add('reveal-correct');
+      if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
     });
   } else {
     const input = document.getElementById('vq-fib-input');
     if (input) { input.disabled = true; input.classList.add('wrong'); }
   }
+  _recordMiss(vqMissed, q);
   addVocabMastery(q.word[0], false);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
@@ -3170,6 +3232,7 @@ function showVocabResults() {
   detachQuizKeyHandler();
   updateNav();
   checkAchievements();
+  _renderMissedSection(vqMissed, 'vr-missed');
 }
 
 function retryVocabQuiz() {
@@ -3310,6 +3373,7 @@ let gqCorrect = 0;
 let gqAnswered = false;
 let gqIsMixed = false;
 let gqWordOrder = [];  // current word-order answer
+let gqMissed = [];
 
 function startGrammarQuiz() {
   if (!currentGrammarLesson) return;
@@ -3317,6 +3381,7 @@ function startGrammarQuiz() {
   gqQuestions = [...currentGrammarLesson.quiz];
   gqIndex = 0;
   gqCorrect = 0;
+  gqMissed = [];
   document.getElementById('gq-title').textContent = currentGrammarLesson.title + ' Quiz';
   showScreen('grammar-quiz');
   renderGrammarQuestion();
@@ -3356,8 +3421,9 @@ function renderGrammarQuestion() {
     }
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
-        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
-      ).join('') + '</div>';
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
+      ).join('') + '</div>' +
+      '<button class="idk-btn" onclick="dontKnowGrammar()">I don\'t know</button>';
     attachQuizKeyHandler('gq');
 
   } else if (q.type === 'fib') {
@@ -3371,7 +3437,8 @@ function renderGrammarQuestion() {
       <input type="text" class="fib-input" id="gq-fib-input" placeholder="Type your answer…"
         onkeydown="if(event.key==='Enter')answerGrammarFIB()" autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" onclick="answerGrammarFIB()">Check</button>
-    </div>`;
+    </div>
+    <button class="idk-btn" onclick="dontKnowGrammar()">I don't know</button>`;
     setTimeout(() => document.getElementById('gq-fib-input')?.focus(), 100);
 
   } else if (q.type === 'word-order') {
@@ -3386,14 +3453,16 @@ function renderGrammarQuestion() {
         ${shuffled.map((w, i) => `<div class="word-tile" data-idx="${i}" data-word="${w}" onclick="selectWordTile(this)">${w}</div>`).join('')}
       </div>
       <button class="btn-primary wo-check-btn" onclick="checkWordOrder()">Check Order</button>
-    </div>`;
+    </div>
+    <button class="idk-btn" onclick="dontKnowGrammar()">I don't know</button>`;
 
   } else if (q.type === 'error-spot') {
     qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
-        `<button class="mc-btn" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
-      ).join('') + '</div>';
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerGrammarMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
+      ).join('') + '</div>' +
+      '<button class="idk-btn" onclick="dontKnowGrammar()">I don\'t know</button>';
     attachQuizKeyHandler('gq');
   }
 }
@@ -3405,10 +3474,15 @@ function answerGrammarMC(btn, chosen) {
   const correct = chosen === q.correct;
   document.querySelectorAll('#gq-answer-area .mc-btn').forEach(b => {
     b.classList.add('disabled');
-    if (b.textContent === q.correct) b.classList.add('reveal-correct');
+    if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
   });
   btn.classList.add(correct ? 'correct' : 'wrong');
-  if (correct) { gqCorrect++; addXP(10); }
+  if (correct) {
+    gqCorrect++; addXP(10);
+    setTimeout(() => { const nb = document.getElementById('gq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
+  } else {
+    _recordMiss(gqMissed, q);
+  }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
@@ -3431,6 +3505,7 @@ function answerGrammarFIB() {
                   q.acceptable.some(a => a === input.value.trim());
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { gqCorrect++; addXP(15); }
+  else { _recordMiss(gqMissed, q); }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
@@ -3486,6 +3561,7 @@ function checkWordOrder() {
   document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
   document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
   if (correct) { gqCorrect++; addXP(15); }
+  else { _recordMiss(gqMissed, q); }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
@@ -3497,6 +3573,34 @@ function showGrammarFeedback(correct, answer) {
   const fb = document.getElementById('gq-feedback');
   fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
   fb.textContent = correct ? '✓ Correct! ' + answer : '✗ Correct answer: ' + answer;
+}
+
+function dontKnowGrammar() {
+  if (gqAnswered) return;
+  gqAnswered = true;
+  const q = gqQuestions[gqIndex];
+  if (q.type === 'translate-mc' || q.type === 'error-spot') {
+    document.querySelectorAll('#gq-answer-area .mc-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
+    });
+    showGrammarFeedback(false, q.explanation || q.correct);
+  } else if (q.type === 'fib') {
+    const input = document.getElementById('gq-fib-input');
+    if (input) { input.disabled = true; input.classList.add('wrong'); }
+    showGrammarFeedback(false, q.answer);
+  } else if (q.type === 'word-order') {
+    document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
+    document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
+    showGrammarFeedback(false, q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
+  }
+  _recordMiss(gqMissed, q);
+  const lessonId = q._lessonId || currentGrammarLesson.id;
+  const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
+  addGrammarMastery(lessonId, qIdx, false);
+  _trackLastSeen('g:' + lessonId);
+  checkAchievements();
+  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 function nextGrammarQuestion() {
@@ -3523,6 +3627,7 @@ function showGrammarResults() {
   detachQuizKeyHandler();
   updateNav();
   checkAchievements();
+  _renderMissedSection(gqMissed, 'gr-missed');
 }
 
 function retryGrammarQuiz() {
@@ -3583,6 +3688,7 @@ function startGrammarMixedPractice() {
   gqQuestions = allQs.slice(0, 12);
   gqIndex = 0;
   gqCorrect = 0;
+  gqMissed = [];
   gqIsMixed = true;
   currentGrammarLesson = currentGrammarLesson || GRAMMAR_LESSONS[0]; // fallback
   document.getElementById('gq-title').textContent = 'Mixed Grammar Practice';
@@ -4834,6 +4940,23 @@ function _trackLastSeen(key) {
 }
 
 // ════════════════════════════════════════
+//  MISSED QUESTIONS RENDER
+// ════════════════════════════════════════
+function _renderMissedSection(missedArr, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!missedArr || missedArr.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="missed-section"><div class="missed-title">Review these</div>' +
+    missedArr.map(m => `
+      <div class="missed-item">
+        ${m.bengali ? `<span class="missed-bengali">${m.bengali}</span>
+        <button class="missed-sound-btn" onclick="speakBengali('${escapeStr(m.bengali)}')" aria-label="Play pronunciation">🔊</button>` : ''}
+        <span class="missed-answer">${m.answer}</span>
+      </div>
+    `).join('') + '</div>';
+}
+
+// ════════════════════════════════════════
 //  QUIZ KEYBOARD SHORTCUTS
 // ════════════════════════════════════════
 let _quizKeyHandler = null;
@@ -4846,6 +4969,12 @@ function attachQuizKeyHandler(screenPrefix) {
       const idx = parseInt(e.key) - 1;
       const btns = document.querySelectorAll(`#${screenPrefix}-answer-area .mc-btn:not(.disabled)`);
       if (btns[idx]) btns[idx].click();
+      return;
+    }
+    // 0: I don't know
+    if (e.key === '0') {
+      const idkBtn = document.querySelector(`#${screenPrefix}-answer-area .idk-btn`);
+      if (idkBtn) idkBtn.click();
       return;
     }
     // Enter: advance after answered, or check word order
