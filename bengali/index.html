@@ -270,6 +270,7 @@ nav h1 span { color: var(--accent); }
 .badge-vowel { background: rgba(232,142,180,0.15); color: var(--vowel); }
 .badge-consonant { background: rgba(94,179,212,0.15); color: var(--consonant); }
 .badge-special { background: rgba(232,120,65,0.15); color: var(--special); }
+.badge-numeral { background: rgba(244,165,50,0.15); color: var(--accent); }
 
 .letter-name { font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; }
 .letter-translit { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 4px; }
@@ -2425,6 +2426,22 @@ const ALL_LETTERS = [
 ];
 
 // ════════════════════════════════════════
+//  BENGALI NUMERALS (০–৯)
+// ════════════════════════════════════════
+const BENGALI_NUMERALS = [
+  { letter:'০', name:'শূন্য (Shunno)', romanized:'shunno', ipa:'0', sound:'zero',  example:'০ থেকে শুরু করো। (shunno theke shuru koro — Start from zero.)', type:'numeral', _isNumeral:true },
+  { letter:'১', name:'এক (Ek)',         romanized:'ek',     ipa:'1', sound:'one',   example:'১ টাকা। (ek taka — One taka.)', type:'numeral', _isNumeral:true },
+  { letter:'২', name:'দুই (Dui)',        romanized:'dui',    ipa:'2', sound:'two',   example:'২ জন আছে। (dui jon ache — There are two people.)', type:'numeral', _isNumeral:true },
+  { letter:'৩', name:'তিন (Tin)',        romanized:'tin',    ipa:'3', sound:'three', example:'৩ দিন পরে। (tin dine pore — After three days.)', type:'numeral', _isNumeral:true },
+  { letter:'৪', name:'চার (Char)',       romanized:'char',   ipa:'4', sound:'four',  example:'৪ টি বই। (char-ti boi — Four books.)', type:'numeral', _isNumeral:true },
+  { letter:'৫', name:'পাঁচ (Panch)',     romanized:'panch',  ipa:'5', sound:'five',  example:'৫ টাকা দাও। (panch taka dao — Give five taka.)', type:'numeral', _isNumeral:true },
+  { letter:'৬', name:'ছয় (Chhoy)',      romanized:'chhoy',  ipa:'6', sound:'six',   example:'৬ মাস পরে। (chhoy mash pore — After six months.)', type:'numeral', _isNumeral:true },
+  { letter:'৭', name:'সাত (Shat)',       romanized:'shat',   ipa:'7', sound:'seven', example:'৭ দিনে সপ্তাহ। (shat dine shoptaho — Seven days in a week.)', type:'numeral', _isNumeral:true },
+  { letter:'৮', name:'আট (Aat)',         romanized:'aat',    ipa:'8', sound:'eight', example:'৮ ঘণ্টা ঘুম। (aat ghonta ghum — Eight hours of sleep.)', type:'numeral', _isNumeral:true },
+  { letter:'৯', name:'নয় (Noy)',         romanized:'noy',    ipa:'9', sound:'nine',  example:'৯ নম্বর বাড়ি। (noy nombor bari — House number nine.)', type:'numeral', _isNumeral:true },
+];
+
+// ════════════════════════════════════════
 //  MODULES
 // ════════════════════════════════════════
 const MODULES = [
@@ -2437,6 +2454,7 @@ const MODULES = [
   { id:'consonants-5', title:'Consonants V (প–ম)', desc:'Labial stops — lips together', icon:'💬', letters: CONSONANTS_LABIAL.map(c=>({...c,type:'consonant'})), color: var_consonant },
   { id:'consonants-6', title:'Consonants VI (য–হ)', desc:'Semivowels, liquids & sibilants', icon:'🔊', letters: CONSONANTS_OTHER.map(c=>({...c,type:'consonant'})), color: var_consonant },
   { id:'special', title:'Special Characters', desc:'Modifiers & extra letters (ড়, ং, ঃ…)', icon:'✨', letters: CONSONANTS_SPECIAL.map(c=>({...c,type:'consonant'})), color: var_special },
+  { id:'numerals', title:'Bengali Numerals (০–৯)', desc:'The 10 Bengali script digits — ০ through ৯', icon:'🔢', letters: BENGALI_NUMERALS, color: () => 'var(--accent)' },
   { id:'chart', title:'Full Alphabet Chart', desc:'Review all 50 letters at a glance', icon:'📊', isChart: true },
 ];
 
@@ -2994,7 +3012,10 @@ function generateQuiz(letters, forceMode) {
   selected.forEach((item, i) => {
     // Alternate between MC-name, MC-sound, fill-in-blank, and string types
     let types;
-    if (listenMode === 'listening') {
+    if (item._isNumeral) {
+      // Numerals don't form meaningful strings; use only name/value/romanization types
+      types = ['mc-name', 'mc-sound', 'fib-name', 'fib-romanized'];
+    } else if (listenMode === 'listening') {
       types = ['listening-mc', 'listening-fib'];
     } else if (listenMode === 'mixed') {
       types = ['mc-name', 'mc-sound', 'fib-name', 'fib-romanized', 'listening-mc', 'listening-fib'];
@@ -3004,31 +3025,31 @@ function generateQuiz(letters, forceMode) {
     const qtype = types[i % types.length];
 
     if (qtype === 'mc-name') {
-      // MC: What is the name of this letter?
-      const correct = item.name.split(' ')[0]; // short name
+      // MC: What is the name of this letter/numeral?
+      const correct = item.name.split(' ')[0]; // short name (Bengali text)
       const distractors = generateDistractors(item, letters, 'name');
       quizQuestions.push({
         type: 'mc',
         letter: item.letter,
         letterType: item.type,
-        prompt: 'What is the name of this letter?',
+        prompt: item._isNumeral ? 'What is the Bengali name of this numeral?' : 'What is the name of this letter?',
         correct: correct,
         options: shuffle([correct, ...distractors]),
         fullAnswer: item.name,
         letterObj: item,
       });
     } else if (qtype === 'mc-sound') {
-      // MC: What sound does this letter make?
+      // MC: What sound / value does this letter make?
       const correct = item.ipa;
       const distractors = generateDistractors(item, letters, 'ipa');
       quizQuestions.push({
         type: 'mc',
         letter: item.letter,
         letterType: item.type,
-        prompt: 'What sound does this letter make?',
+        prompt: item._isNumeral ? 'What value does this numeral represent?' : 'What sound does this letter make?',
         correct: correct,
         options: shuffle([correct, ...distractors]),
-        fullAnswer: item.ipa + ' — ' + item.sound,
+        fullAnswer: item._isNumeral ? item.ipa + ' (' + item.sound + ')' : item.ipa + ' — ' + item.sound,
         letterObj: item,
       });
     } else if (qtype === 'fib-name') {
@@ -3042,10 +3063,10 @@ function generateQuiz(letters, forceMode) {
         type: 'fib',
         letter: item.letter,
         letterType: item.type,
-        prompt: 'Type the name of this letter:',
+        prompt: item._isNumeral ? 'Type the Bengali name of this numeral:' : 'Type the name of this letter:',
         acceptable: [...new Set(acceptable)],
         answer: item.name,
-        hint: 'Hint: ' + item.sound,
+        hint: item._isNumeral ? 'Hint: value ' + item.ipa : 'Hint: ' + item.sound,
         letterObj: item,
       });
     } else if (qtype === 'fib-romanized') {
@@ -3060,7 +3081,7 @@ function generateQuiz(letters, forceMode) {
         type: 'fib',
         letter: item.letter,
         letterType: item.type,
-        prompt: 'Type the romanized form of this letter:',
+        prompt: item._isNumeral ? 'Type the romanized pronunciation of this numeral:' : 'Type the romanized form of this letter:',
         acceptable: [...new Set(acceptable)],
         answer: item.romanized,
         hint: 'Hint: ' + item.name,
