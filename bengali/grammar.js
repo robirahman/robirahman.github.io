@@ -962,18 +962,18 @@ Noun reduplication emphasizes variety or abundance: "দেশে-বিদে�
 
 কিন্তু (but) and আর/এবং (and) work like their English counterparts.`,
     examples: [
-      { bengali: 'যদি বৃষ্টি হয় তাহলে যাব না', roman: 'jodi brrishti hoy tahole jabo na', english: 'If it rains, then I won\'t go' },
+      { bengali: 'যদি বৃষ্টি হয় তাহলে যাব না', roman: 'jodi brishti hoy tahole jabo na', english: 'If it rains, then I won\'t go' },
       { bengali: 'আমি যাইনি কারণ অসুস্থ ছিলাম', roman: 'ami jaini karon oshustho chhilam', english: 'I didn\'t go because I was sick' },
-      { bengali: 'বৃষ্টি হচ্ছে, তাই যাব না', roman: 'brrishti hochhe, tai jabo na', english: 'It\'s raining, so I won\'t go' },
-      { bengali: 'যখন বৃষ্টি থামবে তখন বেরোব', roman: 'jokhon brrishti thambe tokhon berob', english: 'When the rain stops, then I\'ll go out' },
+      { bengali: 'বৃষ্টি হচ্ছে, তাই যাব না', roman: 'brishti hochhe, tai jabo na', english: 'It\'s raining, so I won\'t go' },
+      { bengali: 'যখন বৃষ্টি থামবে তখন বেরোব', roman: 'jokhon brishti thambe tokhon berob', english: 'When the rain stops, then I\'ll go out' },
       { bengali: 'আমি ক্লান্ত কিন্তু কাজ করব', roman: 'ami klanto kintu kaj korbo', english: 'I am tired but I will work' },
       { bengali: 'সে পড়াশোনা করে তাই ভালো ফলাফল পায়', roman: 'she porashona kore tai bhalo phalapal pay', english: 'He/she studies, therefore gets good results' },
     ],
     quiz: [
       { type: 'translate-mc', prompt: 'What does "যদি...তাহলে" mean?', bengali: 'যদি...তাহলে', roman: 'jodi...tahole', correct: 'If...then', options: ['If...then', 'When...then', 'Because...therefore', 'But...so'] },
       { type: 'translate-mc', prompt: '"আমি যাইনি কারণ অসুস্থ ছিলাম" means:', bengali: 'আমি যাইনি কারণ অসুস্থ ছিলাম', roman: 'ami jaini karon oshustho chhilam', correct: 'I didn\'t go because I was sick', options: ['I didn\'t go because I was sick', 'Because I was sick, I will not go', 'I went although I was sick', 'I was sick when I went'] },
-      { type: 'fib', prompt: 'Complete: "বৃষ্টি হচ্ছে ___ যাব না" (so I won\'t go)', sentence: 'বৃষ্টি হচ্ছে ___ যাব না', roman: 'brrishti hochhe ___ jabo na', english: 'It\'s raining so I won\'t go', acceptable: ['তাই', 'tai'], answer: 'তাই' },
-      { type: 'word-order', prompt: 'Arrange: "If it rains then I won\'t go"', words: ['তাহলে', 'হয়', 'যদি', 'যাব', 'বৃষ্টি', 'না'], correct: ['যদি', 'বৃষ্টি', 'হয়', 'তাহলে', 'যাব', 'না'], english: 'If it rains then I won\'t go', roman: 'jodi brrishti hoy tahole jabo na' },
+      { type: 'fib', prompt: 'Complete: "বৃষ্টি হচ্ছে ___ যাব না" (so I won\'t go)', sentence: 'বৃষ্টি হচ্ছে ___ যাব না', roman: 'brishti hochhe ___ jabo na', english: 'It\'s raining so I won\'t go', acceptable: ['তাই', 'tai'], answer: 'তাই' },
+      { type: 'word-order', prompt: 'Arrange: "If it rains then I won\'t go"', words: ['তাহলে', 'হয়', 'যদি', 'যাব', 'বৃষ্টি', 'না'], correct: ['যদি', 'বৃষ্টি', 'হয়', 'তাহলে', 'যাব', 'না'], english: 'If it rains then I won\'t go', roman: 'jodi brishti hoy tahole jabo na' },
       { type: 'error-spot', prompt: 'Which correctly says "When rain stops, I\'ll go out"?', options: ['যখন বৃষ্টি তখন থামবে বেরোব', 'যখন বৃষ্টি থামবে তখন বেরোব', 'বেরোব যখন বৃষ্টি থামবে', 'তখন বৃষ্টি যখন থামবে বেরোব'], correct: 'যখন বৃষ্টি থামবে তখন বেরোব', explanation: 'যখন clause comes first, then তখন introduces the result.' },
       { type: 'translate-mc', prompt: '"তাই" means:', bengali: 'তাই', roman: 'tai', correct: 'Therefore / so (result)', options: ['Therefore / so (result)', 'If / when (condition)', 'Because (cause)', 'But (contrast)'] },
       { type: 'fib', prompt: 'Complete: "আমি ক্লান্ত ___ কাজ করব" (but I will work)', sentence: 'আমি ক্লান্ত ___ কাজ করব', roman: 'ami klanto ___ kaj korbo', english: 'I am tired but I will work', acceptable: ['কিন্তু', 'kintu'], answer: 'কিন্তু' },

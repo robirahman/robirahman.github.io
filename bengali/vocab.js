@@ -1,4 +1,4 @@
-// Bengali Vocabulary — 1000 most common words
+// Bengali Vocabulary — 4,399 most common words
 // Source schema: [lemma, roman, english, category, pos, example]
 // Runtime schema: { lemma, roman, english, category, pos, example, freqRank }
 
@@ -59,7 +59,7 @@ const VOCAB_DATA_RAW = [
 ["আছে","ache","is / are / have","verbs","verb","আমাদের একটি বাগান আছে। (amader ekti bagan ache — We have a garden.)"],
 ["পারে","pare","can / is able to","verbs","verb","সে এটি করতে পারে। (she eți korte pare — He can do this.)"],
 ["নেই","nei","is not / are not","verbs","verb","আমার কাছে টাকা নেই। (amar kachhe taka nei — I don't have money.)"],
-["শুরু","shuru","start / beginning","verbs","verb","তিনি কাজ শুরু করেছেন। (tini kaj shuru korchhen — He has started working.)"],
+["শুরু","shuru","start / beginning","abstract","noun","তিনি কাজ শুরু করেছেন। (tini kaj shuru korchhen — He has started working.)"],
 ["বলে","bole","says / told / means","verbs","verb","সে কী বলে? (she ki bole — What does she say?)"],
 ["হতে","hote","to be / to become","verbs","verb","তাকে ডাক্তার হতে হবে। (take daktar hote hobe — He has to become a doctor.)"],
 // ─── ADJECTIVES ───
@@ -158,7 +158,7 @@ const VOCAB_DATA_RAW = [
 ["একই","eki","same","adjectives","adjective","আমরা একই স্কুলে পড়ি। (amra eki skule pori — We study at the same school.)"],
 ["ভাল","bhal","good / well","adjectives","adjective","এটি একটি ভাল বই। (eti ekti bhal boi — This is a good book.)"],
 ["আন্তর্জাতিক","antorjatik","international","adjectives","adjective","এটি একটি আন্তর্জাতিক সম্মেলন। (eta ekti antorjatik shommhelon — This is an international conference.)"],
-["সামনে","shamne","in front","adjectives","adjective","স্কুল সামনে আছে। (school shamne achhe — The school is in front.)"],
+["সামনে","shamne","in front / ahead","adverbs","adverb","স্কুল সামনে আছে। (school shamne achhe — The school is ahead.)"],
 ["সাধারণ","shadharon","ordinary / common","adjectives","adjective","এটা একটা সাধারণ ব্যাপার। (eta ekta shadharon byapar — This is an ordinary matter.)"],
 ["ছোট","choto","small / little","adjectives","adjective","এটি একটি ছোট বাড়ি। (eti ekti choto bāri — This is a small house.)"],
 // ─── TIME ───
