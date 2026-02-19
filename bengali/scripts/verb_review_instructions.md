@@ -27,6 +27,7 @@ Open `verb_audit.csv` in Excel or Google Sheets. For each row:
 
    **What to write in `corrected_example`:**
    Provide a complete, natural example sentence with:
+
    - The verb **conjugated** appropriately for the English gloss given
    - The same romanized transliteration style: `বাংলা বাক্য। (roman — English translation)`
    - Informal register (তুমি, সে, আমি) unless the headword is a formal/honorific form
@@ -40,6 +41,7 @@ Open `verb_audit.csv` in Excel or Google Sheets. For each row:
    ### Case B — Gerund/infinitive use is intentional
 
    Sometimes the dictionary form is used correctly as a noun/gerund:
+
    - ✅ "খাওয়া ভালো।" — _"Eating is good."_ (gerund as subject) → OK
    - ✅ "সাঁতার কাটা শিখতে হবে।" — _"You need to learn to swim."_ → OK
 
