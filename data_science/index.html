@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Science Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a1628;
+  --card: #111d35;
+  --card-hover: #1a2d4f;
+  --accent: #6366f1;
+  --accent-dim: #4f52c9;
+  --accent-glow: rgba(99,102,241,0.25);
+  --wrong: #ef4444;
+  --right: #22c55e;
+  --text: #e2e8f0;
+  --text-dim: #7b92b8;
+  --gold: #f59e0b;
+  --border: rgba(255,255,255,0.07);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.35);
+  --c-super: #6366f1;
+  --c-unsup: #22d3ee;
+  --c-eval:  #f59e0b;
+  --c-deep:  #a78bfa;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+code,pre{font-family:'JetBrains Mono',monospace}
+a{color:var(--accent);text-decoration:none}
+
+/* ── NAV ── */
+#app-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#0d1e38;
+  border-top:1px solid var(--border);
+  display:flex;z-index:100;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 4px 8px;
+  background:none;color:var(--text-dim);font-size:10px;font-weight:500;
+  transition:color .2s;
+  border-top:2px solid transparent;
+}
+.nav-btn.active{color:var(--accent);border-top-color:var(--accent)}
+.nav-btn svg{width:22px;height:22px;stroke-width:1.8}
+
+/* ── MAIN ── */
+#main{padding-bottom:72px}
+.screen{display:none;min-height:calc(100vh - 72px)}
+.screen.active{display:block}
+
+/* ── HEADER ── */
+.screen-header{
+  padding:20px 16px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.screen-title{font-size:22px;font-weight:700}
+.screen-sub{font-size:13px;color:var(--text-dim);margin-top:2px}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-dim);transition:all .2s;
+}
+.icon-btn:hover{background:var(--card-hover);color:var(--text)}
+.icon-btn svg{width:18px;height:18px;stroke-width:1.8}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;
+  transition:background .2s,transform .15s;
+}
+.card:hover{background:var(--card-hover)}
+.card-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  padding:0 16px 16px;
+}
+@media(min-width:600px){.card-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ── MODULE CARD ── */
+.module-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.module-card:hover{background:var(--card-hover);transform:translateY(-2px)}
+.module-card .progress-bar{
+  position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:rgba(255,255,255,0.07);
+}
+.module-card .progress-fill{
+  height:100%;background:var(--accent);
+  transition:width .4s ease;border-radius:0 2px 2px 0;
+}
+.module-icon{font-size:28px;margin-bottom:8px}
+.module-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.module-count{font-size:11px;color:var(--text-dim)}
+.mastery-dots{display:flex;gap:4px;margin-top:8px}
+.mastery-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.15)}
+.mastery-dot.filled{background:var(--accent)}
+
+/* ── CHIP / BADGE ── */
+.chip{
+  display:inline-flex;align-items:center;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+}
+.chip-super{background:rgba(99,102,241,.18);color:#818cf8}
+.chip-unsup{background:rgba(34,211,238,.15);color:#22d3ee}
+.chip-eval {background:rgba(245,158,11,.18);color:#fbbf24}
+.chip-deep {background:rgba(167,139,250,.18);color:#c4b5fd}
+
+/* ── ML ALGORITHM CARD ── */
+.algo-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin:0 16px 12px;cursor:pointer;
+  transition:all .2s;
+}
+.algo-card:hover{background:var(--card-hover)}
+.algo-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.algo-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.algo-short{font-size:13px;color:var(--text-dim);line-height:1.5}
+.algo-expand{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.algo-expand.open{display:block}
+.algo-section{margin-bottom:12px}
+.algo-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:5px}
+.algo-section p{font-size:13px;color:var(--text);line-height:1.6}
+.code-block{
+  background:#070f1e;border:1px solid var(--border);border-radius:8px;
+  padding:12px;margin-top:6px;overflow-x:auto;
+}
+.code-block code{font-size:12px;color:#a5b4fc;line-height:1.6;white-space:pre}
+.tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tag{
+  font-size:10px;padding:2px 8px;border-radius:20px;
+  background:rgba(255,255,255,0.07);color:var(--text-dim);
+}
+
+/* ── FILTER BAR ── */
+.filter-bar{
+  display:flex;gap:8px;padding:0 16px 14px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-btn{
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  background:var(--card);border:1px solid var(--border);color:var(--text-dim);
+  white-space:nowrap;transition:all .2s;
+}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── STATS LESSON CARD ── */
+.lesson-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px;margin:0 16px 12px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;transition:all .2s;
+}
+.lesson-card:hover{background:var(--card-hover)}
+.lesson-icon-wrap{
+  width:48px;height:48px;border-radius:12px;
+  background:var(--accent-glow);border:1px solid rgba(99,102,241,.3);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+}
+.lesson-meta{flex:1;min-width:0}
+.lesson-title{font-size:15px;font-weight:600;margin-bottom:3px}
+.lesson-desc{font-size:12px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lesson-progress{
+  width:36px;height:36px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.lesson-progress svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.lesson-progress-num{font-size:11px;font-weight:700;color:var(--accent)}
+
+/* ── TODAY / DASHBOARD ── */
+.stat-row{display:flex;gap:10px;padding:0 16px 14px}
+.stat-box{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 12px;text-align:center;
+}
+.stat-num{font-size:26px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text-dim);margin-top:2px}
+.section-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text-dim);padding:0 16px;margin-bottom:8px;
+}
+.review-item{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px 16px;margin:0 16px 8px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:all .2s;
+}
+.review-item:hover{background:var(--card-hover)}
+.review-item-icon{font-size:20px}
+.review-item-info{flex:1}
+.review-item-title{font-size:14px;font-weight:600}
+.review-item-sub{font-size:12px;color:var(--text-dim)}
+.review-item-badge{
+  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  background:var(--accent-glow);color:var(--accent);
+}
+
+/* ── FLASHCARD ── */
+#flashcard-screen{padding:0}
+.flashcard-header{
+  padding:16px 16px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  background:none;color:var(--text-dim);font-size:14px;padding:0;
+}
+.back-btn svg{width:18px;height:18px;stroke-width:2}
+.flashcard-progress-bar{
+  height:3px;background:rgba(255,255,255,0.08);margin:12px 0 0;
+}
+.flashcard-progress-fill{height:100%;background:var(--accent);transition:width .3s}
+.flashcard-module-label{
+  text-align:center;font-size:12px;color:var(--text-dim);
+  padding:10px 0 4px;
+}
+.flashcard-container{
+  perspective:1200px;padding:24px 16px;
+}
+.flashcard{
+  width:100%;min-height:240px;border-radius:var(--radius);
+  position:relative;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.25,.8,.25,1);cursor:pointer;
+}
+.flashcard.flipped{transform:rotateY(180deg)}
+.card-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:var(--radius);padding:28px 24px;
+  display:flex;flex-direction:column;justify-content:center;
+  border:1px solid var(--border);
+}
+.card-front{background:var(--card)}
+.card-back{background:#0f1e3a;transform:rotateY(180deg)}
+.card-hint{font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:16px}
+.card-term{font-size:28px;font-weight:700;text-align:center;margin-bottom:10px}
+.card-module-badge{
+  font-size:11px;color:var(--accent);text-align:center;font-weight:600;
+}
+.card-definition{font-size:15px;line-height:1.7;color:var(--text);margin-bottom:12px}
+.card-analogy{
+  font-size:13px;color:var(--text-dim);line-height:1.6;
+  border-left:3px solid var(--accent);padding-left:12px;margin-bottom:12px;
+}
+.card-example{
+  font-size:12px;color:var(--text-dim);background:rgba(255,255,255,.04);
+  border-radius:8px;padding:10px;line-height:1.5;
+}
+.flashcard-nav{
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  padding:0 16px 16px;
+}
+.fc-nav-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.fc-nav-btn:hover{background:var(--card-hover)}
+.fc-nav-btn svg{width:20px;height:20px;stroke-width:2}
+.fc-counter{font-size:14px;color:var(--text-dim);min-width:60px;text-align:center}
+.flashcard-actions{
+  display:flex;gap:10px;padding:0 16px 20px;
+}
+.btn-primary{
+  flex:1;padding:14px;border-radius:var(--radius-sm);
+  background:var(--accent);color:#fff;font-size:14px;font-weight:600;
+  transition:background .2s;
+}
+.btn-primary:hover{background:var(--accent-dim)}
+.btn-secondary{
+  padding:14px 20px;border-radius:var(--radius-sm);
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:14px;font-weight:600;transition:all .2s;
+}
+.btn-secondary:hover{background:var(--card-hover)}
+
+/* ── QUIZ ── */
+#quiz-screen{padding:0}
+.quiz-header{padding:16px 16px 0;display:flex;align-items:center;gap:12px}
+.quiz-progress-bar{height:3px;background:rgba(255,255,255,.08);margin:12px 16px 0}
+.quiz-progress-fill{height:100%;background:var(--accent);transition:width .3s;border-radius:2px}
+.quiz-body{padding:20px 16px 0}
+.quiz-q-num{font-size:11px;color:var(--text-dim);font-weight:600;margin-bottom:6px}
+.quiz-question{font-size:17px;font-weight:600;line-height:1.5;margin-bottom:20px}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.quiz-opt{
+  padding:14px 12px;border-radius:var(--radius-sm);
+  background:var(--card);border:2px solid var(--border);
+  color:var(--text);font-size:13px;font-weight:500;
+  text-align:left;line-height:1.4;transition:all .2s;
+}
+.quiz-opt:hover:not(:disabled){background:var(--card-hover);border-color:var(--accent)}
+.quiz-opt.correct{background:rgba(34,197,94,.12);border-color:#22c55e;color:#86efac}
+.quiz-opt.wrong{background:rgba(239,68,68,.12);border-color:#ef4444;color:#fca5a5}
+.quiz-opt:disabled{cursor:default}
+.quiz-fib{width:100%;padding:14px 16px;border-radius:var(--radius-sm);font-size:15px;
+  background:var(--card);border:2px solid var(--border);color:var(--text);
+  transition:border-color .2s;outline:none;font-family:inherit;}
+.quiz-fib:focus{border-color:var(--accent)}
+.quiz-fib.correct{border-color:#22c55e}
+.quiz-fib.wrong{border-color:#ef4444}
+.quiz-submit{width:100%;padding:14px;border-radius:var(--radius-sm);
+  background:var(--accent);color:#fff;font-size:15px;font-weight:600;
+  margin-top:10px;transition:background .2s;}
+.quiz-submit:hover{background:var(--accent-dim)}
+.quiz-submit:disabled{background:#2d3a56;color:var(--text-dim);cursor:default}
+.quiz-feedback{
+  margin-top:14px;padding:14px 16px;border-radius:var(--radius-sm);
+  font-size:13px;line-height:1.6;display:none;
+}
+.quiz-feedback.show{display:block}
+.quiz-feedback.correct{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.quiz-feedback.wrong{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.quiz-feedback .explanation{color:var(--text);margin-top:4px;font-size:13px}
+.quiz-next{
+  display:none;width:100%;padding:14px;border-radius:var(--radius-sm);
+  background:var(--accent);color:#fff;font-size:15px;font-weight:600;margin-top:10px;
+}
+.quiz-next.show{display:block}
+
+/* ── RESULTS ── */
+#results-screen{display:none;flex-direction:column;align-items:center;padding:40px 16px 24px}
+#results-screen.active{display:flex}
+.results-circle{position:relative;margin-bottom:24px}
+.results-circle svg{transform:rotate(-90deg)}
+.results-pct{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;
+}
+.results-pct-num{font-size:40px;font-weight:700;color:var(--accent)}
+.results-pct-label{font-size:12px;color:var(--text-dim)}
+.results-title{font-size:22px;font-weight:700;margin-bottom:6px;text-align:center}
+.results-sub{font-size:14px;color:var(--text-dim);text-align:center;margin-bottom:28px}
+.results-stats{display:flex;gap:12px;width:100%;max-width:320px;margin-bottom:28px}
+.results-stat{flex:1;background:var(--card);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.results-stat-num{font-size:24px;font-weight:700;color:var(--text)}
+.results-stat-label{font-size:11px;color:var(--text-dim);margin-top:2px}
+.results-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+
+/* ── LESSON DETAIL ── */
+#lesson-screen{padding:0}
+.lesson-header{padding:16px 16px 0;display:flex;align-items:center;gap:12px}
+.lesson-body{padding:16px}
+.lesson-explanation{
+  font-size:14px;line-height:1.8;color:var(--text);
+  background:var(--card);border-radius:var(--radius);padding:20px;
+  margin-bottom:16px;white-space:pre-wrap;
+}
+.lesson-explanation strong{color:#c7d2fe;font-weight:600}
+.lesson-examples{margin-bottom:20px}
+.example-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px 16px;margin-bottom:10px;
+}
+.example-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:4px}
+.example-formula{font-family:'JetBrains Mono',monospace;font-size:14px;color:#c7d2fe;margin-bottom:6px}
+.example-explanation{font-size:13px;color:var(--text-dim);line-height:1.5}
+.concepts-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.concept-chip{
+  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;
+  background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.2);color:#a5b4fc;
+}
+
+/* ── SETTINGS OVERLAY ── */
+#settings-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+  display:none;align-items:flex-end;
+}
+#settings-overlay.open{display:flex}
+.settings-panel{
+  width:100%;background:#0d1e38;border-radius:24px 24px 0 0;
+  padding:24px 20px 40px;max-height:80vh;overflow-y:auto;
+}
+.settings-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 20px}
+.settings-title{font-size:18px;font-weight:700;margin-bottom:20px}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;border-bottom:1px solid var(--border);
+}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:14px;font-weight:500}
+.settings-row-sub{font-size:12px;color:var(--text-dim);margin-top:2px}
+.toggle{
+  width:44px;height:24px;border-radius:12px;background:#2d3a56;
+  position:relative;cursor:pointer;transition:background .2s;
+}
+.toggle.on{background:var(--accent)}
+.toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:20px;height:20px;border-radius:50%;background:#fff;
+  transition:transform .2s;
+}
+.toggle.on::after{transform:translateX(20px)}
+.danger-btn{
+  width:100%;padding:14px;border-radius:var(--radius-sm);margin-top:8px;
+  background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);
+  color:#f87171;font-size:14px;font-weight:600;transition:all .2s;
+}
+.danger-btn:hover{background:rgba(239,68,68,.2)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#1e3a6e;border:1px solid rgba(99,102,241,.4);
+  border-radius:var(--radius-sm);padding:12px 20px;
+  font-size:14px;font-weight:600;color:var(--text);
+  z-index:300;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── HEATMAP ── */
+.heatmap{display:flex;gap:3px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.heatmap::-webkit-scrollbar{display:none}
+.heatmap-col{display:flex;flex-direction:column;gap:3px}
+.heatmap-cell{
+  width:12px;height:12px;border-radius:2px;
+  background:rgba(255,255,255,.06);
+}
+.heatmap-cell.l1{background:rgba(99,102,241,.25)}
+.heatmap-cell.l2{background:rgba(99,102,241,.5)}
+.heatmap-cell.l3{background:rgba(99,102,241,.75)}
+.heatmap-cell.l4{background:#6366f1}
+
+/* ── ONBOARDING ── */
+#onboarding-overlay{
+  position:fixed;inset:0;background:var(--bg);z-index:400;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;text-align:center;
+}
+#onboarding-overlay.open{display:flex}
+.onboard-emoji{font-size:64px;margin-bottom:24px}
+.onboard-title{font-size:26px;font-weight:700;margin-bottom:12px}
+.onboard-body{font-size:15px;color:var(--text-dim);line-height:1.7;margin-bottom:32px;max-width:400px}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;
+  padding:48px 24px;text-align:center;
+}
+.empty-icon{font-size:48px;margin-bottom:16px}
+.empty-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.empty-body{font-size:14px;color:var(--text-dim);line-height:1.6}
+
+/* ── UTIL ── */
+.spacer{height:16px}
+.divider{height:1px;background:var(--border);margin:16px}
+.pill{
+  display:inline-block;padding:4px 12px;border-radius:20px;
+  font-size:12px;font-weight:600;
+}
+.pill-accent{background:var(--accent-glow);color:var(--accent)}
+.scroll-area{overflow-y:auto;max-height:calc(100vh - 72px)}
+
+/* ── GLOSSARY ── */
+#glossary-screen{padding:0}
+.glossary-search{
+  margin:0 16px 12px;padding:12px 16px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text);font-size:14px;font-family:inherit;outline:none;
+  transition:border-color .2s;width:calc(100% - 32px);
+}
+.glossary-search:focus{border-color:var(--accent)}
+.glossary-item{
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  display:flex;gap:12px;
+}
+.glossary-term{font-size:14px;font-weight:600;min-width:140px}
+.glossary-def{font-size:13px;color:var(--text-dim);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboarding-overlay">
+  <div class="onboard-emoji">📊</div>
+  <div class="onboard-title">Welcome to DS Learning</div>
+  <div class="onboard-body">
+    Master data science concepts, machine learning algorithms, and statistics through spaced-repetition flashcards and quizzes.<br><br>
+    Start with <strong>Today</strong> for your daily practice, or dive into any module.
+  </div>
+  <button class="btn-primary" style="max-width:280px;width:100%" onclick="closeOnboarding()">Get Started</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- SETTINGS OVERLAY -->
+<div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+  <div class="settings-panel">
+    <div class="settings-handle"></div>
+    <div class="settings-title">Settings</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">Show Code Examples</div>
+        <div class="settings-row-sub">Display Python snippets in ML cards</div>
+      </div>
+      <div class="toggle on" id="toggle-code" onclick="toggleSetting('showCode',this)"></div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">Dark Theme</div>
+        <div class="settings-row-sub">Dark is the only supported theme</div>
+      </div>
+      <div class="toggle on"></div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">Quiz Feedback</div>
+        <div class="settings-row-sub">Show explanations after each question</div>
+      </div>
+      <div class="toggle on" id="toggle-feedback" onclick="toggleSetting('showFeedback',this)"></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="danger-btn" onclick="confirmReset()">Reset All Progress</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- TODAY TAB -->
+  <div id="screen-today" class="screen active scroll-area">
+    <div class="screen-header">
+      <div>
+        <div class="screen-title">Today</div>
+        <div class="screen-sub" id="today-date"></div>
+      </div>
+      <button class="icon-btn" onclick="openSettings()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+      </button>
+    </div>
+    <div id="today-body"></div>
+  </div>
+
+  <!-- CONCEPTS TAB -->
+  <div id="screen-concepts" class="screen scroll-area">
+    <div class="screen-header">
+      <div>
+        <div class="screen-title">Concepts</div>
+        <div class="screen-sub">12 core DS modules</div>
+      </div>
+      <button class="icon-btn" onclick="showScreen('glossary')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
+      </button>
+    </div>
+    <div id="concepts-body"></div>
+  </div>
+
+  <!-- ML TAB -->
+  <div id="screen-ml" class="screen scroll-area">
+    <div class="screen-header">
+      <div>
+        <div class="screen-title">Machine Learning</div>
+        <div class="screen-sub" id="ml-sub">Algorithm catalogue</div>
+      </div>
+      <button class="icon-btn" onclick="startMLQuiz(activeMLCategory)">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
+      </button>
+    </div>
+    <div class="filter-bar" id="ml-filter-bar"></div>
+    <div id="ml-body"></div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div id="screen-stats" class="screen scroll-area">
+    <div class="screen-header">
+      <div>
+        <div class="screen-title">Statistics</div>
+        <div class="screen-sub">10 structured lessons</div>
+      </div>
+    </div>
+    <div id="stats-body"></div>
+  </div>
+
+  <!-- SUB-SCREENS (rendered over tabs) -->
+  <div id="screen-flashcard" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
+  <div id="screen-quiz" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
+  <div id="screen-results" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
+  <div id="screen-lesson" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
+  <div id="screen-glossary" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
+
+</div><!-- /main -->
+
+<!-- NAV -->
+<nav id="app-nav">
+  <button class="nav-btn active" data-tab="0" onclick="switchTab(0)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+    Today
+  </button>
+  <button class="nav-btn" data-tab="1" onclick="switchTab(1)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+    Concepts
+  </button>
+  <button class="nav-btn" data-tab="2" onclick="switchTab(2)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+    ML
+  </button>
+  <button class="nav-btn" data-tab="3" onclick="switchTab(3)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.745 3A23.933 23.933 0 003 12c0 3.183.62 6.22 1.745 9M19.5 3c.967 2.759 1.5 5.732 1.5 8.819 0 3.087-.533 6.06-1.5 8.819m-13.5-18 1.5 1.5-1.5 1.5m3-3 1.5 1.5-1.5 1.5m3-3 1.5 1.5-1.5 1.5"/></svg>
+    Statistics
+  </button>
+</nav>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONCEPT MODULES DATA
+// ═══════════════════════════════════════════════════════════
+const CONCEPT_MODULES = [
+  {
+    id: 'what-is-ds',
+    title: 'What is Data Science?',
+    icon: '🔭',
+    concepts: [
+      { id: 'data-science-def', term: 'Data Science', definition: 'An interdisciplinary field using statistics, programming, and domain knowledge to extract insights from data.', analogy: 'A chef combining ingredients (data), techniques (methods), and taste (domain knowledge) to create a dish (insight).', example: 'Predicting customer churn by analyzing 6 months of behavioral data using ML models.' },
+      { id: 'crisp-dm', term: 'CRISP-DM', definition: 'Cross-Industry Standard Process for Data Mining — a 6-phase workflow: Business Understanding → Data Understanding → Data Preparation → Modeling → Evaluation → Deployment.', analogy: 'The scientific method applied to business problems — understand the question before collecting data.', example: 'A bank uses CRISP-DM to build a fraud detection model, starting from defining "what is fraud" before any data collection.' },
+      { id: 'ds-vs-da', term: 'DS vs DA vs DE vs MLE', definition: 'Data Scientist: models + statistics. Data Analyst: reporting + SQL + dashboards. Data Engineer: pipelines + infrastructure. ML Engineer: production ML systems.', analogy: 'A restaurant: the chef (DS) creates dishes, the waiter (DA) describes them, the plumber (DE) ensures water flows, the kitchen manager (MLE) ensures consistent production.', example: 'A DE builds the data pipeline, the DS builds the model, the MLE deploys it, and the DA reports on KPIs.' },
+      { id: 'data-product', term: 'Data Product', definition: 'An end-user-facing artifact powered by data — a recommendation engine, churn predictor, or personalized feed.', analogy: 'Software product where data is the raw material and the model is the production machine.', example: 'Spotify\'s "Discover Weekly" is a data product combining collaborative filtering and audio features.' },
+      { id: 'scientific-method-ds', term: 'Scientific Method in DS', definition: 'Formulate hypothesis → collect data → test hypothesis → interpret results → communicate findings. Reproducibility is essential.', analogy: 'A detective: gather clues (data), form a theory (hypothesis), test it, then present evidence-based conclusions.', example: 'Hypothesize that email open rate varies by send time, A/B test it, analyze results, report findings with confidence intervals.' },
+    ],
+  },
+  {
+    id: 'types-of-data',
+    title: 'Types of Data',
+    icon: '🗂️',
+    concepts: [
+      { id: 'nominal', term: 'Nominal Data', definition: 'Categorical data with no inherent order. Labels or names only.', analogy: 'Colors in a bag of M&Ms — "red" is not more than "blue."', example: 'Country of origin, blood type, product category.' },
+      { id: 'ordinal', term: 'Ordinal Data', definition: 'Categorical data with a meaningful order, but differences between categories are not necessarily equal.', analogy: 'A race result: 1st, 2nd, 3rd — order matters, but the gap between 1st and 2nd may differ from 2nd and 3rd.', example: 'Survey ratings (strongly disagree → strongly agree), education level, movie star ratings.' },
+      { id: 'interval', term: 'Interval Data', definition: 'Numerical data with equal intervals between values but no true zero (zero doesn\'t mean absence).', analogy: 'Temperature in Celsius: 0°C is not "no temperature"; you can\'t say 20°C is twice as hot as 10°C.', example: 'Calendar years, Celsius/Fahrenheit temperatures, IQ scores.' },
+      { id: 'ratio', term: 'Ratio Data', definition: 'Numerical data with equal intervals AND a true zero. Ratios are meaningful.', analogy: 'Weight: 0 kg means no weight exists; 60 kg is genuinely twice 30 kg.', example: 'Height, weight, income, age, reaction time — all have a meaningful zero.' },
+      { id: 'qualitative-quantitative', term: 'Qualitative vs Quantitative', definition: 'Qualitative (categorical): describes qualities (color, gender). Quantitative (numerical): measures quantities. Quantitative is either discrete (countable) or continuous (measurable on a range).', analogy: 'Describing a car: "red" is qualitative; "3,200 lbs" is quantitative.', example: 'Customer segment is qualitative; revenue is quantitative continuous; number of purchases is quantitative discrete.' },
+      { id: 'structured-unstructured', term: 'Structured vs Unstructured', definition: 'Structured: organized in a predefined schema (tables, SQL). Unstructured: no fixed format (images, text, audio, video). Semi-structured: flexible schema (JSON, XML).', analogy: 'Structured = filing cabinet with labeled folders; unstructured = pile of photos on the floor.', example: '80% of enterprise data is estimated to be unstructured. NLP and CV deal with unstructured data.' },
+    ],
+  },
+  {
+    id: 'data-structures',
+    title: 'Data Structures',
+    icon: '🧱',
+    concepts: [
+      { id: 'tabular', term: 'Tabular / Relational Data', definition: 'Data organized in rows (observations) and columns (features). Most common format for supervised ML.', analogy: 'A spreadsheet: each row is a customer, each column is a property.', example: 'CSV files, SQL tables, Pandas DataFrames — the "bread and butter" of data science.' },
+      { id: 'time-series', term: 'Time Series', definition: 'A sequence of data points indexed by time. Key properties: trend, seasonality, and stationarity.', analogy: 'A stock chart — each point is measured at a specific time, order matters.', example: 'Daily temperature readings, website traffic by hour, stock prices, heart rate monitors.' },
+      { id: 'panel-data', term: 'Panel / Longitudinal Data', definition: 'Multiple entities (individuals, companies) each observed over multiple time points. Combines cross-sectional and time series.', analogy: 'Tracking the same group of students\' grades across 4 years — rows for each student-year combination.', example: 'GDP measurements for 50 countries over 20 years; clinical trial data tracking patients over time.' },
+      { id: 'graph-data', term: 'Graph / Network Data', definition: 'Data where relationships between entities (nodes) are as important as the entities themselves. Edges represent connections.', analogy: 'A social network: people are nodes, friendships are edges. Who you know matters as much as who you are.', example: 'Social networks, road maps, knowledge graphs, protein interaction networks, recommendation bipartite graphs.' },
+      { id: 'text-data', term: 'Text Data (NLP)', definition: 'Unstructured sequences of tokens. Requires vectorization (Bag of Words, TF-IDF, embeddings) before ML.', analogy: 'Converting a book into numbers: count words (BoW) or capture meaning (embeddings).', example: 'Customer reviews, emails, medical notes, news articles. Embeddings like BERT capture semantic context.' },
+      { id: 'image-data', term: 'Image Data', definition: 'A 2D grid of pixels, each with RGB (or grayscale) channel values. CNNs exploit spatial locality.', analogy: 'A mosaic: each colored tile is a pixel; the pattern gives meaning only when viewed together.', example: 'Medical imaging (X-rays, MRIs), satellite imagery, document recognition, facial recognition.' },
+    ],
+  },
+  {
+    id: 'data-collection',
+    title: 'Data Collection',
+    icon: '📥',
+    concepts: [
+      { id: 'surveys', term: 'Surveys & Questionnaires', definition: 'Self-reported data collection. Risks: social desirability bias, recall bias, response bias, leading questions.', analogy: 'Asking people how much they exercise vs tracking it — what people say and do often differ.', example: 'Net Promoter Score (NPS), employee satisfaction surveys, census data.' },
+      { id: 'observational', term: 'Observational Studies', definition: 'Researcher observes without intervening. Can establish correlation but not causation (confounders possible).', analogy: 'Watching birds in the wild vs a controlled aviary — you can\'t control what you see.', example: 'Epidemiological studies, web analytics, sales transaction logs.' },
+      { id: 'experiments', term: 'Experiments / RCTs', definition: 'Random assignment to treatment/control groups. Gold standard for causal inference — randomization removes confounding.', analogy: 'A coin flip decides who gets the drug — ensuring the groups are alike in all other ways.', example: 'A/B tests, clinical drug trials, factorial experiments in manufacturing.' },
+      { id: 'apis-scraping', term: 'APIs & Web Scraping', definition: 'APIs: structured programmatic access to data (Twitter, Weather). Scraping: extracting HTML content. Check ToS and rate limits.', analogy: 'API = using the front door with a key; scraping = climbing through a window (check if allowed first).', example: 'Pulling financial data from Yahoo Finance API; scraping product reviews from e-commerce sites.' },
+      { id: 'sampling-bias', term: 'Sampling Bias', definition: 'When the sample is not representative of the population, skewing conclusions. Types: selection, survivorship, confirmation bias.', analogy: 'Asking only library-goers whether people read books — you\'d overestimate book reading.', example: 'Training a face recognition model on mostly one demographic → poor performance on others.' },
+    ],
+  },
+  {
+    id: 'data-quality',
+    title: 'Data Quality & Cleaning',
+    icon: '🧹',
+    concepts: [
+      { id: 'missing-data', term: 'Missing Data', definition: 'MCAR (Missing Completely At Random): no pattern. MAR (Missing At Random): depends on observed data. MNAR (Missing Not At Random): depends on the missing value itself. Strategy depends on mechanism.', analogy: 'MCAR: sensor randomly malfunctions. MAR: elderly respondents skip income question. MNAR: people with high income refuse to report it.', example: 'Impute MCAR/MAR with mean/median/KNN imputation; MNAR requires domain-specific handling or flagging.', codeExample: 'df.isnull().sum()\ndf[\'age\'].fillna(df[\'age\'].median(), inplace=True)\nfrom sklearn.impute import KNNImputer' },
+      { id: 'outliers', term: 'Outliers', definition: 'Data points far from the rest. May be errors (typo: age=999) or real extreme values (CEO salary). Never blindly remove — investigate first.', analogy: 'Finding a 7-foot person in a dataset: real but rare. A person with -5 years of age: data entry error.', example: 'Z-score > 3, IQR method (< Q1-1.5IQR or > Q3+1.5IQR), Isolation Forest for multivariate outliers.' },
+      { id: 'duplicates', term: 'Duplicates', definition: 'Exact or near-duplicate records from data merges, scraping, or system bugs. Can inflate model confidence or bias statistics.', analogy: 'Counting the same customer twice in sales data makes revenue look artificially high.', example: 'df.duplicated().sum(); df.drop_duplicates(); fuzzy matching for near-duplicates (e.g., "Jon Smith" vs "John Smith").' },
+      { id: 'inconsistency', term: 'Inconsistency & Encoding Errors', definition: 'Same concept represented differently (USA / US / United States), wrong types (age stored as string), incorrect units.', analogy: 'Having both "M" and "Male" in a gender column — the model sees two different things.', example: 'Standardize categorical values; parse dates with explicit format; validate ranges (0 ≤ probability ≤ 1).' },
+      { id: 'data-drift', term: 'Data Drift', definition: 'Statistical properties of the input data change over time, degrading model performance. Covariate drift: feature distribution shifts. Concept drift: relationship between features and target changes.', analogy: 'A weather model trained in summer fails in winter because the patterns changed.', example: 'Monitor model performance over time; use drift detection (PSI, KS test); retrain on fresh data.' },
+    ],
+  },
+  {
+    id: 'eda',
+    title: 'Exploratory Data Analysis',
+    icon: '🔍',
+    concepts: [
+      { id: 'summary-stats', term: 'Summary Statistics', definition: 'Numerical summaries: mean, median, std, min, max, percentiles. First step in any EDA. Reveal distributions, outliers, and data quality.', analogy: 'Taking a patient\'s vitals before diagnosing — quick checks before deeper investigation.', example: 'df.describe() in Pandas; pay attention to max values, 25%/75% percentiles, and whether mean ≈ median.' },
+      { id: 'distributions', term: 'Distributions & Histograms', definition: 'Visualize how values are spread across a variable. Look for: shape (normal/skewed/bimodal), outliers, gaps.', analogy: 'A bar chart of grades in a class — you can see if most students are in the middle or clustered at extremes.', example: 'plt.hist(df[\'age\'], bins=30); seaborn.kdeplot(); check for bimodal (hidden subgroups), long tails.' },
+      { id: 'correlations', term: 'Correlations', definition: 'Measure linear associations between pairs of variables. Heatmaps reveal multicollinearity and feature relevance to target.', analogy: 'A relationship map showing which features "move together" — high correlations can cause multicollinearity issues.', example: 'df.corr(); seaborn.heatmap(); Pearson for continuous, Spearman for ordinal/skewed data.' },
+      { id: 'bivariate', term: 'Bivariate Analysis', definition: 'Examine relationships between two variables: scatter plots (continuous-continuous), box plots (categorical-continuous), cross-tabs (categorical-categorical).', analogy: 'Scatter plots let you see if house price increases with size — linearly, curvilinearly, or not at all.', example: 'scatter_matrix(df); boxplot by group (df.boxplot(by=\'category\')); cross-tab chi-square tests.' },
+      { id: 'anomaly-eda', term: 'Anomaly Detection in EDA', definition: 'Spotting unusual patterns, unexpected peaks, sudden drops, or impossible values before modeling. Manual EDA catches what automated cleaning misses.', analogy: 'Proofreading a document — automated spell-check catches typos but misses logical errors.', example: 'Revenue suddenly dropping to 0 for 3 days (system outage), negative quantities (returns?), suspiciously round numbers.' },
+    ],
+  },
+  {
+    id: 'visualization',
+    title: 'Data Visualization',
+    icon: '📊',
+    concepts: [
+      { id: 'chart-selection', term: 'Chart Selection', definition: 'Choose the right chart type: bar (comparisons), line (trends over time), scatter (relationships), histogram (distribution), pie (part-of-whole, sparingly).', analogy: 'Using the right tool for the job — a hammer for nails, a saw for wood.', example: 'Never use pie charts for > 5 categories; use bar charts instead. Line charts require ordered x-axis (time).' },
+      { id: 'visual-encoding', term: 'Visual Encoding', definition: 'How data maps to visual properties. Ranking (best to worst): position > length > angle > area > color intensity > color hue.', analogy: 'Position is most precisely judged by humans (easy to compare heights); angle least (pie charts are hard to read).', example: 'Color for categorical distinction; color intensity for magnitude; size sparingly (bubbles are hard to compare).' },
+      { id: 'misleading-charts', term: 'Misleading Charts', definition: 'Common tricks: truncated y-axis (exaggerates differences), cherry-picking date ranges, dual axes, 3D charts, area for differences.', analogy: 'A graph going from 99% to 101% with a y-axis from 98–102 looks dramatic but is just a 2% change.', example: 'Always start bar charts at 0; be explicit about scale; label units; include sample size.' },
+      { id: 'ggplot-grammar', term: 'Grammar of Graphics', definition: 'Framework (ggplot2, Vega-Altair): data + aesthetics (x, y, color, size) + geometry (points, lines, bars) + statistics + facets. Separates data from presentation.', analogy: 'Building a visualization like a sentence: data is the subject, aesthetics are adjectives, geometry is the verb.', example: 'Python: seaborn, plotly, altair. R: ggplot2. Web: D3.js, Vega-Lite for interactive dashboards.' },
+    ],
+  },
+  {
+    id: 'feature-engineering',
+    title: 'Feature Engineering',
+    icon: '⚙️',
+    concepts: [
+      { id: 'feature-selection', term: 'Feature Selection', definition: 'Removing irrelevant or redundant features. Methods: filter (correlation), wrapper (recursive feature elimination), embedded (LASSO, tree importance).', analogy: 'Packing for a trip — bring only what you need; extra baggage slows you down (overfitting).', example: 'sklearn SelectKBest (filter); RFE (wrapper); L1 regularization zero-coefficients (embedded).' },
+      { id: 'feature-creation', term: 'Feature Creation', definition: 'Engineering new features from existing ones that better capture domain knowledge: ratios, polynomials, interactions, date decomposition.', analogy: 'A chef combining ingredients (flour + water) into bread dough — a new, more useful form.', example: 'price-per-sqft = price/sqft; month, day-of-week from timestamp; click-through rate from clicks/impressions.' },
+      { id: 'scaling', term: 'Feature Scaling', definition: 'StandardScaler (z-score): mean=0, std=1. MinMaxScaler: [0,1]. RobustScaler: uses IQR (robust to outliers). Required for distance-based algorithms and regularization.', analogy: 'Converting recipes from cups to liters — same measurement, common scale for comparison.', example: 'kNN, SVM, PCA, neural networks all require scaling. Tree models (RF, XGBoost) do NOT require scaling.' },
+      { id: 'encoding', term: 'Categorical Encoding', definition: 'One-Hot Encoding: binary columns per category. Ordinal Encoding: integer ranks. Target Encoding: mean of target per category. Embedding for high-cardinality.', analogy: 'Translating categories into a language (numbers) that math can understand.', example: 'pd.get_dummies(); sklearn OrdinalEncoder; high-cardinality (10k+ categories): target encoding or embeddings.' },
+      { id: 'feature-importance', term: 'Feature Importance', definition: 'Ranking features by their contribution to model predictions. Tree-based: impurity decrease. Permutation importance: generalization-safe. SHAP: local + global.', analogy: 'A forensic analysis of which clues mattered most in solving the case.', example: 'rf.feature_importances_; eli5.permutation_importance; shap.summary_plot() for model-agnostic importance.' },
+    ],
+  },
+  {
+    id: 'train-test',
+    title: 'Train/Test & Validation',
+    icon: '✂️',
+    concepts: [
+      { id: 'holdout', term: 'Holdout Split', definition: 'Divide data into train (60-80%), validation (10-20%), test (10-20%). Train on training set, tune on validation, evaluate final model on test set once.', analogy: 'Studying (train), doing practice exams (val), taking the real exam (test). Don\'t look at the test until you\'re done.', example: 'from sklearn.model_selection import train_test_split; X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)' },
+      { id: 'kfold', term: 'k-Fold Cross-Validation', definition: 'Divide data into k folds. Train on k-1, validate on 1. Repeat k times, rotating the validation fold. Average metric across folds.', analogy: 'Grade each student on k different tests and average the results for a more reliable assessment.', example: 'sklearn KFold(n_splits=5); cross_val_score returns k scores — report mean ± std for robust evaluation.' },
+      { id: 'data-leakage', term: 'Data Leakage', definition: 'When information from the test set "leaks" into the training process, inflating metrics. Causes: target leakage (future info), train-test contamination (scaling on all data).', analogy: 'Seeing the exam answers before the test — you\'ll score 100% but learn nothing about real performance.', example: 'Always fit scalers/imputers on train data only, transform train and test. Exclude features that would be unknown at prediction time.' },
+      { id: 'stratified', term: 'Stratified Sampling', definition: 'Ensures each fold/split preserves the original class distribution. Critical for imbalanced datasets.', analogy: 'Making sure each practice exam has the same ratio of easy, medium, and hard questions as the real exam.', example: 'StratifiedKFold(n_splits=5); train_test_split(X, y, stratify=y). Use whenever class imbalance exists.' },
+      { id: 'timeseries-split', term: 'Time Series Split', definition: 'For temporal data: always train on past, validate on future. Never shuffle — shuffling causes future leakage into training.', analogy: 'Predicting tomorrow\'s stock price using only today\'s data — you can\'t use future data to train a model.', example: 'sklearn TimeSeriesSplit: train on [0:n], validate on [n:n+k], then expand window forward.' },
+    ],
+  },
+  {
+    id: 'bias-variance',
+    title: 'Bias-Variance Tradeoff',
+    icon: '⚖️',
+    concepts: [
+      { id: 'bias', term: 'Bias', definition: 'Error from wrong assumptions in the learning algorithm. High bias → model is too simple, underfits. Low bias → model captures true pattern.', analogy: 'A curved surface approximated by a straight line — no matter how much data, the line will miss the curve.', example: 'Linear regression on a quadratic dataset: high bias. The model is systematically wrong, not just noisy.' },
+      { id: 'variance', term: 'Variance', definition: 'Error from sensitivity to small fluctuations in training data. High variance → model overfits, performs great on train, poor on test.', analogy: 'Memorizing every specific question from practice exams — you fail on any new question format.', example: 'An unpruned decision tree: memorizes training noise, achieves 100% train accuracy, ~60% test accuracy.' },
+      { id: 'bias-variance-tradeoff', term: 'Bias-Variance Tradeoff', definition: 'Total error = Bias² + Variance + Irreducible Error. Reducing bias (more complex model) increases variance. Reducing variance (simpler model) increases bias. Goal: find the sweet spot.', analogy: 'Like adjusting telescope focus: too loose = blurry (bias), too fine = trembling from your hand (variance).', example: 'Tune regularization (C in SVM, α in Ridge): as regularization increases, bias increases, variance decreases.' },
+      { id: 'overfitting', term: 'Overfitting', definition: 'Model learns training data noise as if it were signal. High train accuracy, low test accuracy. Cures: regularization, more data, simpler model, dropout, cross-validation.', analogy: 'A student who memorizes textbook examples verbatim — fails when questions are rephrased.', example: 'Train accuracy: 99%, Test accuracy: 62%. Gap signals overfitting. Try: L2 regularization, early stopping.' },
+      { id: 'underfitting', term: 'Underfitting', definition: 'Model is too simple to capture the underlying pattern. Both train and test error are high. Cure: more complex model, better features, less regularization.', analogy: 'A student who only learns "the answer is always B" — fails regardless of the question.', example: 'Linear classifier on a clearly non-linear dataset. Both training and validation accuracy are near chance.' },
+      { id: 'regularization', term: 'Regularization', definition: 'Techniques that penalize model complexity to reduce overfitting: L1 (Lasso, produces sparsity), L2 (Ridge, shrinks all weights), Dropout (neural nets), tree pruning.', analogy: 'Adding a "complexity tax" — the model must prove a complex answer is worth its extra cost.', example: 'Ridge: minimize Σ(yᵢ-ŷᵢ)² + λΣwⱼ². As λ increases, coefficients shrink toward 0.' },
+    ],
+  },
+  {
+    id: 'interpretability',
+    title: 'Model Interpretability',
+    icon: '🔎',
+    concepts: [
+      { id: 'global-vs-local', term: 'Global vs Local Explanations', definition: 'Global: explain the overall model behavior (feature importance). Local: explain a single prediction (why this instance was classified as X).', analogy: 'Global = the judge\'s general sentencing philosophy; Local = why this specific defendant got 5 years.', example: 'SHAP values work at both levels: global via summary plot, local via waterfall/force plot.' },
+      { id: 'shap', term: 'SHAP Values', definition: 'SHapley Additive exPlanations — fairly distribute the prediction among all features using game theory (Shapley values). Consistent, locally accurate, and model-agnostic.', analogy: 'Splitting a restaurant bill fairly among diners based on what each person ate.', example: 'shap.TreeExplainer(model); shap.summary_plot(shap_values, X); negative SHAP = pushes prediction down.' },
+      { id: 'feature-importance-types', term: 'Feature Importance Types', definition: 'Impurity-based (trees, biased toward high-cardinality features) vs Permutation importance (shuffle feature, measure performance drop — unbiased) vs SHAP (game-theoretic, best).', analogy: 'Three ways to find the most valuable player: goals scored (impurity), impact when absent (permutation), or individual contribution to each win (SHAP).', example: 'sklearn: permutation_importance(model, X_val, y_val). Use validation set, not training set.' },
+      { id: 'lime', term: 'LIME', definition: 'Local Interpretable Model-agnostic Explanations: fits a simple (linear) model on perturbed samples near the instance to explain. Works for any black-box model.', analogy: 'When you can\'t understand a complex system, test it with slight variations around one scenario to see what\'s driving that specific output.', example: 'lime.LimeTabularExplainer; use for explaining individual predictions from any model (neural net, XGBoost).' },
+      { id: 'white-vs-black', term: 'White-box vs Black-box', definition: 'White-box: inherently interpretable (linear regression, decision tree, logistic regression). Black-box: complex, require post-hoc explanation (neural networks, random forests, XGBoost).', analogy: 'A clock with visible gears (white-box) vs a digital watch with opaque circuits (black-box).', example: 'Regulated industries (credit, healthcare) may require white-box models; SHAP can help explain black-box decisions.' },
+    ],
+  },
+  {
+    id: 'ethics',
+    title: 'Ethics & Fairness',
+    icon: '⚖️',
+    concepts: [
+      { id: 'sampling-bias-ethics', term: 'Sampling Bias', definition: 'Training data that doesn\'t represent all groups leads to models that perform poorly for underrepresented groups.', analogy: 'Training a hiring model on historical data if that data reflects past discrimination — the model learns and perpetuates the bias.', example: 'Facial recognition models trained on mostly light-skinned faces had significantly higher error rates on dark-skinned faces (MIT Media Lab study).' },
+      { id: 'algorithmic-bias', term: 'Algorithmic Bias', definition: 'When an algorithm systematically disadvantages certain groups even with accurate models. Protected attributes (race, gender) may be encoded in proxy features.', analogy: 'Zip code predicts creditworthiness — but zip codes correlate with race, making the model a proxy discriminator.', example: 'COMPAS recidivism algorithm: Black defendants incorrectly flagged as high-risk at roughly 2× the rate of white defendants.' },
+      { id: 'fairness-metrics', term: 'Fairness Metrics', definition: 'Demographic parity: equal positive rates across groups. Equalized odds: equal TPR and FPR. Individual fairness: similar individuals treated similarly. These metrics often conflict with each other.', analogy: 'You can\'t have perfectly equal pass rates AND perfectly equal error rates simultaneously in many real scenarios (impossibility theorem).', example: 'AIF360, Fairlearn: toolkits for computing and mitigating bias. Must define what "fair" means for your context.' },
+      { id: 'privacy', term: 'Privacy & Data Ethics', definition: 'Principles: data minimization, purpose limitation, consent, right to explanation. Techniques: differential privacy, federated learning, k-anonymity.', analogy: 'Doctors share aggregate insights ("patients with X condition respond better to Y") without revealing individual records.', example: 'GDPR requires explainability for automated decisions affecting individuals. Differential privacy adds calibrated noise to protect individuals.' },
+      { id: 'reproducibility', term: 'Reproducibility', definition: 'Others should be able to reproduce your results with the same data and code. Requires: version control, random seeds, documented preprocessing, public data/code.', analogy: 'A scientific experiment that only works for one researcher in one lab isn\'t science — it\'s anecdote.', example: 'Set random_state/seed; version libraries (requirements.txt/conda env); document every preprocessing step.' },
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+// PROGRESS SYSTEM
+// ═══════════════════════════════════════════════════════════
+const STORAGE_KEY = 'ds_learn_progress_v1';
+let progress = {
+  mastery: {}, xp: 0, streak: 0, lastDate: null,
+  quizHistory: {}, practiceLog: {}, seenOnboarding: false,
+};
+let settings = { showCode: true, showFeedback: true };
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) progress = { ...progress, ...JSON.parse(raw) };
+    const rawS = localStorage.getItem(STORAGE_KEY + '_settings');
+    if (rawS) settings = { ...settings, ...JSON.parse(rawS) };
+  } catch(e) {}
+}
+
+let _saveTimer;
+function saveProgress() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    localStorage.setItem(STORAGE_KEY + '_settings', JSON.stringify(settings));
+  }, 400);
+}
+
+function addXP(n) {
+  progress.xp = (progress.xp || 0) + n;
+  updateStreak();
+  saveProgress();
+}
+
+function updateStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (progress.lastDate === today) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (progress.lastDate === yesterday) {
+    progress.streak = (progress.streak || 0) + 1;
+  } else if (progress.lastDate !== today) {
+    progress.streak = 1;
+  }
+  progress.lastDate = today;
+  logPractice();
+  saveProgress();
+}
+
+function logPractice() {
+  const today = new Date().toISOString().slice(0, 10);
+  progress.practiceLog = progress.practiceLog || {};
+  progress.practiceLog[today] = (progress.practiceLog[today] || 0) + 1;
+}
+
+function getMastery(key) { return progress.mastery[key] || 0; }
+
+function setMastery(key, val) {
+  const prev = getMastery(key);
+  progress.mastery[key] = Math.max(prev, Math.min(3, val));
+  saveProgress();
+}
+
+function incrementMastery(key) {
+  const prev = getMastery(key);
+  if (prev < 3) {
+    progress.mastery[key] = prev + 1;
+    saveProgress();
+    if (progress.mastery[key] === 3) showToast('🏆 Mastered: ' + key.split(':')[1]);
+    else if (progress.mastery[key] === 1) showToast('✅ First rep done!');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB / SCREEN SYSTEM
+// ═══════════════════════════════════════════════════════════
+let activeTab = 0;
+const TAB_SCREENS = ['today', 'concepts', 'ml', 'stats'];
+const SUB_SCREENS = ['flashcard', 'quiz', 'results', 'lesson', 'glossary'];
+
+function switchTab(idx) {
+  // Close any open sub-screens
+  SUB_SCREENS.forEach(s => { document.getElementById('screen-' + s).style.display = 'none'; });
+  activeTab = idx;
+  document.querySelectorAll('.nav-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const targetId = 'screen-' + TAB_SCREENS[idx];
+  document.getElementById(targetId).classList.add('active');
+  if (idx === 0) renderToday();
+  if (idx === 1) renderConceptsHome();
+  if (idx === 2) renderMLHome();
+  if (idx === 3) renderStatsHome();
+}
+
+function showScreen(name) {
+  SUB_SCREENS.forEach(s => { document.getElementById('screen-' + s).style.display = 'none'; });
+  const el = document.getElementById('screen-' + name);
+  if (el) { el.style.display = 'block'; el.scrollTop = 0; }
+}
+
+function hideSubScreen() {
+  SUB_SCREENS.forEach(s => { document.getElementById('screen-' + s).style.display = 'none'; });
+}
+
+// ═══════════════════════════════════════════════════════════
+// TODAY DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function renderToday() {
+  const today = new Date();
+  document.getElementById('today-date').textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const totalConcepts = CONCEPT_MODULES.reduce((a, m) => a + m.concepts.length, 0);
+  const learnedConcepts = Object.keys(progress.mastery).filter(k => k.startsWith('c:') && getMastery(k) >= 1).length;
+  const masteredConcepts = Object.keys(progress.mastery).filter(k => k.startsWith('c:') && getMastery(k) >= 3).length;
+
+  // Build review items
+  const dueReviews = [];
+  CONCEPT_MODULES.forEach(m => {
+    const mMastery = moduleAverageMastery(m);
+    if (mMastery < 3) dueReviews.push({ type: 'concept', id: m.id, title: m.title, icon: m.icon, mastery: mMastery });
+  });
+  if (typeof STATS_LESSONS !== 'undefined') {
+    STATS_LESSONS.slice(0, 3).forEach(l => {
+      const k = 'g:' + l.id;
+      if (getMastery(k) < 3) dueReviews.push({ type: 'stats', id: l.id, title: l.title, icon: l.icon, mastery: getMastery(k) });
+    });
+  }
+
+  let reviewHTML = '';
+  dueReviews.slice(0, 5).forEach(r => {
+    const pct = Math.round((r.mastery / 3) * 100);
+    reviewHTML += `<div class="review-item" onclick="${r.type === 'concept' ? `startConceptModule('${r.id}')` : `startStatsQuiz(${r.id})`}">
+      <div class="review-item-icon">${r.icon}</div>
+      <div class="review-item-info">
+        <div class="review-item-title">${r.title}</div>
+        <div class="review-item-sub">${r.type === 'concept' ? 'Concept module' : 'Statistics lesson'} · ${pct}% mastered</div>
+      </div>
+      <div class="review-item-badge">${r.type === 'concept' ? 'Study' : 'Quiz'}</div>
+    </div>`;
+  });
+
+  document.getElementById('today-body').innerHTML = `
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num">${progress.streak || 0}</div>
+        <div class="stat-label">Day Streak 🔥</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">${progress.xp || 0}</div>
+        <div class="stat-label">Total XP ⭐</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">${masteredConcepts}</div>
+        <div class="stat-label">Mastered 🏆</div>
+      </div>
+    </div>
+    <div style="padding:0 16px 14px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:600">Concept Progress</span>
+          <span style="font-size:13px;color:var(--text-dim)">${learnedConcepts}/${totalConcepts}</span>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px">
+          <div style="height:100%;width:${Math.round(learnedConcepts/totalConcepts*100)}%;background:var(--accent);border-radius:3px;transition:width .4s"></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-label">Activity Heatmap</div>
+    <div style="padding-bottom:14px">${buildHeatmap()}</div>
+    <div class="section-label">Continue Studying</div>
+    ${reviewHTML || '<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">All caught up!</div><div class="empty-body">You\'ve reviewed everything. Great work!</div></div>'}
+    <div class="spacer"></div>
+  `;
+}
+
+function buildHeatmap() {
+  const weeks = 14;
+  const cols = [];
+  const now = new Date();
+  for (let w = weeks - 1; w >= 0; w--) {
+    let colHTML = '<div class="heatmap-col">';
+    for (let d = 6; d >= 0; d--) {
+      const date = new Date(now);
+      date.setDate(now.getDate() - w * 7 - d);
+      const key = date.toISOString().slice(0, 10);
+      const count = (progress.practiceLog || {})[key] || 0;
+      const cls = count === 0 ? '' : count < 3 ? 'l1' : count < 6 ? 'l2' : count < 10 ? 'l3' : 'l4';
+      colHTML += `<div class="heatmap-cell ${cls}" title="${key}: ${count} sessions"></div>`;
+    }
+    colHTML += '</div>';
+    cols.push(colHTML);
+  }
+  return '<div class="heatmap">' + cols.join('') + '</div>';
+}
+
+function moduleAverageMastery(m) {
+  if (!m.concepts.length) return 0;
+  const total = m.concepts.reduce((s, c) => s + getMastery('c:' + c.id), 0);
+  return total / m.concepts.length;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONCEPTS TAB
+// ═══════════════════════════════════════════════════════════
+function renderConceptsHome() {
+  let html = '<div class="card-grid">';
+  CONCEPT_MODULES.forEach(m => {
+    const avg = moduleAverageMastery(m);
+    const pct = Math.round((avg / 3) * 100);
+    const masteredCount = m.concepts.filter(c => getMastery('c:' + c.id) >= 3).length;
+    html += `<div class="module-card" onclick="startConceptModule('${m.id}')">
+      <div class="module-icon">${m.icon}</div>
+      <div class="module-title">${m.title}</div>
+      <div class="module-count">${masteredCount}/${m.concepts.length} mastered</div>
+      <div class="mastery-dots">${[0,1,2].map(i => `<div class="mastery-dot${avg > i ? ' filled' : ''}"></div>`).join('')}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('concepts-body').innerHTML = html;
+}
+
+// ── FLASHCARD SYSTEM ────────────────────────────────────────
+let fcModule = null, fcIndex = 0, fcFlipped = false;
+
+function startConceptModule(moduleId) {
+  fcModule = CONCEPT_MODULES.find(m => m.id === moduleId);
+  fcIndex = 0;
+  fcFlipped = false;
+  showScreen('flashcard');
+  renderFlashcard();
+}
+
+function renderFlashcard() {
+  if (!fcModule) return;
+  const concepts = fcModule.concepts;
+  const concept = concepts[fcIndex];
+  const progress_pct = Math.round(((fcIndex) / concepts.length) * 100);
+  const mastery = getMastery('c:' + concept.id);
+
+  document.getElementById('screen-flashcard').innerHTML = `
+    <div class="flashcard-header">
+      <button class="back-btn" onclick="hideSubScreen();renderConceptsHome()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+        Concepts
+      </button>
+      <span style="font-size:13px;color:var(--text-dim)">${fcIndex+1}/${concepts.length}</span>
+    </div>
+    <div class="flashcard-progress-bar"><div class="flashcard-progress-fill" style="width:${progress_pct}%"></div></div>
+    <div class="flashcard-module-label">${fcModule.icon} ${fcModule.title}</div>
+    <div class="flashcard-container">
+      <div class="flashcard${fcFlipped ? ' flipped' : ''}" id="fc-card" onclick="flipCard()">
+        <div class="card-face card-front">
+          <div class="card-hint">Tap to reveal definition</div>
+          <div class="card-term">${concept.term}</div>
+          <div class="card-module-badge">${fcModule.title}</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-hint">Definition</div>
+          <div class="card-definition">${concept.definition}</div>
+          ${concept.analogy ? `<div class="card-analogy">💡 ${concept.analogy}</div>` : ''}
+          ${concept.example ? `<div class="card-example">📌 ${concept.example}</div>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="flashcard-nav">
+      <button class="fc-nav-btn" onclick="fcNavigate(-1)" ${fcIndex===0?'disabled style="opacity:.4"':''}>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+      </button>
+      <div class="fc-counter">${mastery > 0 ? '⭐'.repeat(mastery) : 'New'}</div>
+      <button class="fc-nav-btn" onclick="fcNavigate(1)" ${fcIndex===concepts.length-1?'style="background:var(--accent)"':''}>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      </button>
+    </div>
+    <div class="flashcard-actions">
+      <button class="btn-secondary" onclick="startConceptQuiz('${fcModule.id}')">Quiz This Module</button>
+      <button class="btn-primary" onclick="fcMarkAndNext()">Got It ✓</button>
+    </div>
+  `;
+}
+
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  const card = document.getElementById('fc-card');
+  if (card) card.classList.toggle('flipped', fcFlipped);
+  if (fcFlipped) {
+    const concept = fcModule.concepts[fcIndex];
+    incrementMastery('c:' + concept.id);
+    addXP(2);
+  }
+}
+
+function fcNavigate(dir) {
+  fcIndex = Math.max(0, Math.min(fcModule.concepts.length - 1, fcIndex + dir));
+  fcFlipped = false;
+  renderFlashcard();
+}
+
+function fcMarkAndNext() {
+  const concept = fcModule.concepts[fcIndex];
+  if (!fcFlipped) {
+    incrementMastery('c:' + concept.id);
+    addXP(2);
+  }
+  if (fcIndex < fcModule.concepts.length - 1) {
+    fcNavigate(1);
+  } else {
+    startConceptQuiz(fcModule.id);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════════════════════════
+let quizState = { questions: [], index: 0, correct: 0, source: '', sourceId: null };
+
+function buildConceptQuestions(module) {
+  const qs = [];
+  module.concepts.forEach(c => {
+    // MC: definition match
+    const distractors = CONCEPT_MODULES
+      .flatMap(m => m.concepts)
+      .filter(x => x.id !== c.id)
+      .sort(() => Math.random() - .5)
+      .slice(0, 3)
+      .map(x => x.term);
+    const opts = [c.term, ...distractors].sort(() => Math.random() - .5);
+    qs.push({
+      type: 'mc',
+      question: `Which term matches this definition?\n\n"${c.definition.slice(0, 140)}${c.definition.length > 140 ? '…' : ''}"`,
+      options: opts,
+      answer: opts.indexOf(c.term),
+      explanation: c.analogy || c.example || '',
+      masteryKey: 'c:' + c.id,
+    });
+  });
+  return qs.sort(() => Math.random() - .5).slice(0, 5);
+}
+
+function buildMLQuestions(categoryId) {
+  const pool = (typeof ALGORITHM_DATA !== 'undefined' ? ALGORITHM_DATA : [])
+    .filter(a => !categoryId || a.category === categoryId);
+  const qs = [];
+  pool.forEach(algo => {
+    const distractors = pool.filter(x => x.id !== algo.id).sort(() => Math.random() - .5).slice(0, 3).map(x => x.term);
+    const opts = [algo.term, ...distractors].sort(() => Math.random() - .5);
+    qs.push({
+      type: 'mc',
+      question: `Which algorithm fits this description?\n\n"${algo.shortDef}"`,
+      options: opts,
+      answer: opts.indexOf(algo.term),
+      explanation: algo.whenToUse,
+      masteryKey: 'ml:' + algo.id,
+    });
+  });
+  return qs.sort(() => Math.random() - .5).slice(0, 6);
+}
+
+function buildStatsQuestions(lessonId) {
+  if (typeof STATS_LESSONS === 'undefined') return [];
+  const lesson = STATS_LESSONS.find(l => l.id === lessonId);
+  if (!lesson) return [];
+  return lesson.quizzes.map(q => ({ ...q, masteryKey: 'g:' + lessonId }));
+}
+
+function startConceptQuiz(moduleId) {
+  const module = CONCEPT_MODULES.find(m => m.id === moduleId);
+  if (!module) return;
+  quizState = {
+    questions: buildConceptQuestions(module),
+    index: 0, correct: 0,
+    source: 'concept', sourceId: moduleId,
+  };
+  showScreen('quiz');
+  renderQuiz();
+}
+
+let activeMLCategory = null;
+function startMLQuiz(categoryId) {
+  const questions = buildMLQuestions(categoryId);
+  if (!questions.length) { showToast('No ML data loaded'); return; }
+  quizState = { questions, index: 0, correct: 0, source: 'ml', sourceId: categoryId };
+  showScreen('quiz');
+  renderQuiz();
+}
+
+function startStatsQuiz(lessonId) {
+  const questions = buildStatsQuestions(lessonId);
+  if (!questions.length) { showToast('No stats data loaded'); return; }
+  quizState = { questions, index: 0, correct: 0, source: 'stats', sourceId: lessonId };
+  showScreen('quiz');
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const { questions, index } = quizState;
+  if (index >= questions.length) { showResults(); return; }
+  const q = questions[index];
+  const pct = Math.round((index / questions.length) * 100);
+
+  let optionsHTML = '';
+  if (q.type === 'mc') {
+    optionsHTML = '<div class="quiz-options">' +
+      q.options.map((o, i) => `<button class="quiz-opt" id="qopt-${i}" onclick="submitMC(${i})">${o}</button>`).join('') +
+      '</div>';
+  } else if (q.type === 'tf') {
+    optionsHTML = '<div class="quiz-options">' +
+      ['True', 'False'].map((o, i) =>
+        `<button class="quiz-opt" id="qopt-${i}" onclick="submitTF(${i===0})">${o}</button>`
+      ).join('') + '</div>';
+  } else if (q.type === 'fib') {
+    optionsHTML = `<input class="quiz-fib" id="fib-input" type="text" placeholder="Type your answer…" autocomplete="off">
+      <button class="quiz-submit" id="fib-submit" onclick="submitFIB()">Check Answer</button>`;
+  }
+
+  document.getElementById('screen-quiz').innerHTML = `
+    <div class="quiz-header">
+      <button class="back-btn" onclick="hideSubScreen()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+        Back
+      </button>
+      <span style="font-size:13px;color:var(--text-dim)">${index+1}/${questions.length}</span>
+    </div>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+    <div class="quiz-body">
+      <div class="quiz-q-num">Question ${index+1} of ${questions.length}</div>
+      <div class="quiz-question">${q.question}</div>
+      ${optionsHTML}
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="quiz-next" id="quiz-next" onclick="nextQuestion()">Next →</button>
+    </div>
+  `;
+
+  if (q.type === 'fib') {
+    const inp = document.getElementById('fib-input');
+    if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitFIB(); });
+  }
+}
+
+function submitMC(chosen) {
+  const q = quizState.questions[quizState.index];
+  const correct = chosen === q.answer;
+  if (correct) quizState.correct++;
+  if (q.masteryKey) correct ? incrementMastery(q.masteryKey) : null;
+  addXP(correct ? 10 : 2);
+  document.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.answer) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+  });
+  showQuizFeedback(correct, q.explanation);
+}
+
+function submitTF(chosen) {
+  const q = quizState.questions[quizState.index];
+  const correct = chosen === q.answer;
+  if (correct) quizState.correct++;
+  addXP(correct ? 10 : 2);
+  document.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    if ((i === 0) === q.answer) btn.classList.add('correct');
+    else if ((i === 0) === chosen) btn.classList.add('wrong');
+  });
+  showQuizFeedback(correct, q.explanation);
+}
+
+function submitFIB() {
+  const q = quizState.questions[quizState.index];
+  const inp = document.getElementById('fib-input');
+  if (!inp) return;
+  const val = inp.value.trim().toLowerCase();
+  const ans = q.answer.toLowerCase();
+  const correct = val === ans || (q.aliases || []).map(a => a.toLowerCase()).includes(val);
+  if (correct) quizState.correct++;
+  addXP(correct ? 10 : 2);
+  inp.disabled = true;
+  inp.classList.add(correct ? 'correct' : 'wrong');
+  const sub = document.getElementById('fib-submit');
+  if (sub) sub.disabled = true;
+  showQuizFeedback(correct, `Correct answer: ${q.answer}. ${q.explanation || ''}`);
+}
+
+function showQuizFeedback(correct, explanation) {
+  if (!settings.showFeedback) { nextQuestion(); return; }
+  const fb = document.getElementById('quiz-feedback');
+  const nx = document.getElementById('quiz-next');
+  if (fb) {
+    fb.className = 'quiz-feedback show ' + (correct ? 'correct' : 'wrong');
+    fb.innerHTML = `<strong>${correct ? '✓ Correct!' : '✗ Incorrect'}</strong><div class="explanation">${explanation || ''}</div>`;
+  }
+  if (nx) nx.classList.add('show');
+}
+
+function nextQuestion() {
+  quizState.index++;
+  renderQuiz();
+}
+
+function showResults() {
+  const { questions, correct, source, sourceId } = quizState;
+  const pct = Math.round((correct / questions.length) * 100);
+  const c = 2 * Math.PI * 54;
+  const dashoffset = c - (pct / 100) * c;
+
+  let backAction = '';
+  if (source === 'concept') backAction = `startConceptModule('${sourceId}')`;
+  else if (source === 'ml') backAction = `renderMLHome()`;
+  else if (source === 'stats') backAction = `startStatsLesson(${sourceId})`;
+
+  document.getElementById('screen-results').innerHTML = `
+    <div style="padding:40px 16px 24px;display:flex;flex-direction:column;align-items:center">
+      <div class="results-circle" style="width:120px;height:120px;margin-bottom:24px">
+        <svg width="120" height="120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--accent)" stroke-width="8"
+            stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${dashoffset.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="results-pct" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+          <div class="results-pct-num" style="font-size:32px;font-weight:700;color:var(--accent)">${pct}%</div>
+        </div>
+      </div>
+      <div class="results-title">${pct >= 80 ? '🎉 Great work!' : pct >= 50 ? '💪 Keep going!' : '📚 Keep studying!'}</div>
+      <div class="results-sub">${correct} of ${questions.length} correct</div>
+      <div class="results-stats" style="display:flex;gap:12px;width:100%;max-width:280px;margin-bottom:28px">
+        <div class="results-stat" style="flex:1;background:var(--card);border-radius:var(--radius-sm);padding:14px;text-align:center">
+          <div style="font-size:24px;font-weight:700;color:#22c55e">${correct}</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">Correct</div>
+        </div>
+        <div class="results-stat" style="flex:1;background:var(--card);border-radius:var(--radius-sm);padding:14px;text-align:center">
+          <div style="font-size:24px;font-weight:700;color:#ef4444">${questions.length - correct}</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">Incorrect</div>
+        </div>
+        <div class="results-stat" style="flex:1;background:var(--card);border-radius:var(--radius-sm);padding:14px;text-align:center">
+          <div style="font-size:24px;font-weight:700;color:var(--gold)">${correct * 10}</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">XP Earned</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px">
+        <button class="btn-primary" onclick="retakeQuiz()">Retake Quiz</button>
+        ${backAction ? `<button class="btn-secondary" onclick="hideSubScreen();${backAction}">Back to Study</button>` : ''}
+        <button class="btn-secondary" onclick="switchTab(activeTab)">Return to Home</button>
+      </div>
+    </div>
+  `;
+  showScreen('results');
+}
+
+function retakeQuiz() {
+  const { source, sourceId } = quizState;
+  if (source === 'concept') startConceptQuiz(sourceId);
+  else if (source === 'ml') startMLQuiz(sourceId);
+  else if (source === 'stats') startStatsQuiz(sourceId);
+}
+
+// ═══════════════════════════════════════════════════════════
+// ML TAB
+// ═══════════════════════════════════════════════════════════
+function renderMLHome() {
+  if (typeof ALGORITHM_DATA === 'undefined') {
+    document.getElementById('ml-body').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">ml.js not loaded</div><div class="empty-body">Ensure ml.js is in the same directory as index.html.</div></div>';
+    return;
+  }
+  const cats = typeof ML_CATEGORIES !== 'undefined' ? ML_CATEGORIES : [];
+  // Filter bar
+  let filterHTML = `<button class="filter-btn${!activeMLCategory ? ' active' : ''}" onclick="setMLFilter(null)">All</button>`;
+  cats.forEach(c => {
+    filterHTML += `<button class="filter-btn${activeMLCategory===c.id ? ' active' : ''}" onclick="setMLFilter('${c.id}')">${c.label}</button>`;
+  });
+  document.getElementById('ml-filter-bar').innerHTML = filterHTML;
+
+  const filtered = activeMLCategory ? ALGORITHM_DATA.filter(a => a.category === activeMLCategory) : ALGORITHM_DATA;
+  let count = filtered.length;
+  document.getElementById('ml-sub').textContent = count + ' algorithms';
+
+  let html = '';
+  filtered.forEach(algo => {
+    const cat = cats.find(c => c.id === algo.category);
+    const chipCls = 'chip-' + algo.category.replace('supervised','super').replace('unsupervised','unsup').replace('evaluation','eval').replace('deep','deep');
+    const mastery = getMastery('ml:' + algo.id);
+    html += `<div class="algo-card" id="ac-${algo.id}">
+      <div class="algo-card-header" onclick="toggleAlgo('${algo.id}')">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="algo-title">${algo.term}</span>
+            ${mastery > 0 ? `<span style="font-size:12px">⭐</span>` : ''}
+          </div>
+          <div class="algo-short">${algo.shortDef}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+          <span class="chip ${chipCls}">${cat ? cat.label.split(' ')[0] : algo.category}</span>
+          <svg id="ac-arrow-${algo.id}" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:16px;height:16px;color:var(--text-dim);transition:transform .2s"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+      </div>
+      <div class="algo-expand" id="ae-${algo.id}">
+        <div class="algo-section">
+          <div class="algo-section-label">Full Definition</div>
+          <p>${algo.fullDef}</p>
+        </div>
+        <div class="algo-section">
+          <div class="algo-section-label">When to Use</div>
+          <p>${algo.whenToUse}</p>
+        </div>
+        <div class="algo-section">
+          <div class="algo-section-label">Tradeoffs</div>
+          <p>${algo.tradeoffs}</p>
+        </div>
+        ${settings.showCode && algo.codeExample ? `<div class="algo-section">
+          <div class="algo-section-label">Python Example</div>
+          <div class="code-block"><code>${escapeHTML(algo.codeExample)}</code></div>
+        </div>` : ''}
+        <div class="tag-list">${algo.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <button class="btn-primary" style="margin-top:12px" onclick="markMLStudied('${algo.id}')">Studied ✓</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('ml-body').innerHTML = html;
+}
+
+function setMLFilter(catId) {
+  activeMLCategory = catId;
+  renderMLHome();
+}
+
+function toggleAlgo(id) {
+  const expand = document.getElementById('ae-' + id);
+  const arrow = document.getElementById('ac-arrow-' + id);
+  if (!expand) return;
+  const open = expand.classList.toggle('open');
+  if (arrow) arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
+
+function markMLStudied(id) {
+  incrementMastery('ml:' + id);
+  addXP(5);
+  showToast('✅ Marked as studied!');
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATS TAB
+// ═══════════════════════════════════════════════════════════
+function renderStatsHome() {
+  if (typeof STATS_LESSONS === 'undefined') {
+    document.getElementById('stats-body').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">stats.js not loaded</div><div class="empty-body">Ensure stats.js is in the same directory.</div></div>';
+    return;
+  }
+  let html = '';
+  STATS_LESSONS.forEach(l => {
+    const mastery = getMastery('g:' + l.id);
+    const quizCount = l.quizzes ? l.quizzes.length : 0;
+    const c = 2 * Math.PI * 16;
+    const dash = c - (mastery / 3) * c;
+    html += `<div class="lesson-card" onclick="startStatsLesson(${l.id})">
+      <div class="lesson-icon-wrap">${l.icon}</div>
+      <div class="lesson-meta">
+        <div class="lesson-title">${l.title}</div>
+        <div class="lesson-desc">${l.description} · ${quizCount} questions</div>
+      </div>
+      <div class="lesson-progress">
+        <svg width="36" height="36">
+          <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3"/>
+          <circle cx="18" cy="18" r="16" fill="none" stroke="var(--accent)" stroke-width="3"
+            stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${dash.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 18 18)"/>
+        </svg>
+        <div class="lesson-progress-num">${mastery > 0 ? '⭐'.repeat(mastery) : ''}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('stats-body').innerHTML = html;
+}
+
+function startStatsLesson(lessonId) {
+  if (typeof STATS_LESSONS === 'undefined') return;
+  const lesson = STATS_LESSONS.find(l => l.id === lessonId);
+  if (!lesson) return;
+  showScreen('lesson');
+  renderLesson(lesson);
+}
+
+function renderLesson(lesson) {
+  const explanationHTML = lesson.explanation
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+
+  let examplesHTML = '';
+  if (lesson.examples) {
+    lesson.examples.forEach(ex => {
+      examplesHTML += `<div class="example-card">
+        <div class="example-label">${ex.label}</div>
+        <div class="example-formula">${ex.formula}</div>
+        <div class="example-explanation">${ex.explanation}</div>
+      </div>`;
+    });
+  }
+
+  let conceptsHTML = lesson.concepts.map(c => `<span class="concept-chip">${c}</span>`).join('');
+
+  document.getElementById('screen-lesson').innerHTML = `
+    <div class="lesson-header">
+      <button class="back-btn" onclick="hideSubScreen();renderStatsHome()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+        Statistics
+      </button>
+    </div>
+    <div class="lesson-body">
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Lesson ${lesson.id} of ${STATS_LESSONS.length}</div>
+      <div style="font-size:22px;font-weight:700;margin-bottom:4px">${lesson.icon} ${lesson.title}</div>
+      <div style="font-size:14px;color:var(--text-dim);margin-bottom:16px">${lesson.description}</div>
+      <div class="section-label" style="padding:0;margin-bottom:8px">Key Concepts</div>
+      <div class="concepts-row" style="margin-bottom:16px">${conceptsHTML}</div>
+      <div class="section-label" style="padding:0;margin-bottom:8px">Explanation</div>
+      <div class="lesson-explanation">${explanationHTML}</div>
+      ${examplesHTML ? `<div class="section-label" style="padding:0;margin-bottom:8px">Formulas & Examples</div>${examplesHTML}` : ''}
+      <div class="spacer"></div>
+      <button class="btn-primary" onclick="startStatsQuiz(${lesson.id})">Take the Quiz →</button>
+      <div class="spacer"></div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+// GLOSSARY
+// ═══════════════════════════════════════════════════════════
+function showGlossary() {
+  showScreen('glossary');
+  renderGlossary('');
+  document.getElementById('screen-glossary').innerHTML = `
+    <div class="screen-header">
+      <div><div class="screen-title">Glossary</div><div class="screen-sub">All DS terms</div></div>
+      <button class="icon-btn" onclick="hideSubScreen()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <input class="glossary-search" placeholder="Search terms…" id="glossary-search" oninput="renderGlossary(this.value)">
+    <div id="glossary-list"></div>
+  `;
+  renderGlossary('');
+}
+
+function renderGlossary(query) {
+  const q = query.toLowerCase();
+  const allTerms = CONCEPT_MODULES.flatMap(m =>
+    m.concepts.map(c => ({ term: c.term, def: c.definition, src: m.title }))
+  );
+  const filtered = allTerms.filter(t =>
+    !q || t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q)
+  );
+  const listEl = document.getElementById('glossary-list');
+  if (!listEl) return;
+  if (!filtered.length) { listEl.innerHTML = '<div class="empty-state" style="padding:24px"><div class="empty-body">No terms found.</div></div>'; return; }
+  listEl.innerHTML = filtered.map(t =>
+    `<div class="glossary-item">
+      <div class="glossary-term">${t.term}</div>
+      <div style="flex:1"><div class="glossary-def">${t.def.slice(0, 120)}${t.def.length>120?'…':''}</div><div style="font-size:11px;color:var(--accent);margin-top:3px">${t.src}</div></div>
+    </div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════
+function openSettings() { document.getElementById('settings-overlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('open'); }
+
+function toggleSetting(key, el) {
+  el.classList.toggle('on');
+  settings[key] = el.classList.contains('on');
+  saveProgress();
+}
+
+function confirmReset() {
+  if (confirm('Reset all progress? This cannot be undone.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    progress = { mastery: {}, xp: 0, streak: 0, lastDate: null, quizHistory: {}, practiceLog: {}, seenOnboarding: true };
+    saveProgress();
+    closeSettings();
+    switchTab(0);
+    showToast('Progress reset!');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════════
+// ONBOARDING
+// ═══════════════════════════════════════════════════════════
+function closeOnboarding() {
+  progress.seenOnboarding = true;
+  saveProgress();
+  document.getElementById('onboarding-overlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+loadProgress();
+updateStreak();
+
+if (!progress.seenOnboarding) {
+  document.getElementById('onboarding-overlay').classList.add('open');
+}
+
+// Sync settings toggles with saved values
+document.getElementById('toggle-code').classList.toggle('on', settings.showCode);
+document.getElementById('toggle-feedback').classList.toggle('on', settings.showFeedback);
+
+// Override glossary button action
+document.querySelector('[onclick="showScreen(\'glossary\')"]').setAttribute('onclick', 'showGlossary()');
+
+switchTab(0);
+</script>
+
+<!-- Load data files with graceful fallback -->
+<script src="ml.js" onerror="console.warn('ml.js not found — ML tab will show error state')"></script>
+<script src="stats.js" onerror="console.warn('stats.js not found — Stats tab will show error state')"></script>
+</body>
+</html>
