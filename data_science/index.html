@@ -6,6 +6,11 @@
 <title>Data Science Learning</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" defer></script>
 <style>
@@ -405,6 +410,7 @@ a{color:var(--accent);text-decoration:none}
 }
 .example-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:4px}
 .example-formula{font-family:'JetBrains Mono',monospace;font-size:14px;color:#c7d2fe;margin-bottom:6px}
+.example-formula .katex{color:var(--accent);font-size:1.05em}
 .example-explanation{font-size:13px;color:var(--text-dim);line-height:1.5}
 .concepts-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .concept-chip{
@@ -2425,6 +2431,15 @@ function renderLesson(lesson) {
       <div class="spacer"></div>
     </div>
   `;
+  if (typeof renderMathInElement !== 'undefined') {
+    renderMathInElement(document.getElementById('screen-lesson'), {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      throwOnError: false,
+    });
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2546,5 +2561,10 @@ switchTab(0);
 <!-- Load data files with graceful fallback -->
 <script src="ml.js" onerror="console.warn('ml.js not found — ML tab will show error state')"></script>
 <script src="stats.js" onerror="console.warn('stats.js not found — Stats tab will show error state')"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(console.warn);
+}
+</script>
 </body>
 </html>
