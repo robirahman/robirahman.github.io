@@ -1058,4 +1058,52 @@ The quiz questions below test your ability to recognize and produce these patter
       { type: 'translate-mc', prompt: 'Which combination is used in "আপনি কি আমাকে দেখাবেন?"', bengali: 'আপনি কি আমাকে দেখাবেন?', roman: 'apni ki amake dekhaben?', correct: 'Causative verb (দেখানো) + formal register (আপনি)', options: ['Causative verb (দেখানো) + formal register (আপনি)', 'Passive + conditional', 'Reduplication + superlative', 'Reported speech + particle'] },
     ]
   },
+  // ═══════════════════════════════════════
+  {
+    id: 'sandhi',
+    number: 31,
+    title: 'Sound Changes & Pronunciation Rules',
+    shortDesc: 'How spoken Bengali differs from its written form',
+    explanation: `Bengali writing and speech don't always match perfectly. Understanding these common phonological patterns will help you read naturally and understand native speakers.
+
+**1. The inherent vowel ô (অ)**
+Every Bengali consonant carries an inherent /ɔ/ vowel — so ক is "kô" and ম is "mô". However, this vowel is often reduced or silent:
+• Before a conjunct consonant: শব্দ (shôbdô) → spoken "shobdo"
+• At the end of a word: কাল (kāl, not "kālô"), মানুষ (manush, not "mānushô")
+• Between consonants in a cluster: প্রতিদিন → "protidin" (the ô after প্র is silent)
+
+**2. Spoken shortening of case endings (-কে → -য়)**
+In informal speech, the -কে accusative/dative ending often shortens to -য়:
+• আমাকে → আমায় (amake → amay — "to me / me")
+• তোমাকে → তোমায় (tomake → tomay — "to you / you")
+• Written forms are always correct; spoken short forms are natural but informal.
+
+**3. Vowel blending between words**
+When one word ends in a vowel and the next begins with a vowel, Bengali speakers often link or slightly reduce the boundary:
+• ভালো আছেন → "bhalo achhen" — both vowels stay, but the transition is smooth
+• এসো আমার সাথে → "esho amar shathe" — no elision, but rhythm is even
+
+**4. Assimilation in conjunct consonants**
+When consonants combine in a conjunct, the first consonant often adapts to match the manner of articulation of the second:
+• ন before a retroflex (ট ড) → written ণ: কর্ণ (kôrNô — ear), বর্ণ (bôrNô — letter/colour)
+• ম before ব/প → can nasalise: সম্পর্ক (shômpôrkô → "shomporko" — relationship)
+• This is why শব্দ is "shobdo" not "shôbdô" — the ব softens the preceding vowel`,
+    examples: [
+      { bengali: 'কাল বৃষ্টি ছিল', roman: 'kal brishti chhilo', english: 'Yesterday it was raining (final ô on কাল is silent)' },
+      { bengali: 'আমাকে / আমায়', roman: 'amake / amay', english: 'to me / for me (formal vs. informal speech)' },
+      { bengali: 'প্রতিদিন সকালে উঠি', roman: 'protidin shokale uthi', english: 'I wake up every morning (প্র cluster: ô after র is silent)' },
+      { bengali: 'সম্পর্ক', roman: 'shomporko', english: 'relationship (ম assimilates before প → "shom-")' },
+      { bengali: 'বর্ণমালা', roman: 'bôrNômala', english: 'alphabet (ণ by assimilation from ন + ন→ণ rule)' },
+      { bengali: 'তোমাকে ভালোবাসি / তোমায় ভালোবাসি', roman: 'tomake bhalobashi / tomay bhalobashi', english: 'I love you — formal / informal spoken' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'Which statement about the inherent vowel ô is correct?', bengali: 'অ (ô)', roman: 'ô', correct: 'It is often silent at word endings and before conjunct consonants', options: ['It is often silent at word endings and before conjunct consonants', 'It is always pronounced as in আ (aa)', 'It only appears in vowel letters, not consonants', 'It is the same sound as এ (e)'] },
+      { type: 'translate-mc', prompt: 'What is the informal spoken equivalent of "তোমাকে"?', bengali: 'তোমাকে', roman: 'tomake', correct: 'তোমায় (tomay)', options: ['তোমায় (tomay)', 'তোমার (tomar)', 'তোমাদের (tomader)', 'তুমি (tumi)'] },
+      { type: 'translate-mc', prompt: 'Why is প্রতিদিন pronounced "protidin" rather than "prôtidin"?', bengali: 'প্রতিদিন', roman: 'protidin', correct: 'The inherent ô after র in the conjunct প্র is silent', options: ['The inherent ô after র in the conjunct প্র is silent', 'প্র is a vowel, not a consonant', 'দিন causes the vowel before it to change', 'Bengali always uses "o" instead of "ô"'] },
+      { type: 'translate-mc', prompt: '"সম্পর্ক" is romanized as "shomporko." Why does ম sound like "shom-" not "shôm-"?', bengali: 'সম্পর্ক', roman: 'shomporko', correct: 'Assimilation: ম before প makes the vowel round to /o/', options: ['Assimilation: ম before প makes the vowel round to /o/', 'ম is always pronounced with /o/ in Bengali', 'প changes all preceding vowels to /o/', 'It is a dialect-specific pronunciation only'] },
+      { type: 'fib', prompt: 'Write the informal spoken form of আমাকে (accusative "me"):', sentence: 'আমাকে → ___', roman: 'amake → ___', english: 'Informal spoken: amay', acceptable: ['আমায়', 'amay'], answer: 'আমায়' },
+      { type: 'translate-mc', prompt: 'The inherent vowel ô in বর্ণ (letter/colour) is affected by which rule?', bengali: 'বর্ণ', roman: 'bôrNô', correct: 'Assimilation: ন becomes ণ (retroflex) after র in the cluster', options: ['Assimilation: ন becomes ণ (retroflex) after র in the cluster', 'Vowel elision removes the ô completely', 'The final ô is pronounced as আ', 'র before ন always drops the ন'] },
+      { type: 'translate-mc', prompt: 'Which pair correctly shows the formal (written/careful) vs. informal (spoken) contrast?', bengali: 'formal vs. informal', roman: 'formal vs. spoken', correct: 'তোমাকে (formal) / তোমায় (informal)', options: ['তোমাকে (formal) / তোমায় (informal)', 'আমার (formal) / আমায় (informal)', 'তুমি (formal) / তুই (informal)', 'বলেছেন (formal) / বলল (informal)'] },
+    ]
+  },
 ];
