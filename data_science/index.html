@@ -26,6 +26,39 @@
   --c-unsup: #22d3ee;
   --c-eval:  #f59e0b;
   --c-deep:  #a78bfa;
+  --nav-bg: #0d1e38;
+  --card-back-bg: #0f1e3a;
+  --code-bg: #070f1e;
+  --code-color: #a5b4fc;
+  --settings-bg: #0d1e38;
+  --chip-super-bg: rgba(99,102,241,.18); --chip-super-c: #818cf8;
+  --chip-unsup-bg: rgba(34,211,238,.15); --chip-unsup-c: #22d3ee;
+  --chip-eval-bg:  rgba(245,158,11,.18); --chip-eval-c:  #fbbf24;
+  --chip-deep-bg:  rgba(167,139,250,.18);--chip-deep-c:  #c4b5fd;
+}
+html.light {
+  --bg: #f0f4ff;
+  --card: #ffffff;
+  --card-hover: #e8eeff;
+  --accent: #4f46e5;
+  --accent-dim: #3730a3;
+  --accent-glow: rgba(79,70,229,0.12);
+  --wrong: #dc2626;
+  --right: #16a34a;
+  --text: #1e293b;
+  --text-dim: #64748b;
+  --gold: #d97706;
+  --border: rgba(0,0,0,0.09);
+  --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  --nav-bg: #ffffff;
+  --card-back-bg: #eef2ff;
+  --code-bg: #1e1b4b;
+  --code-color: #a5b4fc;
+  --settings-bg: #ffffff;
+  --chip-super-bg: rgba(99,102,241,.13); --chip-super-c: #4338ca;
+  --chip-unsup-bg: rgba(6,182,212,.13);  --chip-unsup-c: #0e7490;
+  --chip-eval-bg:  rgba(217,119,6,.13);  --chip-eval-c:  #92400e;
+  --chip-deep-bg:  rgba(124,58,237,.13); --chip-deep-c:  #5b21b6;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
@@ -37,7 +70,7 @@ a{color:var(--accent);text-decoration:none}
 /* ── NAV ── */
 #app-nav{
   position:fixed;bottom:0;left:0;right:0;
-  background:#0d1e38;
+  background:var(--nav-bg);
   border-top:1px solid var(--border);
   display:flex;z-index:100;
   padding-bottom:env(safe-area-inset-bottom);
@@ -113,10 +146,10 @@ a{color:var(--accent);text-decoration:none}
   display:inline-flex;align-items:center;
   padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
 }
-.chip-super{background:rgba(99,102,241,.18);color:#818cf8}
-.chip-unsup{background:rgba(34,211,238,.15);color:#22d3ee}
-.chip-eval {background:rgba(245,158,11,.18);color:#fbbf24}
-.chip-deep {background:rgba(167,139,250,.18);color:#c4b5fd}
+.chip-super{background:var(--chip-super-bg);color:var(--chip-super-c)}
+.chip-unsup{background:var(--chip-unsup-bg);color:var(--chip-unsup-c)}
+.chip-eval {background:var(--chip-eval-bg); color:var(--chip-eval-c)}
+.chip-deep {background:var(--chip-deep-bg); color:var(--chip-deep-c)}
 
 /* ── ML ALGORITHM CARD ── */
 .algo-card{
@@ -134,10 +167,10 @@ a{color:var(--accent);text-decoration:none}
 .algo-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:5px}
 .algo-section p{font-size:13px;color:var(--text);line-height:1.6}
 .code-block{
-  background:#070f1e;border:1px solid var(--border);border-radius:8px;
+  background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
   padding:12px;margin-top:6px;overflow-x:auto;
 }
-.code-block code{font-size:12px;color:#a5b4fc;line-height:1.6;white-space:pre}
+.code-block code{font-size:12px;color:var(--code-color);line-height:1.6;white-space:pre}
 .tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
 .tag{
   font-size:10px;padding:2px 8px;border-radius:20px;
@@ -243,7 +276,7 @@ a{color:var(--accent);text-decoration:none}
   border:1px solid var(--border);
 }
 .card-front{background:var(--card)}
-.card-back{background:#0f1e3a;transform:rotateY(180deg)}
+.card-back{background:var(--card-back-bg);transform:rotateY(180deg)}
 .card-hint{font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:16px}
 .card-term{font-size:28px;font-weight:700;text-align:center;margin-bottom:10px}
 .card-module-badge{
@@ -316,7 +349,7 @@ a{color:var(--accent);text-decoration:none}
   background:var(--accent);color:#fff;font-size:15px;font-weight:600;
   margin-top:10px;transition:background .2s;}
 .quiz-submit:hover{background:var(--accent-dim)}
-.quiz-submit:disabled{background:#2d3a56;color:var(--text-dim);cursor:default}
+.quiz-submit:disabled{background:var(--card-hover);color:var(--text-dim);cursor:default}
 .quiz-feedback{
   margin-top:14px;padding:14px 16px;border-radius:var(--radius-sm);
   font-size:13px;line-height:1.6;display:none;
@@ -381,7 +414,7 @@ a{color:var(--accent);text-decoration:none}
 }
 #settings-overlay.open{display:flex}
 .settings-panel{
-  width:100%;background:#0d1e38;border-radius:24px 24px 0 0;
+  width:100%;background:var(--settings-bg);border-radius:24px 24px 0 0;
   padding:24px 20px 40px;max-height:80vh;overflow-y:auto;
 }
 .settings-handle{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 20px}
@@ -394,7 +427,7 @@ a{color:var(--accent);text-decoration:none}
 .settings-row-label{font-size:14px;font-weight:500}
 .settings-row-sub{font-size:12px;color:var(--text-dim);margin-top:2px}
 .toggle{
-  width:44px;height:24px;border-radius:12px;background:#2d3a56;
+  width:44px;height:24px;border-radius:12px;background:var(--border);background:rgba(100,116,139,.35);
   position:relative;cursor:pointer;transition:background .2s;
 }
 .toggle.on{background:var(--accent)}
@@ -511,10 +544,10 @@ a{color:var(--accent);text-decoration:none}
     </div>
     <div class="settings-row">
       <div>
-        <div class="settings-row-label">Dark Theme</div>
-        <div class="settings-row-sub">Dark is the only supported theme</div>
+        <div class="settings-row-label">Light Theme</div>
+        <div class="settings-row-sub">Switch to a light colour scheme</div>
       </div>
-      <div class="toggle on"></div>
+      <div class="toggle" id="toggle-theme" onclick="toggleTheme(this)"></div>
     </div>
     <div class="settings-row">
       <div>
@@ -522,6 +555,13 @@ a{color:var(--accent);text-decoration:none}
         <div class="settings-row-sub">Show explanations after each question</div>
       </div>
       <div class="toggle on" id="toggle-feedback" onclick="toggleSetting('showFeedback',this)"></div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-row-label">robirahman.com</div>
+        <div class="settings-row-sub">Back to the main site</div>
+      </div>
+      <a href="https://robirahman.com" style="font-size:13px;color:var(--accent);font-weight:600;text-decoration:none">Visit →</a>
     </div>
     <div class="spacer"></div>
     <button class="danger-btn" onclick="confirmReset()">Reset All Progress</button>
@@ -1593,6 +1633,19 @@ function toggleSetting(key, el) {
   saveProgress();
 }
 
+function toggleTheme(el) {
+  el.classList.toggle('on');
+  settings.lightTheme = el.classList.contains('on');
+  document.documentElement.classList.toggle('light', settings.lightTheme);
+  saveProgress();
+}
+
+function applyTheme() {
+  document.documentElement.classList.toggle('light', !!settings.lightTheme);
+  const toggleEl = document.getElementById('toggle-theme');
+  if (toggleEl) toggleEl.classList.toggle('on', !!settings.lightTheme);
+}
+
 function confirmReset() {
   if (confirm('Reset all progress? This cannot be undone.')) {
     localStorage.removeItem(STORAGE_KEY);
@@ -1630,6 +1683,7 @@ function closeOnboarding() {
 // ═══════════════════════════════════════════════════════════
 loadProgress();
 updateStreak();
+applyTheme();
 
 if (!progress.seenOnboarding) {
   document.getElementById('onboarding-overlay').classList.add('open');
