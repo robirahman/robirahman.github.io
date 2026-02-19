@@ -3025,15 +3025,24 @@ function renderVocabHome() {
 // greetings, common verbs, food, numbers, etc.  New waves unlock when
 // ≥50 % of the current wave reaches mastery ≥ 2.
 
-const VMIX_WAVE_SIZE  = 10;  // words per wave
-const VMIX_INTRO      = 5;   // new words shown as flashcards per session
-const VMIX_QUIZ_SIZE  = 10;  // questions per quiz round
-const VMIX_UNLOCK_THR = 2;   // mastery needed to count as "familiar"
+const VMIX_WAVE_SIZE  = 10;   // words per wave
+const VMIX_INTRO      = 5;    // new words shown as flashcards per session
+const VMIX_QUIZ_SIZE  = 10;   // questions per quiz round
+const VMIX_UNLOCK_THR = 2;    // mastery needed to count as "familiar"
+const VMIX_FREQ_BANDS = [
+  { maxRank: 20,   label: '1-20' },
+  { maxRank: 70,   label: '21-70' },
+  { maxRank: 250,  label: '71-250' },
+  { maxRank: 800,  label: '251-800' },
+  { maxRank: 2500, label: '801-2500' },
+  { maxRank: 9000, label: '2501-9000' },
+];
 
-// Build a deliberate curriculum order.  We round-robin across categories
-// so the learner doesn't get 120 verbs in a row.
+// Build a deliberate curriculum order in two stages:
+//  1) partition by frequency band;
+//  2) within each band, interleave categories with weighted round-robin.
 const VMIX_CURRICULUM = (() => {
-  // Priority order: highest-utility categories first
+  // Priority order: highest-utility categories first.
   const catOrder = [
     'expressions','pronouns','numbers','verbs','food','family',
     'adjectives','phrases','time','home','body','places',
@@ -3041,37 +3050,81 @@ const VMIX_CURRICULUM = (() => {
     'grammar','clothing','transport','health','colors','technology',
     'society','abstract'
   ];
-  // Build per-category queues
-  const queues = {};
-  catOrder.forEach(c => { queues[c] = []; });
-  VOCAB_DATA.forEach(w => {
-    const c = w.category;
-    if (queues[c]) queues[c].push(w);
-    else {
-      // category not in our list — append to abstract
-      if (!queues['abstract']) queues['abstract'] = [];
-      queues['abstract'].push(w);
-    }
+
+  const categoryWeight = {};
+  catOrder.forEach((cat, idx) => {
+    // Higher-priority categories get a slightly higher turn frequency.
+    categoryWeight[cat] = catOrder.length - idx;
   });
-  // Round-robin: take one from each non-empty category in order, repeat
-  const result = [];
-  const seen = new Set();
-  let remaining = true;
-  while (remaining) {
-    remaining = false;
-    for (const c of catOrder) {
-      if (queues[c].length > 0) {
-        const w = queues[c].shift();
-        const key = w.lemma + '|' + w.english; // dedup by bengali+english
-        if (!seen.has(key)) {
-          seen.add(key);
-          result.push(w);
+
+  const normalizeWord = (w) => ({
+    ...w,
+    category: catOrder.includes(w.category) ? w.category : 'abstract',
+    freqRank: Number.isFinite(w.freqRank) ? w.freqRank : Number.MAX_SAFE_INTEGER,
+  });
+
+  const stableWordSort = (a, b) =>
+    (a.freqRank - b.freqRank) ||
+    a.lemma.localeCompare(b.lemma, 'bn') ||
+    a.english.localeCompare(b.english);
+
+  const weightedRoundRobinBand = (wordsInBand) => {
+    const queues = {};
+    catOrder.forEach(c => { queues[c] = []; });
+
+    wordsInBand.forEach(w => {
+      queues[w.category].push(w);
+    });
+
+    // Deterministic ordering within each category queue.
+    catOrder.forEach(c => queues[c].sort(stableWordSort));
+
+    const emitted = [];
+    const seen = new Set();
+
+    while (true) {
+      let emittedThisPass = false;
+      for (const c of catOrder) {
+        let turns = categoryWeight[c] || 1;
+        while (turns > 0 && queues[c].length > 0) {
+          const w = queues[c].shift();
+          const key = w.lemma + '|' + w.english;
+          if (!seen.has(key)) {
+            seen.add(key);
+            emitted.push(w);
+          }
+          emittedThisPass = true;
+          turns--;
         }
-        remaining = true;
       }
+      if (!emittedThisPass) break;
     }
+
+    return emitted;
+  };
+
+  const getBandIdxByRank = (rank) => {
+    for (let i = 0; i < VMIX_FREQ_BANDS.length; i++) {
+      if (rank <= VMIX_FREQ_BANDS[i].maxRank) return i;
+    }
+    return VMIX_FREQ_BANDS.length - 1;
+  };
+
+  const bands = new Map();
+  VOCAB_DATA.map(normalizeWord)
+    .sort(stableWordSort)
+    .forEach(w => {
+      const bandIdx = getBandIdxByRank(w.freqRank);
+      if (!bands.has(bandIdx)) bands.set(bandIdx, []);
+      bands.get(bandIdx).push(w);
+    });
+
+  const curriculum = [];
+  for (let i = 0; i < VMIX_FREQ_BANDS.length; i++) {
+    if (bands.has(i)) curriculum.push(...weightedRoundRobinBand(bands.get(i)));
   }
-  return result;
+
+  return curriculum;
 })();
 
 function getVocabMixedUnlockedCount() {
@@ -3099,10 +3152,13 @@ function buildMixedVocabSession() {
 
   // Prioritise low-mastery words for the quiz
   const prioritized = [...pool].sort((a, b) => {
-    const ma = getVocabMastery(a[0]), mb = getVocabMastery(b[0]);
-    const sa = ma === 3 ? 3 + Math.random() * 2 : ma === 0 ? 0.5 : ma === 1 ? 0 : 1;
-    const sb = mb === 3 ? 3 + Math.random() * 2 : mb === 0 ? 0.5 : mb === 1 ? 0 : 1;
-    return sa - sb;
+    const ma = getVocabMastery(a.lemma), mb = getVocabMastery(b.lemma);
+    const sa = ma === 3 ? 4 : ma === 2 ? 1 : ma === 0 ? 0.5 : 0;
+    const sb = mb === 3 ? 4 : mb === 2 ? 1 : mb === 0 ? 0.5 : 0;
+    return (sa - sb)
+      || ((a.freqRank || Number.MAX_SAFE_INTEGER) - (b.freqRank || Number.MAX_SAFE_INTEGER))
+      || a.lemma.localeCompare(b.lemma, 'bn')
+      || a.english.localeCompare(b.english);
   });
 
   const quiz = prioritized.slice(0, Math.min(VMIX_QUIZ_SIZE, pool.length));
