@@ -708,16 +708,31 @@ nav h1 span { color: var(--accent); }
 }
 .profile-card {
   background: var(--card); border-radius: var(--radius);
-  padding: 24px 28px; cursor: pointer; text-align: center;
+  padding: 0; cursor: default; text-align: center;
   border: 2px solid transparent; transition: all 0.2s;
   min-width: 140px;
 }
-.profile-card:hover {
-  border-color: var(--accent); background: var(--card-hover);
-  transform: translateY(-2px); box-shadow: var(--shadow);
+.profile-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.pc-select {
+  padding: 24px 28px 12px; cursor: pointer;
+  border-radius: var(--radius) var(--radius) 0 0;
+  transition: background 0.15s;
 }
+.pc-select:hover { background: var(--card-hover); }
 .profile-card .pc-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
 .profile-card .pc-stats { font-size: 0.8rem; color: var(--text-dim); }
+.pc-actions {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 8px 12px 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.pc-action-btn {
+  background: rgba(255,255,255,0.06); border: none; color: var(--text-dim);
+  border-radius: 6px; padding: 4px 10px; font-size: 0.85rem;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.pc-action-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.pc-action-delete:hover { background: rgba(232,80,80,0.18); color: var(--wrong); }
 .profile-add {
   background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.15);
   border-radius: var(--radius); padding: 24px 28px; cursor: pointer;
@@ -816,6 +831,18 @@ nav h1 span { color: var(--accent); }
 .settings-panel button.danger { color: var(--wrong); }
 .settings-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
 .settings-panel button .pm-icon { margin-right: 8px; }
+.settings-collapsible { border: none; }
+.settings-collapsible-hdr {
+  cursor: pointer; list-style: none; display: flex;
+  align-items: center; justify-content: space-between;
+  margin: 0;
+}
+.settings-collapsible-hdr::-webkit-details-marker { display: none; }
+.settings-collapsible-hdr::after {
+  content: '▸'; font-size: 0.75rem; color: var(--text-dim);
+  margin-right: 18px; transition: transform 0.15s;
+}
+details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .settings-section-label {
   font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em;
   color: var(--text-dim); padding: 10px 18px 4px;
@@ -1023,7 +1050,8 @@ nav h1 span { color: var(--accent); }
   .vq-bengali { font-size: 3.5rem; }
   .grammar-content { padding: 20px; }
   .word-tile { padding: 8px 14px; font-size: 1rem; }
-  .profile-card { min-width: 120px; padding: 18px 20px; }
+  .profile-card { min-width: 120px; }
+  .pc-select { padding: 18px 20px 10px; }
   .profile-input { width: 220px; }
 
   /* Nav: hide back link and XP bar to prevent overflow on narrow phones */
@@ -1497,29 +1525,33 @@ nav h1 span { color: var(--accent); }
       <button class="mode-chip" id="listenmode-mixed" onclick="setListeningMode('mixed')">Text + Audio</button>
       <button class="mode-chip" id="listenmode-listening" onclick="setListeningMode('listening')">Audio only</button>
     </div>
-    <div class="settings-section-label">Theme</div>
-    <div class="settings-theme-swatches" id="theme-swatches">
-      <button class="theme-swatch" data-palette="sundarbans" onclick="setThemePalette('sundarbans')" style="--swatch-color:#3ec97a"><span class="swatch-dot"></span><span class="swatch-emoji">🌿</span><span class="swatch-name">Sundarbans</span></button>
-      <button class="theme-swatch" data-palette="padma"      onclick="setThemePalette('padma')"      style="--swatch-color:#4a9eff"><span class="swatch-dot"></span><span class="swatch-emoji">🌊</span><span class="swatch-name">Padma River</span></button>
-      <button class="theme-swatch" data-palette="mustard"    onclick="setThemePalette('mustard')"    style="--swatch-color:#e8c030"><span class="swatch-dot"></span><span class="swatch-emoji">🌻</span><span class="swatch-name">Mustard Fields</span></button>
-      <button class="theme-swatch" data-palette="terracotta" onclick="setThemePalette('terracotta')" style="--swatch-color:#e87040"><span class="swatch-dot"></span><span class="swatch-emoji">🏺</span><span class="swatch-name">Terracotta</span></button>
-      <button class="theme-swatch" data-palette="bengal"     onclick="setThemePalette('bengal')"     style="--swatch-color:#38b4d8"><span class="swatch-dot"></span><span class="swatch-emoji">🐟</span><span class="swatch-name">Bay of Bengal</span></button>
-      <button class="theme-swatch" data-palette="kantha"     onclick="setThemePalette('kantha')"     style="--swatch-color:#c058c8"><span class="swatch-dot"></span><span class="swatch-emoji">🧵</span><span class="swatch-name">Nakshi Kantha</span></button>
-      <button class="theme-swatch" data-palette="tiger"      onclick="setThemePalette('tiger')"      style="--swatch-color:#e89218"><span class="swatch-dot"></span><span class="swatch-emoji">🐯</span><span class="swatch-name">Royal Bengal Tiger</span></button>
-      <button class="theme-swatch" data-palette="boishakh"   onclick="setThemePalette('boishakh')"   style="--swatch-color:#e83030"><span class="swatch-dot"></span><span class="swatch-emoji">🌺</span><span class="swatch-name">Pohela Boishakh</span></button>
-      <button class="theme-swatch" data-palette="muslin"     onclick="setThemePalette('muslin')"     style="--swatch-color:#a8c8e8"><span class="swatch-dot"></span><span class="swatch-emoji">🪡</span><span class="swatch-name">Dhaka Muslin</span></button>
-      <button class="theme-swatch" data-palette="nouka"      onclick="setThemePalette('nouka')"      style="--swatch-color:#00c8b0"><span class="swatch-dot"></span><span class="swatch-emoji">🚣</span><span class="swatch-name">Nouka Baich</span></button>
-      <button class="theme-swatch" data-palette="ruposhi"    onclick="setThemePalette('ruposhi')"    style="--swatch-color:#78c840"><span class="swatch-dot"></span><span class="swatch-emoji">🌾</span><span class="swatch-name">Ruposhi Bangla</span></button>
-    </div>
+    <details class="settings-collapsible">
+      <summary class="settings-section-label settings-collapsible-hdr">Theme</summary>
+      <div class="settings-theme-swatches" id="theme-swatches">
+        <button class="theme-swatch" data-palette="sundarbans" onclick="setThemePalette('sundarbans')" style="--swatch-color:#3ec97a"><span class="swatch-dot"></span><span class="swatch-emoji">🌿</span><span class="swatch-name">Sundarbans</span></button>
+        <button class="theme-swatch" data-palette="padma"      onclick="setThemePalette('padma')"      style="--swatch-color:#4a9eff"><span class="swatch-dot"></span><span class="swatch-emoji">🌊</span><span class="swatch-name">Padma River</span></button>
+        <button class="theme-swatch" data-palette="mustard"    onclick="setThemePalette('mustard')"    style="--swatch-color:#e8c030"><span class="swatch-dot"></span><span class="swatch-emoji">🌻</span><span class="swatch-name">Mustard Fields</span></button>
+        <button class="theme-swatch" data-palette="terracotta" onclick="setThemePalette('terracotta')" style="--swatch-color:#e87040"><span class="swatch-dot"></span><span class="swatch-emoji">🏺</span><span class="swatch-name">Terracotta</span></button>
+        <button class="theme-swatch" data-palette="bengal"     onclick="setThemePalette('bengal')"     style="--swatch-color:#38b4d8"><span class="swatch-dot"></span><span class="swatch-emoji">🐟</span><span class="swatch-name">Bay of Bengal</span></button>
+        <button class="theme-swatch" data-palette="kantha"     onclick="setThemePalette('kantha')"     style="--swatch-color:#c058c8"><span class="swatch-dot"></span><span class="swatch-emoji">🧵</span><span class="swatch-name">Nakshi Kantha</span></button>
+        <button class="theme-swatch" data-palette="tiger"      onclick="setThemePalette('tiger')"      style="--swatch-color:#e89218"><span class="swatch-dot"></span><span class="swatch-emoji">🐯</span><span class="swatch-name">Royal Bengal Tiger</span></button>
+        <button class="theme-swatch" data-palette="boishakh"   onclick="setThemePalette('boishakh')"   style="--swatch-color:#e83030"><span class="swatch-dot"></span><span class="swatch-emoji">🌺</span><span class="swatch-name">Pohela Boishakh</span></button>
+        <button class="theme-swatch" data-palette="muslin"     onclick="setThemePalette('muslin')"     style="--swatch-color:#a8c8e8"><span class="swatch-dot"></span><span class="swatch-emoji">🪡</span><span class="swatch-name">Dhaka Muslin</span></button>
+        <button class="theme-swatch" data-palette="nouka"      onclick="setThemePalette('nouka')"      style="--swatch-color:#00c8b0"><span class="swatch-dot"></span><span class="swatch-emoji">🚣</span><span class="swatch-name">Nouka Baich</span></button>
+        <button class="theme-swatch" data-palette="ruposhi"    onclick="setThemePalette('ruposhi')"    style="--swatch-color:#78c840"><span class="swatch-dot"></span><span class="swatch-emoji">🌾</span><span class="swatch-name">Ruposhi Bangla</span></button>
+      </div>
+    </details>
     <div class="settings-divider"></div>
     <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
-    <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
-    <button onclick="importProgress()"><span class="pm-icon">⬆</span>Import Progress</button>
-    <div class="settings-divider"></div>
-    <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
-    <div class="settings-divider"></div>
-    <div class="settings-section-label">Debug</div>
-    <button onclick="unlockAllContent(this)"><span class="pm-icon">🔓</span>Unlock All &amp; Mark Mastered</button>
+    <details class="settings-collapsible">
+      <summary class="settings-section-label settings-collapsible-hdr">Advanced</summary>
+      <button onclick="importProgress()"><span class="pm-icon">⬆</span>Import Progress</button>
+      <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
+      <div class="settings-divider"></div>
+      <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
+      <div class="settings-divider"></div>
+      <button onclick="unlockAllContent(this)"><span class="pm-icon">🔓</span>Unlock All &amp; Mark Mastered</button>
+    </details>
   </div>
 </div>
 
@@ -5102,10 +5134,17 @@ function renderProfileList(forceShowPicker) {
   for (const u of users) {
     const card = document.createElement('div');
     card.className = 'profile-card';
-    card.onclick = () => selectProfile(u.name);
+    const safeName = escapeHTML(u.name);
+    const safeNameJs = u.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     card.innerHTML = `
-      <div class="pc-name">${escapeHTML(u.name)}</div>
-      <div class="pc-stats">⭐ ${u.xp} XP &nbsp; 🔥 ${u.streak}</div>
+      <div class="pc-select" onclick="selectProfile('${safeNameJs}')">
+        <div class="pc-name">${safeName}</div>
+        <div class="pc-stats">⭐ ${u.xp} XP &nbsp; 🔥 ${u.streak}</div>
+      </div>
+      <div class="pc-actions">
+        <button class="pc-action-btn" onclick="exportProfileData('${safeNameJs}')" title="Export progress">⬇</button>
+        <button class="pc-action-btn pc-action-delete" onclick="deleteProfile('${safeNameJs}')" title="Delete profile">🗑</button>
+      </div>
     `;
     list.appendChild(card);
   }
@@ -5312,6 +5351,30 @@ function deleteCurrentProfile() {
   showProfileScreen(true);
 }
 
+// Per-profile export/delete from the profile picker screen
+function exportProfileData(name) {
+  const data = _loadProgressLS(name) || {};
+  const envelope = { exportedBy: name, exportedAt: new Date().toISOString(), version: 1, progress: data };
+  const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bengali-progress-' + name.replace(/\s+/g, '-') + '-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function deleteProfile(name) {
+  if (!confirm('Delete profile "' + name + '"? All progress will be lost.')) return;
+  _deleteProgressLS(name);
+  if (name === currentUser) {
+    if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+    currentUser = null;
+    progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  }
+  renderProfileList(true);
+}
+
 // ════════════════════════════════════════
 //  EXPORT / IMPORT
 // ════════════════════════════════════════
@@ -5489,8 +5552,8 @@ function _buildAlphabetSection() {
 
 function _buildVocabSection() {
   const cats = [...new Set(VOCAB_DATA.map(w => w.category))];
-  const totalVocab = VOCAB_DATA.length;
-  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length;
+  const totalVocab = VOCAB_TOTAL_WORDS;
+  const masteredVocab = Object.entries(progress.mastery).filter(([k, v]) => k.startsWith('v:') && v >= 3).length;
   const isOpen = _progOpenSections.has('vocab');
   const arrowCls = isOpen ? 'open' : '';
 
@@ -5671,8 +5734,8 @@ function _statsEsc(e) { if (e.key === 'Escape') closeStatsPanel(); }
 function renderStatsPanel() {
   const totalLetters = ALL_LETTERS.length;
   const masteredLetters = ALL_LETTERS.filter(l => getMastery(l.letter) >= 3).length;
-  const totalVocab = VOCAB_DATA.length;
-  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length;
+  const totalVocab = VOCAB_TOTAL_WORDS;
+  const masteredVocab = Object.entries(progress.mastery).filter(([k, v]) => k.startsWith('v:') && v >= 3).length;
   const totalLessons = GRAMMAR_LESSONS.length;
   const masteredLessons = GRAMMAR_LESSONS.filter(l => getLessonProgress(l).pct === 100).length;
 
