@@ -1491,6 +1491,9 @@ nav h1 span { color: var(--accent); }
     <button onclick="importProgress()"><span class="pm-icon">⬆</span>Import Progress</button>
     <div class="settings-divider"></div>
     <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
+    <div class="settings-divider"></div>
+    <div class="settings-section-label">Debug</div>
+    <button onclick="unlockAllContent(this)"><span class="pm-icon">🔓</span>Unlock All &amp; Mark Mastered</button>
   </div>
 </div>
 
@@ -5071,6 +5074,19 @@ function closeSettingsPanel() {
   document.removeEventListener('keydown', _settingsEsc);
 }
 function _settingsEsc(e) { if (e.key === 'Escape') closeSettingsPanel(); }
+
+// ── Debug: Unlock All & Mark Mastered ───────────────────────────────
+async function unlockAllContent(btn) {
+  btn.disabled = true;
+  btn.textContent = 'Loading packs…';
+  await Promise.all([1, 2, 3].map(n => loadVocabPack(n)));
+  for (const w of VMIX_CURRICULUM) progress.mastery['v:' + w.lemma] = 3;
+  for (const item of MIXED_CURRICULUM) progress.mastery[item.letter] = 3;
+  saveProgress();
+  closeSettingsPanel();
+  renderHome();
+  renderVocabHome();
+}
 
 // ── FIB Input Mode ──────────────────────────────────────────────────
 function getFibMode() { return localStorage.getItem('bengali_fib_mode') || 'latin'; }
