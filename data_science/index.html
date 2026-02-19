@@ -631,6 +631,7 @@ a{color:var(--accent);text-decoration:none}
   <div id="screen-results" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
   <div id="screen-lesson" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
   <div id="screen-glossary" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
+  <div id="screen-placement" class="screen" style="position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;padding-bottom:72px;display:none"></div>
 
 </div><!-- /main -->
 
@@ -1235,7 +1236,7 @@ function incrementMastery(key) {
 // ═══════════════════════════════════════════════════════════
 let activeTab = 0;
 const TAB_SCREENS = ['today', 'concepts', 'ml', 'stats'];
-const SUB_SCREENS = ['flashcard', 'quiz', 'results', 'lesson', 'glossary'];
+const SUB_SCREENS = ['flashcard', 'quiz', 'results', 'lesson', 'glossary', 'placement'];
 
 function switchTab(idx) {
   // Close any open sub-screens
@@ -1321,6 +1322,18 @@ function renderToday() {
         </div>
         <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px">
           <div style="height:100%;width:${Math.round(learnedConcepts/totalConcepts*100)}%;background:var(--accent);border-radius:3px;transition:width .4s"></div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 16px 14px">
+      <div style="background:linear-gradient(135deg,#1e1b4b,#312e81);border:1px solid rgba(99,102,241,.35);border-radius:var(--radius);padding:18px;cursor:pointer" onclick="startPlacementTest()">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:28px">🎯</div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;color:#e0e7ff;margin-bottom:3px">Placement Test</div>
+            <div style="font-size:12px;color:#a5b4fc;line-height:1.4">~20 adaptive questions across all topics. Automatically sets your mastery levels so you start where you belong.</div>
+          </div>
+          <div style="color:#818cf8;font-size:20px">→</div>
         </div>
       </div>
     </div>
@@ -1710,6 +1723,510 @@ function retakeQuiz() {
   if (source === 'concept') startConceptQuiz(sourceId);
   else if (source === 'ml') startMLQuiz(sourceId);
   else if (source === 'stats') startStatsQuiz(sourceId);
+}
+
+// ═══════════════════════════════════════════════════════════
+// PLACEMENT TEST
+// ═══════════════════════════════════════════════════════════
+
+const PLACEMENT_TOPICS = [
+  { id: 'ds-foundations',  label: 'DS Foundations',    icon: '🔭', moduleIds: ['what-is-ds','types-of-data','data-structures','data-collection'] },
+  { id: 'data-prep',       label: 'Data Preparation',  icon: '🧹', moduleIds: ['data-quality','eda','visualization','feature-engineering'] },
+  { id: 'ml-fundamentals', label: 'ML Fundamentals',   icon: '⚖️', moduleIds: ['train-test','bias-variance','interpretability','ethics'] },
+  { id: 'data-engineering',label: 'Data Engineering',  icon: '🏗️', moduleIds: ['databases-sql','nosql-bigdata','pipelines-etl','data-engineering'] },
+  { id: 'mathematics',     label: 'Mathematics',        icon: '📐', moduleIds: ['math-foundations','calculus','linear-algebra-basics','linear-algebra-advanced','information-theory'] },
+  { id: 'ml-algorithms',   label: 'ML Algorithms',     icon: '🤖', mlCats: ['supervised','unsupervised','evaluation'] },
+  { id: 'deep-learning',   label: 'Deep Learning',     icon: '🔥', mlCats: ['deep'] },
+  { id: 'statistics',      label: 'Statistics',         icon: '📊', statsIds: [1,2,3,4,5,6,7,8,9,10] },
+  { id: 'tools',           label: 'Tools & Tech',       icon: '🛠️', moduleIds: ['python-ecosystem','dl-frameworks','dev-tools','cloud-platforms','mlops'] },
+];
+
+let pt = null; // placement test state
+
+function startPlacementTest() {
+  pt = {
+    topics: PLACEMENT_TOPICS.map(t => ({
+      ...t,
+      difficulty: 'easy',
+      correct: 0,
+      wrong: 0,
+      asked: 0,
+      done: false,
+      finalMastery: null,
+      usedIds: [],
+    })),
+    topicCursor: 0,
+    totalAsked: 0,
+    currentQ: null,
+    awaitingNext: false,
+    feedbackShown: false,
+  };
+  showScreen('placement');
+  renderPlacementQuestion();
+}
+
+// ── Question pool helpers ──────────────────────────────────
+
+function ptConceptsForTopic(topicState) {
+  if (!topicState.moduleIds) return [];
+  return topicState.moduleIds.flatMap(mid => {
+    const m = CONCEPT_MODULES.find(x => x.id === mid);
+    return m ? m.concepts : [];
+  });
+}
+
+function ptMLForTopic(topicState) {
+  if (!topicState.mlCats || typeof ALGORITHM_DATA === 'undefined') return [];
+  return ALGORITHM_DATA.filter(a => topicState.mlCats.includes(a.category));
+}
+
+function ptStatsForTopic(topicState) {
+  if (!topicState.statsIds || typeof STATS_LESSONS === 'undefined') return [];
+  return topicState.statsIds.flatMap(id => {
+    const l = STATS_LESSONS.find(x => x.id === id);
+    return l ? l.quizzes.map(q => ({ ...q, lessonId: id })) : [];
+  });
+}
+
+function ptShuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function ptPickUnused(pool, usedIds) {
+  const unused = pool.filter(x => !usedIds.includes(x.id || x.term));
+  if (unused.length === 0) return pool[Math.floor(Math.random() * pool.length)];
+  return unused[Math.floor(Math.random() * unused.length)];
+}
+
+// ── Question generators ────────────────────────────────────
+
+function genConceptQuestion(topicState, difficulty) {
+  const pool = ptConceptsForTopic(topicState);
+  if (pool.length < 2) return null;
+  const concept = ptPickUnused(pool, topicState.usedIds);
+  topicState.usedIds.push(concept.id);
+
+  // Distractors: prefer same-module concepts, fall back to any concept
+  const allConcepts = CONCEPT_MODULES.flatMap(m => m.concepts);
+  const distractorPool = allConcepts.filter(c => c.id !== concept.id);
+  const distractors = ptShuffle(distractorPool).slice(0, 3);
+
+  if (difficulty === 'easy') {
+    // Show term → pick correct definition
+    const opts = ptShuffle([concept, ...distractors]).map(c => c.definition.slice(0, 90) + (c.definition.length > 90 ? '…' : ''));
+    const correctDef = concept.definition.slice(0, 90) + (concept.definition.length > 90 ? '…' : '');
+    return {
+      type: 'mc',
+      question: `Which definition best describes:\n\n"${concept.term}"?`,
+      options: opts,
+      answer: opts.indexOf(correctDef),
+      explanation: concept.analogy || concept.example || concept.definition,
+      masteryKeys: ptMasteryKeysForTopic(topicState),
+    };
+  }
+
+  if (difficulty === 'medium') {
+    // Show definition → pick correct term
+    const opts = ptShuffle([concept, ...distractors]).map(c => c.term);
+    return {
+      type: 'mc',
+      question: `Which term matches this description?\n\n"${concept.definition.slice(0, 160)}${concept.definition.length > 160 ? '…' : ''}"`,
+      options: opts,
+      answer: opts.indexOf(concept.term),
+      explanation: concept.analogy || concept.example || '',
+      masteryKeys: ptMasteryKeysForTopic(topicState),
+    };
+  }
+
+  // hard: show analogy or example → pick term; use related distractors from same topic
+  const sameTopicPool = pool.filter(c => c.id !== concept.id);
+  const sameDistractors = ptShuffle(sameTopicPool).slice(0, 3);
+  const hardDistractors = sameDistractors.length >= 3 ? sameDistractors : [...sameDistractors, ...ptShuffle(distractorPool).slice(0, 3 - sameDistractors.length)];
+  const opts = ptShuffle([concept, ...hardDistractors.slice(0, 3)]).map(c => c.term);
+  const clue = concept.analogy || concept.example || concept.definition;
+  return {
+    type: 'mc',
+    question: `Which concept does this scenario describe?\n\n"${clue.slice(0, 200)}${clue.length > 200 ? '…' : ''}"`,
+    options: opts,
+    answer: opts.indexOf(concept.term),
+    explanation: concept.definition,
+    masteryKeys: ptMasteryKeysForTopic(topicState),
+  };
+}
+
+function genMLQuestion(topicState, difficulty) {
+  const pool = ptMLForTopic(topicState);
+  if (pool.length < 2) return null;
+  const algo = ptPickUnused(pool, topicState.usedIds);
+  topicState.usedIds.push(algo.id);
+
+  const distractors = ptShuffle(pool.filter(a => a.id !== algo.id)).slice(0, 3);
+
+  if (difficulty === 'easy') {
+    const opts = ptShuffle([algo, ...distractors]).map(a => a.shortDef.slice(0, 80) + '…');
+    const correctShort = algo.shortDef.slice(0, 80) + '…';
+    return {
+      type: 'mc',
+      question: `Which definition best describes:\n\n"${algo.term}"?`,
+      options: opts,
+      answer: opts.indexOf(correctShort),
+      explanation: algo.whenToUse,
+      masteryKeys: ptMasteryKeysForTopic(topicState),
+    };
+  }
+
+  if (difficulty === 'medium') {
+    const opts = ptShuffle([algo, ...distractors]).map(a => a.term);
+    return {
+      type: 'mc',
+      question: `Which algorithm fits this description?\n\n"${algo.shortDef}"`,
+      options: opts,
+      answer: opts.indexOf(algo.term),
+      explanation: algo.whenToUse,
+      masteryKeys: ptMasteryKeysForTopic(topicState),
+    };
+  }
+
+  // hard: show when-to-use → pick term
+  const opts = ptShuffle([algo, ...distractors]).map(a => a.term);
+  return {
+    type: 'mc',
+    question: `Which algorithm is best suited for this situation?\n\n"${algo.whenToUse}"`,
+    options: opts,
+    answer: opts.indexOf(algo.term),
+    explanation: algo.tradeoffs,
+    masteryKeys: ptMasteryKeysForTopic(topicState),
+  };
+}
+
+function genStatsQuestion(topicState, difficulty) {
+  const allQuizzes = ptStatsForTopic(topicState);
+  if (!allQuizzes.length) return null;
+  // Filter to difficulty-appropriate quizzes (later quizzes in each lesson are harder)
+  const byLesson = {};
+  allQuizzes.forEach(q => {
+    byLesson[q.lessonId] = byLesson[q.lessonId] || [];
+    byLesson[q.lessonId].push(q);
+  });
+  // easy: first quiz per lesson; medium: second; hard: last
+  const diffIdx = { easy: 0, medium: 1, hard: -1 };
+  const idx = diffIdx[difficulty];
+  const candidates = Object.values(byLesson)
+    .map(qs => idx === -1 ? qs[qs.length - 1] : qs[Math.min(idx, qs.length - 1)])
+    .filter(q => q && !topicState.usedIds.includes(q.question));
+  if (!candidates.length) return null;
+  const q = candidates[Math.floor(Math.random() * candidates.length)];
+  topicState.usedIds.push(q.question);
+
+  if (q.type === 'tf') {
+    return {
+      type: 'tf',
+      question: q.question,
+      answer: q.answer,
+      explanation: q.explanation,
+      masteryKeys: ptMasteryKeysForTopic(topicState),
+    };
+  }
+  return {
+    type: 'mc',
+    question: q.question,
+    options: q.options,
+    answer: q.answer,
+    explanation: q.explanation,
+    masteryKeys: ptMasteryKeysForTopic(topicState),
+  };
+}
+
+function ptMasteryKeysForTopic(topicState) {
+  const keys = [];
+  if (topicState.moduleIds) {
+    topicState.moduleIds.forEach(mid => {
+      const m = CONCEPT_MODULES.find(x => x.id === mid);
+      if (m) m.concepts.forEach(c => keys.push('c:' + c.id));
+    });
+  }
+  if (topicState.mlCats && typeof ALGORITHM_DATA !== 'undefined') {
+    ALGORITHM_DATA.filter(a => topicState.mlCats.includes(a.category))
+      .forEach(a => keys.push('ml:' + a.id));
+  }
+  if (topicState.statsIds && typeof STATS_LESSONS !== 'undefined') {
+    topicState.statsIds.forEach(id => keys.push('g:' + id));
+  }
+  return keys;
+}
+
+// ── Adaptive state machine ─────────────────────────────────
+
+function ptNextUndone() {
+  // Round-robin from cursor, skipping done topics
+  const n = pt.topics.length;
+  for (let i = 0; i < n; i++) {
+    const idx = (pt.topicCursor + i) % n;
+    if (!pt.topics[idx].done) return idx;
+  }
+  return -1; // all done
+}
+
+function ptGenerateQuestion(topicState) {
+  if (topicState.moduleIds) return genConceptQuestion(topicState, topicState.difficulty);
+  if (topicState.mlCats)    return genMLQuestion(topicState, topicState.difficulty);
+  if (topicState.statsIds)  return genStatsQuestion(topicState, topicState.difficulty);
+  return null;
+}
+
+function ptAdvanceDifficulty(topicState) {
+  if (topicState.difficulty === 'easy')   topicState.difficulty = 'medium';
+  else if (topicState.difficulty === 'medium') topicState.difficulty = 'hard';
+}
+
+function ptResolveTopic(topicState) {
+  // Called when asked >= 2 and we decide the topic is done enough
+  const ratio = topicState.correct / Math.max(topicState.asked, 1);
+  if (ratio === 1 && topicState.difficulty === 'hard')  topicState.finalMastery = 3;
+  else if (ratio >= 0.67) topicState.finalMastery = 2;
+  else if (ratio >= 0.34) topicState.finalMastery = 1;
+  else                    topicState.finalMastery = 0;
+  topicState.done = true;
+}
+
+// ── Rendering ──────────────────────────────────────────────
+
+function renderPlacementQuestion() {
+  const allDone = pt.topics.every(t => t.done);
+  const MAX_Q = 27; // 3 per topic × 9 topics
+  if (allDone || pt.totalAsked >= MAX_Q) {
+    renderPlacementResults();
+    return;
+  }
+
+  const topicIdx = ptNextUndone();
+  if (topicIdx === -1) { renderPlacementResults(); return; }
+
+  const topicState = pt.topics[topicIdx];
+  pt.topicCursor = (topicIdx + 1) % pt.topics.length;
+
+  const q = ptGenerateQuestion(topicState);
+  if (!q) {
+    topicState.done = true;
+    topicState.finalMastery = topicState.correct > 0 ? 1 : 0;
+    renderPlacementQuestion();
+    return;
+  }
+
+  pt.currentQ = { ...q, topicIdx };
+  pt.awaitingNext = false;
+  pt.feedbackShown = false;
+
+  const undoneCount = pt.topics.filter(t => !t.done).length;
+  const progressPct = Math.round(((pt.topics.length - undoneCount) / pt.topics.length) * 100);
+  const diffLabel = { easy: '⬜ Introductory', medium: '🟦 Intermediate', hard: '🟥 Advanced' }[topicState.difficulty];
+
+  let optionsHTML = '';
+  if (q.type === 'mc') {
+    optionsHTML = '<div class="quiz-options">' +
+      q.options.map((o, i) => `<button class="quiz-opt" id="ptopt-${i}" onclick="ptSubmit(${i})">${o}</button>`).join('') +
+      '</div>';
+  } else {
+    optionsHTML = '<div class="quiz-options">' +
+      ['True', 'False'].map((o, i) =>
+        `<button class="quiz-opt" id="ptopt-${i}" onclick="ptSubmitTF(${i === 0})">${o}</button>`
+      ).join('') + '</div>';
+  }
+
+  document.getElementById('screen-placement').innerHTML = `
+    <div class="quiz-header" style="padding:16px 16px 0;display:flex;align-items:center;gap:12px">
+      <button class="back-btn" onclick="confirmExitPlacement()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+        Exit Test
+      </button>
+      <div style="flex:1;text-align:right;font-size:12px;color:var(--text-dim)">Q${pt.totalAsked + 1} · ${topicState.icon} ${topicState.label}</div>
+    </div>
+    <div style="height:3px;background:rgba(255,255,255,.08);margin:12px 16px 0">
+      <div style="height:100%;width:${progressPct}%;background:var(--accent);transition:width .3s;border-radius:2px"></div>
+    </div>
+    <div class="quiz-body" style="padding:20px 16px 0">
+      <div style="font-size:11px;color:var(--text-dim);font-weight:600;margin-bottom:6px">${diffLabel} · ${pt.topics.filter(t=>t.done).length}/${pt.topics.length} topics assessed</div>
+      <div class="quiz-question">${q.question}</div>
+      ${optionsHTML}
+      <div class="quiz-feedback" id="pt-feedback"></div>
+      <button class="quiz-next" id="pt-next" style="display:none" onclick="ptNext()">Next Question →</button>
+    </div>
+  `;
+}
+
+function ptSubmit(chosen) {
+  const q = pt.currentQ;
+  if (pt.feedbackShown) return;
+  pt.feedbackShown = true;
+
+  const correct = chosen === q.answer;
+  ptRecord(correct);
+
+  document.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.answer) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+  });
+  ptShowFeedback(correct, q.explanation);
+}
+
+function ptSubmitTF(chosen) {
+  const q = pt.currentQ;
+  if (pt.feedbackShown) return;
+  pt.feedbackShown = true;
+
+  const correct = chosen === q.answer;
+  ptRecord(correct);
+
+  document.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+    btn.disabled = true;
+    const btnVal = i === 0; // True button
+    if (btnVal === q.answer) btn.classList.add('correct');
+    else if (btnVal === chosen) btn.classList.add('wrong');
+  });
+  ptShowFeedback(correct, q.explanation);
+}
+
+function ptRecord(correct) {
+  const topicState = pt.topics[pt.currentQ.topicIdx];
+  topicState.asked++;
+  pt.totalAsked++;
+  if (correct) topicState.correct++;
+  else         topicState.wrong++;
+
+  // Adaptive: after each answer, decide whether to upgrade difficulty or resolve
+  if (topicState.asked >= 2) {
+    const allRight = topicState.correct === topicState.asked;
+    const allWrong = topicState.wrong >= 2;
+    if (allWrong) {
+      ptResolveTopic(topicState);
+    } else if (allRight && topicState.difficulty === 'hard') {
+      ptResolveTopic(topicState);
+    } else if (allRight && topicState.asked === 2) {
+      // 2/2 at easy or medium → bump up difficulty, ask one more
+      ptAdvanceDifficulty(topicState);
+    } else if (topicState.asked >= 3) {
+      ptResolveTopic(topicState);
+    } else if (correct) {
+      ptAdvanceDifficulty(topicState);
+    }
+  } else if (topicState.asked === 1 && correct) {
+    ptAdvanceDifficulty(topicState);
+  }
+}
+
+function ptShowFeedback(correct, explanation) {
+  const fb = document.getElementById('pt-feedback');
+  const nx = document.getElementById('pt-next');
+  if (fb) {
+    fb.className = 'quiz-feedback show ' + (correct ? 'correct' : 'wrong');
+    fb.innerHTML = `<strong>${correct ? '✓ Correct!' : '✗ Incorrect'}</strong>${explanation ? `<div class="explanation">${explanation}</div>` : ''}`;
+  }
+  if (nx) nx.style.display = 'block';
+}
+
+function ptNext() {
+  renderPlacementQuestion();
+}
+
+function confirmExitPlacement() {
+  if (confirm('Exit the placement test? Progress so far will be lost.')) {
+    hideSubScreen();
+  }
+}
+
+// ── Results ────────────────────────────────────────────────
+
+function renderPlacementResults() {
+  // Resolve any undone topics with what we have
+  pt.topics.forEach(t => { if (!t.done) ptResolveTopic(t); });
+
+  // Apply mastery to progress
+  applyPlacementMastery();
+
+  const masteryLabel = ['Needs Study', 'Familiar', 'Proficient', 'Mastered'];
+  const masteryColor = ['#ef4444', '#f59e0b', '#6366f1', '#22c55e'];
+  const masteryIcon  = ['📚', '🌱', '⭐', '🏆'];
+
+  const topicRows = pt.topics.map(t => {
+    const m = t.finalMastery ?? 0;
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">
+        <div style="font-size:22px;width:32px;text-align:center">${t.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600">${t.label}</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t.correct}/${t.asked} correct · ${['Easy','Medium','Hard'][['easy','medium','hard'].indexOf(t.difficulty)] || ''} level reached</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:18px">${masteryIcon[m]}</div>
+          <div style="font-size:10px;font-weight:700;color:${masteryColor[m]}">${masteryLabel[m]}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const avgMastery = pt.topics.reduce((s, t) => s + (t.finalMastery ?? 0), 0) / pt.topics.length;
+  const overallPct = Math.round((avgMastery / 3) * 100);
+  const c = 2 * Math.PI * 54;
+  const dashOffset = c - (overallPct / 100) * c;
+
+  document.getElementById('screen-placement').innerHTML = `
+    <div style="padding:24px 16px 0;display:flex;align-items:center;gap:12px">
+      <div style="font-size:18px;font-weight:700;flex:1">Placement Results</div>
+      <button class="icon-btn" onclick="hideSubScreen();renderToday()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;padding:24px 16px">
+      <div style="position:relative;width:120px;height:120px;margin-bottom:16px">
+        <svg width="120" height="120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--accent)" stroke-width="8"
+            stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${dashOffset.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+          <div style="font-size:28px;font-weight:700;color:var(--accent)">${overallPct}%</div>
+          <div style="font-size:10px;color:var(--text-dim)">overall</div>
+        </div>
+      </div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px;text-align:center">
+        ${overallPct >= 80 ? 'Strong foundation!' : overallPct >= 50 ? 'Solid start!' : 'Lots to explore!'}
+      </div>
+      <div style="font-size:13px;color:var(--text-dim);text-align:center;margin-bottom:8px">
+        Mastery levels have been updated across all topics.
+      </div>
+      <div style="font-size:12px;color:var(--accent);background:var(--accent-glow);border-radius:20px;padding:4px 14px;margin-bottom:24px">
+        +${pt.totalAsked * 5} XP earned
+      </div>
+    </div>
+    <div style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+      <div style="padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim)">Topic Breakdown</div>
+      ${topicRows}
+    </div>
+    <div style="padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn-primary" onclick="hideSubScreen();switchTab(1)">Start Studying Concepts →</button>
+      <button class="btn-secondary" onclick="hideSubScreen();renderToday()">Back to Today</button>
+      <button class="btn-secondary" onclick="startPlacementTest()">Retake Placement Test</button>
+    </div>
+  `;
+}
+
+function applyPlacementMastery() {
+  pt.topics.forEach(t => {
+    const m = t.finalMastery ?? 0;
+    (ptMasteryKeysForTopic(t)).forEach(key => {
+      // Only update if placement result is higher than current, OR if it's lower (reset)
+      // We set directly: placement test is authoritative
+      progress.mastery[key] = m;
+    });
+  });
+  progress.xp = (progress.xp || 0) + pt.totalAsked * 5;
+  saveProgress();
 }
 
 // ═══════════════════════════════════════════════════════════
