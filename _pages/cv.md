@@ -34,3 +34,7 @@ nav_order: 3
 </ul>
 
 ---
+
+## Publications
+
+{% bibliography %}
