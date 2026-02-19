@@ -14,3 +14,5 @@ Bengali flashcards app/**
 bengali/grammar.js
 bengali/vocab.js
 bengali/index.html
+bengali/vocab-pack-*.json
+bengali/Vocabulary corpus/
