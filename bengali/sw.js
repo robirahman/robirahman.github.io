@@ -1,7 +1,7 @@
 // Bengali App — Service Worker
 // Cache-first strategy for offline support.
 // Bump CACHE_VERSION to force cache refresh after major updates.
-const CACHE_VERSION = "bengali-v1";
+const CACHE_VERSION = "bengali-v2";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
