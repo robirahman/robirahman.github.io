@@ -1246,6 +1246,15 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   color: var(--accent); cursor: pointer;
 }
 .search-more:hover { text-decoration: underline; }
+.sri-add-btn {
+  margin-left: auto; flex-shrink: 0; align-self: center;
+  background: rgba(244,165,50,0.12); border: 1px solid rgba(244,165,50,0.4);
+  color: var(--accent); border-radius: 12px; padding: 3px 9px;
+  font-size: 0.72rem; font-weight: 700; cursor: pointer;
+  transition: background 0.15s; white-space: nowrap;
+}
+.sri-add-btn:hover { background: rgba(244,165,50,0.28); }
+.sri-add-btn.added { background: rgba(100,220,100,0.12); border-color: rgba(100,220,100,0.4); color: #6dc97a; }
 .search-divider {
   height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0;
 }
@@ -4132,6 +4141,18 @@ function studyWordNext(lemma) {
   if (btn) btn.textContent = '✓ In study queue';
 }
 
+// Add-to-study from search overlay without leaving the panel
+function searchAddToStudy(lemma, btn) {
+  if (!progress.vmixPriority) progress.vmixPriority = [];
+  if (!progress.vmixPriority.includes(lemma)) {
+    progress.vmixPriority.unshift(lemma);
+    saveProgress();
+  }
+  btn.textContent = '✓ Queued';
+  btn.classList.add('added');
+  btn.title = 'Already in study queue';
+}
+
 function closeWordModal() {
   document.getElementById('word-modal').classList.remove('open');
   document.removeEventListener('keydown', _wordModalEsc);
@@ -6955,10 +6976,13 @@ function runSearch(q) {
     html += `<div class="search-group">
       <div class="search-group-title">Vocabulary</div>`;
     vocabHits.slice(0, MAX_VOCAB).forEach(w => {
-      html += `<div class="search-result-item" onclick="closeSearch();showVocabDetail(${JSON.stringify(w.lemma)})">
+      const inQueue = (progress.vmixPriority || []).includes(w.lemma);
+      const safeLemma = escHtml(JSON.stringify(w.lemma));
+      html += `<div class="search-result-item" onclick="closeSearch();showVocabDetail(${safeLemma})">
         <span class="sri-bengali">${escHtml(w.lemma)}</span>
         <span class="sri-detail">${escHtml(w.roman)} · ${escHtml(w.english)}</span>
         <span class="sri-tag">${escHtml(w.pos)}</span>
+        <button class="sri-add-btn${inQueue ? ' added' : ''}" onclick="event.stopPropagation();searchAddToStudy(${safeLemma},this)" title="${inQueue ? 'Already in study queue' : 'Add to study queue'}">${inQueue ? '✓ Queued' : '+ Study'}</button>
       </div>`;
     });
     if (vocabHits.length > MAX_VOCAB) {

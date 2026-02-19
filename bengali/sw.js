@@ -1,7 +1,8 @@
 // Bengali App — Service Worker
-// Cache-first strategy for offline support.
-// Bump CACHE_VERSION to force cache refresh after major updates.
-const CACHE_VERSION = "bengali-v3";
+// Data files use stale-while-revalidate so deploys are reflected on next load.
+// Other same-origin assets use cache-first for offline support.
+// Bump CACHE_VERSION to force full cache refresh after major updates.
+const CACHE_VERSION = "bengali-v4";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -14,6 +15,16 @@ const PRECACHE_URLS = [
   "./vocab-pack-3.json",
   "./manifest.json",
 ];
+
+// Data files that change between deploys — use stale-while-revalidate
+const DATA_FILE_RE = /\/(vocab\.js|grammar\.js|phrases\.js|vocab-pack-\d+\.json)(\?.*)?$/;
+
+function cacheAndReturn(request, response) {
+  if (!response || response.status !== 200 || response.type === "opaque") return response;
+  const clone = response.clone();
+  caches.open(CACHE_VERSION).then((cache) => cache.put(request, clone));
+  return response;
+}
 
 // Install: pre-cache core assets
 self.addEventListener("install", (event) => {
@@ -29,26 +40,36 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for same-origin requests; network-only for third-party
+// Fetch: stale-while-revalidate for data files; cache-first for everything else
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
   // Only intercept same-origin GET requests
   if (event.request.method !== "GET" || url.origin !== self.location.origin) return;
 
-  // Google Fonts — network-first (not cached; fails gracefully offline)
+  // Google Fonts — network-only (not cached; fails gracefully offline)
   if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com") return;
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      // Not in cache — fetch from network and cache the response
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type === "opaque") return response;
-        const clone = response.clone();
-        caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
-        return response;
-      });
-    })
-  );
+  if (DATA_FILE_RE.test(url.pathname)) {
+    // Stale-while-revalidate: serve cached immediately, update in background
+    event.respondWith(
+      caches.open(CACHE_VERSION).then((cache) =>
+        cache.match(event.request).then((cached) => {
+          const networkFetch = fetch(event.request).then((response) => {
+            cacheAndReturn(event.request, response.clone());
+            return response;
+          }).catch(() => null);
+          return cached || networkFetch;
+        })
+      )
+    );
+  } else {
+    // Cache-first for shell / static assets
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => cacheAndReturn(event.request, response));
+      })
+    );
+  }
 });
