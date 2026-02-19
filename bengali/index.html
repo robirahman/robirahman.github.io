@@ -1125,6 +1125,62 @@ nav h1 span { color: var(--accent); }
   --consonant: #3a7a28;
   --special: #c07810;
 }
+
+/* ── Cultural palette themes ────────────────────────────────────────────── */
+/* Each palette overrides the CSS variables. The dark/light toggle (data-theme)
+   continues to work independently within every palette.                      */
+
+/* Padma River — পদ্মা নদী */
+[data-palette="padma"] { --bg:#0a0f1e; --card:#111b33; --card-hover:#1a2845; --accent:#4a9eff; --accent-dim:#2d6dbf; --text:#ddeeff; --text-dim:#6a9fd8; --gold:#c8b040; --vowel:#7ac4f0; --consonant:#5a8fd0; --special:#f0a860; }
+[data-palette="padma"][data-theme="light"] { --bg:#e8f0ff; --card:#fff; --card-hover:#d5e6ff; --accent:#1a5dc8; --accent-dim:#3478e8; --text:#081428; --text-dim:#2d5a9a; --vowel:#1a7ab0; --consonant:#2a5a98; }
+
+/* Mustard Fields — সরিষা মাঠ */
+[data-palette="mustard"] { --bg:#16120a; --card:#231b0d; --card-hover:#30260f; --accent:#e8c030; --accent-dim:#b09020; --text:#f5ecd0; --text-dim:#a89050; --gold:#e8a820; --vowel:#f0d060; --consonant:#c8a840; --special:#e89030; }
+[data-palette="mustard"][data-theme="light"] { --bg:#fdf6e3; --card:#fff; --card-hover:#fff0c0; --accent:#b07800; --accent-dim:#d09010; --text:#201800; --text-dim:#806010; --vowel:#a07800; --consonant:#907000; }
+
+/* Terracotta — টেরাকোটা */
+[data-palette="terracotta"] { --bg:#1a0e0a; --card:#2e1810; --card-hover:#3e2118; --accent:#e87040; --accent-dim:#b04f28; --text:#f5e0d5; --text-dim:#a06850; --gold:#d0a040; --vowel:#f0905a; --consonant:#e06840; --special:#f0c050; }
+[data-palette="terracotta"][data-theme="light"] { --bg:#faf0ea; --card:#fff; --card-hover:#ffe5d5; --accent:#c04020; --accent-dim:#e05030; --text:#200808; --text-dim:#804030; --vowel:#a03010; --consonant:#903020; }
+
+/* Bay of Bengal — বঙ্গোপসাগর */
+[data-palette="bengal"] { --bg:#040d1a; --card:#0a1628; --card-hover:#10203a; --accent:#38b4d8; --accent-dim:#1e7a9a; --text:#d0eaf8; --text-dim:#5090b8; --gold:#c8b040; --vowel:#60c8e8; --consonant:#4090c0; --special:#f0a060; }
+[data-palette="bengal"][data-theme="light"] { --bg:#e0f0fa; --card:#fff; --card-hover:#c8e8f8; --accent:#0c5c7a; --accent-dim:#1a7898; --text:#040c1a; --text-dim:#1a4a68; --vowel:#0a6a8a; --consonant:#0a5070; }
+
+/* Nakshi Kantha — নকশিকাঁথা */
+[data-palette="kantha"] { --bg:#160a1e; --card:#231030; --card-hover:#30163e; --accent:#c058c8; --accent-dim:#8a3898; --text:#f0d8f8; --text-dim:#9858a8; --gold:#e0a840; --vowel:#e080f0; --consonant:#b848c8; --special:#f0a060; }
+[data-palette="kantha"][data-theme="light"] { --bg:#fae8ff; --card:#fff; --card-hover:#f0d0ff; --accent:#8020a0; --accent-dim:#a030c0; --text:#180820; --text-dim:#6a2880; --vowel:#801898; --consonant:#701480; }
+
+/* Royal Bengal Tiger — বাংলা বাঘ */
+[data-palette="tiger"] { --bg:#1a0f08; --card:#2e1a0a; --card-hover:#3e2410; --accent:#e89218; --accent-dim:#b07010; --text:#f5e8d0; --text-dim:#b08850; --gold:#e8b040; --vowel:#f0b040; --consonant:#d09030; --special:#c05020; }
+[data-palette="tiger"][data-theme="light"] { --bg:#fdf5e8; --card:#fff; --card-hover:#fff0d0; --accent:#b07008; --accent-dim:#c88810; --text:#1c0e00; --text-dim:#7a5020; --vowel:#9a6010; --consonant:#8a5008; }
+
+/* Pohela Boishakh — পহেলা বৈশাখ */
+[data-palette="boishakh"] { --bg:#1a0808; --card:#2e1010; --card-hover:#3e1818; --accent:#e83030; --accent-dim:#a81818; --text:#f8e8e8; --text-dim:#b07070; --gold:#e8b030; --vowel:#f07070; --consonant:#e04040; --special:#e0a020; }
+[data-palette="boishakh"][data-theme="light"] { --bg:#fff0f0; --card:#fff; --card-hover:#ffe0e0; --accent:#c01818; --accent-dim:#e02020; --text:#200000; --text-dim:#902020; --vowel:#980808; --consonant:#880000; }
+
+/* Dhaka Muslin — ঢাকাই মসলিন */
+[data-palette="muslin"] { --bg:#0d1118; --card:#161e2c; --card-hover:#1e2a3a; --accent:#a8c8e8; --accent-dim:#6898c0; --text:#e8eef8; --text-dim:#7890b0; --gold:#d0c060; --vowel:#b8d8f0; --consonant:#90b8d8; --special:#f0c080; }
+[data-palette="muslin"][data-theme="light"] { --bg:#f0f4fa; --card:#fff; --card-hover:#e0eaf8; --accent:#3870a8; --accent-dim:#5090c8; --text:#080c18; --text-dim:#3060a0; --vowel:#2868a0; --consonant:#205888; }
+
+/* Nouka Baich — নৌকাবাইচ */
+[data-palette="nouka"] { --bg:#040e12; --card:#081820; --card-hover:#0e2430; --accent:#00c8b0; --accent-dim:#009888; --text:#d0f0ee; --text-dim:#4498a0; --gold:#c8b840; --vowel:#40d8c8; --consonant:#20b0a8; --special:#f0a060; }
+[data-palette="nouka"][data-theme="light"] { --bg:#e0faf8; --card:#fff; --card-hover:#c0f4f0; --accent:#007868; --accent-dim:#009880; --text:#000e0c; --text-dim:#1a6860; --vowel:#006858; --consonant:#005848; }
+
+/* Ruposhi Bangla — রূপসী বাংলা */
+[data-palette="ruposhi"] { --bg:#0e1408; --card:#182008; --card-hover:#223010; --accent:#78c840; --accent-dim:#50a020; --text:#e8f0d8; --text-dim:#88a858; --gold:#d0b840; --vowel:#90d858; --consonant:#70b838; --special:#f0c050; }
+[data-palette="ruposhi"][data-theme="light"] { --bg:#f0f8e8; --card:#fff; --card-hover:#e0f4d0; --accent:#3a7818; --accent-dim:#50a028; --text:#080e00; --text-dim:#406828; --vowel:#307810; --consonant:#286808; }
+
+/* ── Theme swatch picker UI ─────────────────────────────────────────────── */
+.settings-theme-swatches { display:flex; gap:8px; padding:4px 0 8px; flex-wrap:wrap; }
+.theme-swatch {
+  width:42px; height:42px; border-radius:50%; border:3px solid transparent;
+  background:var(--swatch-color); font-size:1.2rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color 0.2s, transform 0.15s; box-sizing:border-box;
+  line-height:1;
+}
+.theme-swatch:hover { transform:scale(1.12); }
+.theme-swatch.active { border-color:var(--text); box-shadow:0 0 0 2px var(--accent); }
 [data-theme="light"] .flashcard-front {
   background: linear-gradient(145deg, #fff8f0, #f0e8d8);
   border-color: rgba(0,0,0,0.08);
@@ -1409,6 +1465,20 @@ nav h1 span { color: var(--accent); }
       <button class="mode-chip" id="listenmode-text" onclick="setListeningMode('text')">Text only</button>
       <button class="mode-chip" id="listenmode-mixed" onclick="setListeningMode('mixed')">Text + Audio</button>
       <button class="mode-chip" id="listenmode-listening" onclick="setListeningMode('listening')">Audio only</button>
+    </div>
+    <div class="settings-section-label">Theme</div>
+    <div class="settings-theme-swatches" id="theme-swatches">
+      <button class="theme-swatch" data-palette="sundarbans" onclick="setThemePalette('sundarbans')" title="Sundarbans"         style="--swatch-color:#3ec97a">🌿</button>
+      <button class="theme-swatch" data-palette="padma"      onclick="setThemePalette('padma')"      title="Padma River"        style="--swatch-color:#4a9eff">🌊</button>
+      <button class="theme-swatch" data-palette="mustard"    onclick="setThemePalette('mustard')"    title="Mustard Fields"     style="--swatch-color:#e8c030">🌻</button>
+      <button class="theme-swatch" data-palette="terracotta" onclick="setThemePalette('terracotta')" title="Terracotta"         style="--swatch-color:#e87040">🏺</button>
+      <button class="theme-swatch" data-palette="bengal"     onclick="setThemePalette('bengal')"     title="Bay of Bengal"      style="--swatch-color:#38b4d8">🐟</button>
+      <button class="theme-swatch" data-palette="kantha"     onclick="setThemePalette('kantha')"     title="Nakshi Kantha"      style="--swatch-color:#c058c8">🧵</button>
+      <button class="theme-swatch" data-palette="tiger"      onclick="setThemePalette('tiger')"      title="Royal Bengal Tiger" style="--swatch-color:#e89218">🐯</button>
+      <button class="theme-swatch" data-palette="boishakh"   onclick="setThemePalette('boishakh')"   title="Pohela Boishakh"    style="--swatch-color:#e83030">🌺</button>
+      <button class="theme-swatch" data-palette="muslin"     onclick="setThemePalette('muslin')"     title="Dhaka Muslin"       style="--swatch-color:#a8c8e8">🪡</button>
+      <button class="theme-swatch" data-palette="nouka"      onclick="setThemePalette('nouka')"      title="Nouka Baich"        style="--swatch-color:#00c8b0">🚣</button>
+      <button class="theme-swatch" data-palette="ruposhi"    onclick="setThemePalette('ruposhi')"    title="Ruposhi Bangla"     style="--swatch-color:#78c840">🌾</button>
     </div>
     <div class="settings-divider"></div>
     <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
@@ -4987,6 +5057,7 @@ function openSettingsPanel() {
   updateProfileMenuHeader();
   _updateFibModeChips();
   _updateListenModeChips();
+  _updateThemeSwatches();
   document.getElementById('settings-overlay').classList.add('open');
   document.addEventListener('keydown', _settingsEsc);
 }
@@ -5022,6 +5093,19 @@ function _updateListenModeChips() {
   ['text','mixed','listening'].forEach(m => {
     const el = document.getElementById('listenmode-' + m);
     if (el) el.classList.toggle('active', m === mode);
+  });
+}
+
+// ── Cultural theme palette ───────────────────────────────────────────────────
+function setThemePalette(name) {
+  document.documentElement.dataset.palette = (name === 'sundarbans') ? '' : name;
+  localStorage.setItem('bengali_palette', name);
+  _updateThemeSwatches();
+}
+function _updateThemeSwatches() {
+  const current = localStorage.getItem('bengali_palette') || 'sundarbans';
+  document.querySelectorAll('.theme-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.palette === current);
   });
 }
 
@@ -5368,6 +5452,10 @@ function toggleTheme() {
     document.documentElement.dataset.theme = 'light';
     const btn = document.getElementById('nav-theme-btn');
     if (btn) btn.textContent = '🌙';
+  }
+  const palette = localStorage.getItem('bengali_palette');
+  if (palette && palette !== 'sundarbans') {
+    document.documentElement.dataset.palette = palette;
   }
 })();
 
