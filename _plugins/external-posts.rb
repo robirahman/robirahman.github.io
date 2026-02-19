@@ -27,6 +27,8 @@ module ExternalPosts
       return if xml.nil?
       feed = Feedjira.parse(xml)
       process_entries(site, src, feed.entries)
+    rescue StandardError => e
+      Jekyll.logger.warn "ExternalPosts:", "Failed to fetch RSS from #{src['rss_url']}: #{e.message}"
     end
 
     def process_entries(site, src, entries)
@@ -63,6 +65,8 @@ module ExternalPosts
         content[:published] = parse_published_date(post['published_date'])
         create_document(site, src['name'], post['url'], content)
       end
+    rescue StandardError => e
+      Jekyll.logger.warn "ExternalPosts:", "Failed to fetch posts from #{src['name']}: #{e.message}"
     end
 
     def parse_published_date(published_date)
