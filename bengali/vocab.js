@@ -6,7 +6,7 @@
 const VOCAB_DATA_RAW = [
 // Pack 0 — top curriculum words (lazy packs 1-3 loaded at runtime)
 // ─── EXPRESSIONS ───
-["না","na","no","expressions","expression","না, আমি পারব না। (na, ami parbo na — No, I cannot.)"],
+["না","na","no / not","expressions","expression","না, আমি পারব না। (na, ami parbo na — No, I cannot.)"],
 // ─── PRONOUNS ───
 ["এই","ei","this","pronouns","pronoun","এই বাড়িটা সুন্দর। (ei barita shundor — This house is beautiful.)"],
 ["তার","tar","his / her / its","pronouns","pronoun","তার বই খুবই সুন্দর। (tar boi khuboi sundar — His/her book is very beautiful.)"],
@@ -20,7 +20,6 @@ const VOCAB_DATA_RAW = [
 ["করতে","korte","to do / to make","verbs","verb","আমি এটা করতে চাই। (ami eta korte chai — I want to do this.)"],
 ["হবে","hobe","will be / shall be","verbs","verb","আগামীকাল ছুটির দিন হবে। (agamikal chutir din hobe — Tomorrow will be a holiday.)"],
 // ─── ADVERBS ───
-["না","na","no / not","adverbs","particle","আমি এখন যাব না। (ami ekhon jabo na — I will not go now.)"],
 ["এবং","ebong","and","adverbs","conjunction","সে এবং আমি বন্ধু। (she ebong ami bondhu — She and I are friends.)"],
 ["আর","ar","and / more / else","adverbs","particle","আর কিছু লাগবে? (ar kichhu lagbe? — Do you need anything more?)"],
 // ─── GRAMMAR ───
@@ -64,20 +63,14 @@ const VOCAB_DATA_RAW = [
 ["বলে","bole","says / told / means","verbs","verb","সে কী বলে? (she ki bole — What does she say?)"],
 ["হতে","hote","to be / to become","verbs","verb","তাকে ডাক্তার হতে হবে। (take daktar hote hobe — He has to become a doctor.)"],
 // ─── ADJECTIVES ───
-["কিছু","kichhu","some","adjectives","adjective","কিছু খেতে দাও। (kichhu khete dao — Give something to eat.)"],
-["অনেক","onek","many / much","adjectives","adjective","আমাদের অনেক কাজ আছে। (amader onek kaj achhe — We have a lot of work.)"],
-["সব","shob","all","adjectives","adjective","সব ঠিক আছে। (shob thik achhe — Everything is alright.)"],
-["কাছে","kachhe","near","adjectives","adjective","ডাক্তারের কাছে যাও। (daktarer kachhe jao — Go to the doctor.)"],
+["অনেক","onek","many / much / a lot","adjectives","adjective","আমাদের অনেক কাজ আছে। (amader onek kaj achhe — We have a lot of work.)"],
 // ─── TIME ───
 ["সময়","shomoy","time","time","noun","এখন সময় নেই। (ekhon shomoy nei — There is no time now.)"],
 ["এখন","ekhon","now","time","adverb","এখন বাড়ি যাও।"],
 ["বছর","bochor","year","time","noun","নতুন বছর শুরু হলো।"],
 // ─── ADVERBS ───
 ["কিন্তু","kintu","but","adverbs","conjunction","চাই, কিন্তু পারছি না। (chai, kintu parchi na — I want to, but I can't.)"],
-["অনেক","onek","very much / a lot","adverbs","adverb","আমাদের অনেক কাজ আছে। (amader onek kaj achhe — We have a lot of work.)"],
 ["যদি","jodi","if","adverbs","conjunction","যদি আসো তাহলে জানাও। (jodi asho tahole janao — If you come, let me know.)"],
-// ─── NATURE ───
-["তারা","tara","star","nature","noun","রাতে আকাশে তারা দেখা যায়।"],
 // ─── EDUCATION ───
 ["কাজ","kaj","work / job","education","noun","আমার আজ অনেক কাজ আছে। (amar aj onek kaj achhe — I have a lot of work today.)"],
 // ─── GRAMMAR ───
@@ -95,7 +88,6 @@ const VOCAB_DATA_RAW = [
 ["কাছে","kachhe","near / to (a person)","grammar","postposition","ডাক্তারের কাছে যাও। (daktarer kachhe jao — Go to the doctor.)"],
 // ─── ABSTRACT ───
 ["মনে","mone","in mind / think / remember","abstract","adverb","তোমার মনে আছে কি? (tomak mone ache ki — Do you remember?)"],
-["কাজ","kaj","work / deed","abstract","noun","আমার আজ অনেক কাজ আছে। (amar aj onek kaj achhe — I have a lot of work today.)"],
 // ─── EXPRESSIONS ───
 ["ঘোষণা","ghoshnā","announcement / declaration","expressions","noun","প্রধানমন্ত্রী একটি গুরুত্বপূর্ণ ঘোষণা করেছেন। (prodhānmontri ekti guruttopoorno ghoshnā korechen — The Prime Minister made an important announcement.)"],
 ["অভিযোগ","obhiyog","complaint / accusation","expressions","noun","তিনি একটি গুরুতর অভিযোগ করেছেন। (tini ekti guruter obhiyog korechen — He made a serious complaint.)"],
@@ -207,17 +199,16 @@ const VOCAB_DATA_RAW = [
 ["পুলিশ","pulish","police","professions","noun","পুলিশ চোরকে ধরল। (polish chorke dhorlo — The police caught the thief.)"],
 // ─── GRAMMAR ───
 ["হিসেবে","hisebe","as / in the capacity of","grammar","preposition","তিনি শিক্ষক হিসেবে কাজ করছেন। (tini shikkhok hisebe kaj korchhen — He is working as a teacher.)"],
-["আগে","age","before","grammar","postposition","ঘুমানোর আগে বই পড়ো। (ghumanoar age boi poro — Read a book before sleeping.)"],
-["আগে","age","before (time)","grammar","postposition","ঘুমানোর আগে বই পড়ো। (ghumanoar age boi poro — Read a book before sleeping.)"],
 ["যখন","jokhon","when","grammar","conjunction","যখন ডাকবে, আসবো। (jokhon dakbe, ashbo — When you call, I will come.)"],
 ["তো","to","so / well (emphasis)","grammar","particle","তুমি তো জানোই। (tumi to janoi — You already know, don't you.)"],
 ["পর্যন্ত","porjonto","until / up to","grammar","postposition","সকাল থেকে রাত পর্যন্ত কাজ করি। (shokal theke rat porjonto kaj kori — I work from morning until night.)"],
 ["দিকে","dike","toward","grammar","postposition","সে বাড়ির দিকে হাঁটছে। (she barir dike hatchhe — She is walking toward home.)"],
 ["মতো","moto","like / as","grammar","postposition","সে পাখির মতো গান গায়। (she pakhir moto gan gay — She sings like a bird.)"],
+["প্রতি","proti","toward / per / each","grammar","postposition","প্রতি মানুষের প্রতি সদয় হও। (proti manusher proti shodoy hao — Be kind to every person.)"],
+["সঙ্গে","shonge","with","grammar","postposition","আমি তোমার সঙ্গে যাবো। (ami tomar shonge jabo — I will go with you.)"],
 // ─── HEALTH ───
 ["আল","āl","pus / suppuration","health","noun","ক্ষতে আল জমেছে। (khote āl jomeche — Pus has accumulated in the wound.)"],
 // ─── TECHNOLOGY ───
-["ছবি","chhobi","photo / picture","technology","noun","সে সুন্দর ছবি আঁকে। (she shundor chhobi ake — She draws beautiful pictures.)"],
 ["ভিডিও","video","video","technology","noun","সে একটা ভিডিও পাঠাল। (she ekta video pathalo — She sent a video.)"],
 // ─── SOCIETY ───
 ["সরকার","shorkar","government","society","noun","সরকার নতুন আইন করেছে। (shorkar notun ain koreche — The government has made a new law.)"],
@@ -254,23 +245,18 @@ const VOCAB_DATA_RAW = [
 ["যেখানে","jekkhāne","where / wherever","adverbs","adverb","যেখানে তুমি যাও, আমি তোমার সাথে থাকব। (jekkhāne tumi yāo, āmi tomār sāthe thākbo — Wherever you go, I will be with you.)"],
 ["একটু","ektu","a little","adverbs","adverb","একটু অপেক্ষা করো। (ektu opekha koro — Wait a little.)"],
 // ─── GRAMMAR ───
-["পরে","pore","after","grammar","postposition","খাওয়ার পরে বিশ্রাম নাও। (khawar pore bishram nao — Rest after eating.)"],
-["প্রতি","proti","toward / per / each","grammar","postposition","প্রতি মানুষের প্রতি সদয় হও। (proti manusher proti shodoy hao — Be kind to every person.)"],
-["তখন","tokhon","then (at that time)","grammar","conjunction","তখন আমি ছোট ছিলাম। (tokhon ami chhoto chhilam — I was small then.)"],
-["সঙ্গে","shonge","with","grammar","postposition","আমি তোমার সঙ্গে যাবো। (ami tomar shonge jabo — I will go with you.)"],
 ["যেন","jeno","as if / so that","grammar","conjunction","মনে হচ্ছে যেন স্বপ্ন দেখছি। (mone hocche jeno shopno dekhchhi — It feels as if I am dreaming.)"],
 ["ফলে","phole","as a result","grammar","conjunction","পরিশ্রমের ফলে সে সফল হলো। (porishhromer phole she shophol holo — As a result of hard work, she succeeded.)"],
 ["ছাড়া","chhara","without / except","grammar","postposition","তুমি ছাড়া আমি একা। (tumi chhara ami eka — Without you, I am alone.)"],
 ["যেমন","jemon","as / like / for example","grammar","conjunction","যেমন কর্ম তেমন ফল। (jemon kormo temon phol — As you act, so you reap.)"],
+["চেয়ে","cheye","than (comparison)","grammar","postposition","আম কাঁঠালের চেয়ে বেশি মিষ্টি। (am kathhaler cheye beshi mishti — Mango is sweeter than jackfruit.)"],
+["নাকি","naki","or (question)","grammar","particle","তুমি যাবে নাকি থাকবে? (tumi jabe naki thakbe — Will you go or stay?)"],
+["বিষয়ে","bishoye","about / regarding","grammar","postposition","এই বিষয়ে আমার কিছু বলার আছে। (ei bishoye amar kichhu bolar achhe — I have something to say about this matter.)"],
 // ─── SOCIETY ───
 ["মানুষের","manusher","of the people / of people","society","noun","মানুষের অধিকার গুরুত্বপূর্ণ। (manusher adhikar gurutwopurn — People's rights are important.)"],
 ["দলের","daler","of the team / of the group","society","noun","দলের নেতা আমি। (daler neta ami — I am the team leader.)"],
 // ─── ABSTRACT ───
 ["মাধ্যমে","madhdhame","through / by means of","abstract","preposition","সোশ্যাল মিডিয়ার মাধ্যমে খবর ছড়ায়। (shoshal midia'r madhdhame khabor chhoray — News spreads through social media.)"],
-// ─── GRAMMAR ───
-["চেয়ে","cheye","than (comparison)","grammar","postposition","আম কাঁঠালের চেয়ে বেশি মিষ্টি। (am kathhaler cheye beshi mishti — Mango is sweeter than jackfruit.)"],
-["নাকি","naki","or (question)","grammar","particle","তুমি যাবে নাকি থাকবে? (tumi jabe naki thakbe — Will you go or stay?)"],
-["বিষয়ে","bishoye","about / regarding","grammar","postposition","এই বিষয়ে আমার কিছু বলার আছে। (ei bishoye amar kichhu bolar achhe — I have something to say about this matter.)"],
 // ─── SOCIETY ───
 ["নারী","nari","woman","society","noun","নারী শিক্ষা জরুরি। (nari shikkha joruri — Women's education is important.)"],
 ["নির্বাচন","nirbachon","election","society","noun","নির্বাচন অনুষ্ঠিত হবে। (nirbachon anushthito hobe — The election will be held.)"],
@@ -280,16 +266,14 @@ const VOCAB_DATA_RAW = [
 ["শিক্ষা","shikkha","education","society","noun","শিক্ষাই জাতির মেরুদণ্ড। (shikkhai jatir meruddondo — Education is the backbone of a nation.)"],
 ["সরকারের","sorkarer","government's / of the government","society","noun","সরকারের নীতি খুবই গুরুত্বপূর্ণ। (sorkarer nīti khubui guruttopoorno — The government's policy is very important.)"],
 // ─── ABSTRACT ───
-["কারণ","karon","reason / cause","abstract","noun","সে আসেনি, কারণ জানি না। (she asheni, karon jani na — She didn't come, I don't know the reason.)"],
+["বিরুদ্ধে","biruddhe","against / opposed to","abstract","preposition","তিনি এই প্রস্তাবের বিরুদ্ধে। (tin ei prastaber biruddhe — He is against this proposal.)"],
 // ─── SOCIETY ───
 ["মৃত্যু","mrittu","death","society","noun","মৃত্যু জীবনের অনিবার্য পরিণতি। (mrittu jiboner onibarro porinoti — Death is the inevitable conclusion of life.)"],
 ["খবর","khobor","news","society","noun","ভালো খবর আছে। (bhalo khobor achhe — There is good news.)"],
 // ─── ABSTRACT ───
-["বিরুদ্ধে","biruddhe","against / opposed to","abstract","preposition","তিনি এই প্রস্তাবের বিরুদ্ধে। (tin ei prastaber biruddhe — He is against this proposal.)"],
 ["কারণে","karone","because of / due to","abstract","preposition","বৃষ্টির কারণে খেলা বন্ধ হয়েছে। (brishti'r karone khela bondh hoeche — The game is cancelled due to rain.)"],
 ["অংশ","ongsh","part / portion / share","abstract","noun","এটি আমার অংশ। (eti amar ongsh — This is my part.)"],
 ["প্রকাশ","prakash","expression / manifestation / light","abstract","noun","তার আবেগের প্রকাশ স্পষ্ট। (tar abegger prakash shapst — The expression of his emotion is clear.)"],
-["ছবি","chhobi","picture / image","abstract","noun","সে সুন্দর ছবি আঁকে। (she shundor chhobi ake — She draws beautiful pictures.)"],
 ["নামে","name","named / by the name of","abstract","preposition","তার নামে একটি স্কুল আছে। (tar name ekti shkul ache — There is a school in his name.)"],
 ["চেষ্টা","cheshta","effort / attempt / endeavor","abstract","noun","তার প্রচেষ্টা প্রশংসার যোগ্য। (tar procheshta prashonsar joggo — His effort is praiseworthy.)"],
 ["মাঝে","māzhe","middle / among / between","abstract","preposition","গাছের মাঝে একটি পাখি আছে। (gaćher māzhe ekti pākhi āche — There is a bird among the trees.)"],
@@ -358,19 +342,36 @@ const VOCAB_DATA_RAW = [
 ["শেখ","shekh","to learn / to teach","verbs","verb","তুমি বাংলা শেখ। (tumi bangla shekh — Learn Bengali.)"],
 ["জানতে","jante","to know / to learn","verbs","verb","আমি এটি জানতে চাই। (ami eta jante chai — I want to know this.)"],
 ["মারা","mara","to hit / to beat","verbs","verb","কাউকে মারা ঠিক না। (kauke mara thik na — Hitting someone is not right.)"],
+["হয়নি","hoyni","has not been / did not happen","verbs","verb","এটি হয়নি কারণ সবাই বিরোধী ছিল। (eta hoyni karon soba birodhi chil — This did not happen because everyone opposed.)"],
+["এসেছে","eseche","has come / have come","verbs","verb","সে আজ আমাদের বাড়িতে এসেছে। (she aj amader brite eseche — She has come to our house today.)"],
+["আসছে","aschche","is coming / are coming","verbs","verb","সে আগামীকাল আসছে। (she agamikal aschche — He is coming tomorrow.)"],
+["যাওয়ার","jawar","of going / going's","verbs","verb","দেশ যাওয়ার আগে বিদায় নিন। (desh jawar age biday nin — Say goodbye before going to the country.)"],
+// ─── FAMILY ───
+["পরিবারের","paribarer","family's / of the family","family","noun","পরিবারের সকল সদস্য উপস্থিত ছিল। (paribarer sokol shōdoshyo upōsthit chhil — All family members were present.)"],
+["বিয়ে","biē","marriage / wedding","family","noun","তাদের বিয়ে হবে পরের মাসে। (tader biē hōbē pōrer mashe — Their wedding will be next month.)"],
+["মহিলা","mohila","woman / female","family","noun","একজন মহিলা এসেছিলেন। (ekjon mohila esechhhilen — A woman came.)"],
+["মায়ের","mayer","mother's","family","noun","মায়ের ভালোবাসা অতুলনীয়। (mayer valobasha otulniy — Mother's love is incomparable.)"],
+// ─── ADJECTIVES ───
+["অন্যান্য","onnānno","other / various / miscellaneous","adjectives","adjective","অন্যান্য বিষয়ে আমরা পরে আলোচনা করব। (onnānno bishōye āmrā pore āloĉnā korbo — We will discuss other matters later.)"],
+["রাজনৈতিক","rājonortik","political","adjectives","adjective","রাজনৈতিক পরিস্থিতি খুবই জটিল। (rājonortik porisstiti khubuī jotil — The political situation is very complex.)"],
+["উচিত","uchit","should / ought / proper","adjectives","adjective","তোমার এটি করা উচিত। (tomār eti korā uchit — You should do this.)"],
+["নিশ্চিত","nischit","certain / sure / definite","adjectives","adjective","তিনি নিশ্চিত যে সে আসবে। (tin nischit je se asbe — He is certain that he will come.)"],
+["ভারতীয়","bharotio","Indian","adjectives","adjective","তিনি একজন ভারতীয় নাগরিক। (tin ekjon bharotio nagrik — He is an Indian citizen.)"],
+["এত","et","so much / so many / this much","adjectives","adjective","এত দিন আমরা অপেক্ষা করেছি। (et din amra opekkha korech — We have waited so long.)"],
 ];
 
-const VOCAB_TOTAL_WORDS = 4413; // updated by build_vocab_packs.py // updated by build_vocab_packs.py
+const VOCAB_TOTAL_WORDS = 4399; // updated by build_vocab_packs.py
 
 // VOCAB_DATA is mutable so lazy-loaded packs can be appended at runtime.
 // Pack 0 is inlined here; packs 1-3 are fetched from vocab-pack-N.json.
-let VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example], index) => ({
+let VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example, senseId = ''], index) => ({
   lemma,
   roman,
   english,
   category,
   pos,
   example: example || '',
+  senseId: senseId || '',
   freqRank: index + 1,
 }));
 

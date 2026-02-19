@@ -128,19 +128,25 @@ def lint_vocab_js():
         if count:
             issues.append(f"  [vocab.js] Found {count} occurrence(s) of typo '{bad}' (should be '{good}')")
 
-    # Extract roman fields from vocab.js arrays: ["bengali","roman","english",...]
-    # Each entry is a JS array literal: ["...", "roman_value", ...]
-    pattern = re.compile(r'\["([^"]+)","([^"]+)","([^"]+)"')
-    seen_lemmas: dict[str, int] = defaultdict(int)
+    # Extract fields from vocab.js arrays: ["lemma","roman","english","cat","pos","example"(,"senseId")]
+    # The optional 7th element (senseId) marks intentional same-lemma different-sense entries.
+    pattern = re.compile(
+        r'\["([^"]+)","([^"]+)","([^"]+)","([^"]+)","([^"]+)","([^"]*)"(?:,"([^"]*)")?\]'
+    )
+    # Key = (lemma, senseId) — entries with distinct senseIds are not duplicates
+    seen_keys: dict[tuple[str, str], int] = defaultdict(int)
     for m in pattern.finditer(text):
-        lemma, roman, _ = m.group(1), m.group(2), m.group(3)
-        seen_lemmas[lemma] += 1
+        lemma, roman = m.group(1), m.group(2)
+        sense_id = m.group(7) or ''
+        seen_keys[(lemma, sense_id)] += 1
         issues.extend(check_roman_chars(roman, lemma, f"vocab.js/{lemma}"))
 
-    # Duplicates in vocab.js
-    for lemma, count in seen_lemmas.items():
+    # Group by lemma to detect true duplicates (same lemma AND same senseId)
+    from collections import defaultdict as _dd
+    lemma_counts: dict[str, int] = _dd(int)
+    for (lemma, sense_id), count in seen_keys.items():
         if count > 1:
-            issues.append(f"  [vocab.js] Duplicate lemma '{lemma}' ({count} times)")
+            issues.append(f"  [vocab.js] Duplicate lemma '{lemma}' (senseId={sense_id!r}, {count} times)")
 
 
 def main():

@@ -2944,7 +2944,7 @@
   },
   {
     "lemma": "গড়ে",
-    "roman": "gorе̄",
+    "roman": "gore",
     "english": "on average / in total",
     "category": "adverbs",
     "pos": "adverb",
@@ -3043,7 +3043,7 @@
   },
   {
     "lemma": "খুঁজে",
-    "roman": "khũje",
+    "roman": "khuje",
     "english": "search / find / look for",
     "category": "verbs",
     "pos": "verb",
@@ -4204,7 +4204,7 @@
   },
   {
     "lemma": "আয়",
-    "roman": "aaẏ",
+    "roman": "aay",
     "english": "income / earnings",
     "category": "abstract",
     "pos": "noun",
@@ -4501,7 +4501,7 @@
   },
   {
     "lemma": "জানিয়েছেন",
-    "roman": "janiẏechhen",
+    "roman": "janiyechhen",
     "english": "has informed / has let know",
     "category": "verbs",
     "pos": "verb",
@@ -4582,7 +4582,7 @@
   },
   {
     "lemma": "বিষয়ক",
-    "roman": "bishshoẏok",
+    "roman": "bishshoyok",
     "english": "related to / concerning",
     "category": "adjectives",
     "pos": "adjective",
@@ -6571,7 +6571,7 @@
   },
   {
     "lemma": "ভেঙ্গে",
-    "roman": "bhe~ge",
+    "roman": "bhege",
     "english": "to break / breaking",
     "category": "verbs",
     "pos": "verb",
@@ -8389,7 +8389,7 @@
   },
   {
     "lemma": "কলেজে",
-    "roman": "kalejé",
+    "roman": "kaleje",
     "english": "in college / at college",
     "category": "education",
     "pos": "noun",
@@ -8398,7 +8398,7 @@
   },
   {
     "lemma": "কেন্দ্রে",
-    "roman": "kendré",
+    "roman": "kendre",
     "english": "in center / at center",
     "category": "places",
     "pos": "noun",
@@ -8452,7 +8452,7 @@
   },
   {
     "lemma": "পেলে",
-    "roman": "pelé",
+    "roman": "pele",
     "english": "if (I) get / if (I) obtain",
     "category": "verbs",
     "pos": "verb",
@@ -8506,7 +8506,7 @@
   },
   {
     "lemma": "লিখেছেন",
-    "roman": "likhéchen",
+    "roman": "likhechen",
     "english": "wrote / have written",
     "category": "verbs",
     "pos": "verb",
@@ -8596,7 +8596,7 @@
   },
   {
     "lemma": "দিয়েছিল",
-    "roman": "diyéchilo",
+    "roman": "diyechilo",
     "english": "gave / had given",
     "category": "verbs",
     "pos": "verb",
@@ -8614,7 +8614,7 @@
   },
   {
     "lemma": "দেখেছি",
-    "roman": "dekhéchi",
+    "roman": "dekhechi",
     "english": "saw / have seen",
     "category": "verbs",
     "pos": "verb",
@@ -11548,7 +11548,7 @@
   },
   {
     "lemma": "প্রতিযোগিতায়",
-    "roman": "pratijogiтay",
+    "roman": "pratijogitay",
     "english": "in competition / competition",
     "category": "abstract",
     "pos": "noun",
@@ -11710,7 +11710,7 @@
   },
   {
     "lemma": "থাকলেও",
-    "roman": "thaklео",
+    "roman": "thakleo",
     "english": "even if / although",
     "category": "grammar",
     "pos": "conjunction",
@@ -11935,7 +11935,7 @@
   },
   {
     "lemma": "পয়েন্ট",
-    "roman": "purushер",
+    "roman": "purusher",
     "english": "of man / male's",
     "category": "body",
     "pos": "noun",
@@ -12016,7 +12016,7 @@
   },
   {
     "lemma": "মনোযোগ",
-    "roman": "minitе",
+    "roman": "minite",
     "english": "in the minute / in minutes",
     "category": "time",
     "pos": "noun",
@@ -13132,7 +13132,7 @@
   },
   {
     "lemma": "বিদেশে",
-    "roman": "bideshе",
+    "roman": "bideshe",
     "english": "abroad / in foreign country",
     "category": "places",
     "pos": "noun",
@@ -13195,7 +13195,7 @@
   },
   {
     "lemma": "সাক্ষাৎ",
-    "roman": "sakkhаt",
+    "roman": "sakkhat",
     "english": "meeting / encounter / direct",
     "category": "abstract",
     "pos": "noun",
@@ -14527,7 +14527,7 @@
   },
   {
     "lemma": "সংস্কৃতির",
-    "roman": "śoṁskṛtir",
+    "roman": "śomskṛtir",
     "english": "of culture / culture's",
     "category": "society",
     "pos": "noun",
@@ -14689,7 +14689,7 @@
   },
   {
     "lemma": "নিশ্চয়ই",
-    "roman": "niśćoyi",
+    "roman": "niścoyi",
     "english": "certainly / surely / definitely",
     "category": "adverbs",
     "pos": "adverb",
@@ -14788,7 +14788,7 @@
   },
   {
     "lemma": "সম্প্রদায়",
-    "roman": "śoṁprodāy",
+    "roman": "śomprodāy",
     "english": "community / group / sect",
     "category": "society",
     "pos": "noun",
@@ -14824,7 +14824,7 @@
   },
   {
     "lemma": "অতঃপর",
-    "roman": "otoḥper",
+    "roman": "otohper",
     "english": "afterwards / then / subsequently",
     "category": "adverbs",
     "pos": "adverb",
@@ -15229,7 +15229,7 @@
   },
   {
     "lemma": "ঘটনাটি",
-    "roman": "ghotnattiː",
+    "roman": "ghotnatti",
     "english": "event / incident",
     "category": "abstract",
     "pos": "noun",
@@ -16039,7 +16039,7 @@
   },
   {
     "lemma": "বেঁধে",
-    "roman": "bẽdhe",
+    "roman": "bedhe",
     "english": "tied / bound",
     "category": "verbs",
     "pos": "verb",
@@ -17092,7 +17092,7 @@
   },
   {
     "lemma": "দেখাচ্ছে",
-    "roman": "dekhachhе",
+    "roman": "dekhachhe",
     "english": "showing / appearing",
     "category": "verbs",
     "pos": "verb",
@@ -17155,7 +17155,7 @@
   },
   {
     "lemma": "প্রদেশে",
-    "roman": "prodeshе",
+    "roman": "prodeshe",
     "english": "in the province / province's",
     "category": "places",
     "pos": "noun",
@@ -17992,7 +17992,7 @@
   },
   {
     "lemma": "আক্রমণের",
-    "roman": "ākromon̄er",
+    "roman": "ākromoner",
     "english": "attack / invasion (possessive)",
     "category": "society",
     "pos": "noun",
@@ -18091,7 +18091,7 @@
   },
   {
     "lemma": "গুণ",
-    "roman": "gun̄",
+    "roman": "gun",
     "english": "quality / virtue",
     "category": "abstract",
     "pos": "noun",
@@ -18118,7 +18118,7 @@
   },
   {
     "lemma": "টায়",
-    "roman": "ţāy",
+    "roman": "tāy",
     "english": "tie",
     "category": "clothing",
     "pos": "noun",
@@ -18190,7 +18190,7 @@
   },
   {
     "lemma": "পাঠানোর",
-    "roman": "pāţhānor",
+    "roman": "pāthānor",
     "english": "to send (infinitive)",
     "category": "verbs",
     "pos": "verb",
@@ -19045,7 +19045,7 @@
   },
   {
     "lemma": "বন্ধের",
-    "roman": "bondhɔr",
+    "roman": "bondhor",
     "english": "of closure / of closure",
     "category": "abstract",
     "pos": "noun",
@@ -22294,7 +22294,7 @@
   },
   {
     "lemma": "এগুলোর",
-    "roman": "eguloр",
+    "roman": "egulor",
     "english": "of these",
     "category": "grammar",
     "pos": "pronoun",
@@ -22357,7 +22357,7 @@
   },
   {
     "lemma": "গিয়েছিলাম",
-    "roman": "giyechiлam",
+    "roman": "giyechilam",
     "english": "had gone / went",
     "category": "verbs",
     "pos": "verb",
@@ -22375,7 +22375,7 @@
   },
   {
     "lemma": "চেয়েছিলেন",
-    "roman": "cheyechiলen",
+    "roman": "cheyechilen",
     "english": "had wanted / had wished",
     "category": "verbs",
     "pos": "verb",
@@ -22627,7 +22627,7 @@
   },
   {
     "lemma": "যাইহোক",
-    "roman": "yaihoк",
+    "roman": "yaihok",
     "english": "anyway / in any case",
     "category": "adverbs",
     "pos": "adverb",
@@ -22654,7 +22654,7 @@
   },
   {
     "lemma": "শিশুকে",
-    "roman": "shishuке",
+    "roman": "shishuke",
     "english": "to child",
     "category": "family",
     "pos": "noun",
@@ -22753,7 +22753,7 @@
   },
   {
     "lemma": "আসছি",
-    "roman": "aschhі",
+    "roman": "aschhi",
     "english": "am coming",
     "category": "verbs",
     "pos": "verb",
@@ -22762,7 +22762,7 @@
   },
   {
     "lemma": "আসেনি",
-    "roman": "asenі",
+    "roman": "aseni",
     "english": "did not come",
     "category": "verbs",
     "pos": "verb",
@@ -22789,7 +22789,7 @@
   },
   {
     "lemma": "কেও",
-    "roman": "keو",
+    "roman": "keo",
     "english": "anyone",
     "category": "pronouns",
     "pos": "pronoun",
@@ -22825,7 +22825,7 @@
   },
   {
     "lemma": "চরিত্রে",
-    "roman": "charіtre",
+    "roman": "charitre",
     "english": "in character",
     "category": "abstract",
     "pos": "noun",
@@ -23437,7 +23437,7 @@
   },
   {
     "lemma": "রকমের",
-    "roman": "rokmér",
+    "roman": "rokmer",
     "english": "kind of / type of",
     "category": "adjectives",
     "pos": "adjective",
@@ -25462,7 +25462,7 @@
   },
   {
     "lemma": "কমাতে",
-    "roman": "kômâte",
+    "roman": "kômate",
     "english": "to reduce / to decrease",
     "category": "verbs",
     "pos": "verb",
@@ -25471,7 +25471,7 @@
   },
   {
     "lemma": "কালকে",
-    "roman": "kâlke",
+    "roman": "kalke",
     "english": "tomorrow / yesterday",
     "category": "time",
     "pos": "noun",
@@ -25534,7 +25534,7 @@
   },
   {
     "lemma": "চুলের",
-    "roman": "chúler",
+    "roman": "chuler",
     "english": "of hair",
     "category": "body",
     "pos": "noun",
@@ -25588,7 +25588,7 @@
   },
   {
     "lemma": "দৃশ্যমান",
-    "roman": "drisshyômân",
+    "roman": "drisshyôman",
     "english": "visible / apparent",
     "category": "adjectives",
     "pos": "adjective",
@@ -26191,7 +26191,7 @@
   },
   {
     "lemma": "ভাইয়া",
-    "roman": "bhalbasар",
+    "roman": "bhalbasar",
     "english": "of love / love's",
     "category": "emotions",
     "pos": "noun",
@@ -26218,7 +26218,7 @@
   },
   {
     "lemma": "মিডিয়ায়",
-    "roman": "muktijoddhаder",
+    "roman": "muktijoddhader",
     "english": "of freedom fighters / freedom fighters'",
     "category": "society",
     "pos": "noun",
@@ -26407,7 +26407,7 @@
   },
   {
     "lemma": "কূটনৈতিক",
-    "roman": "kutnaiтик",
+    "roman": "kutnaitik",
     "english": "diplomatic / diplomat",
     "category": "professions",
     "pos": "adjective",
@@ -26551,7 +26551,7 @@
   },
   {
     "lemma": "ফটো",
-    "roman": "pracharер",
+    "roman": "pracharer",
     "english": "of propaganda / publicity",
     "category": "abstract",
     "pos": "noun",
@@ -26596,7 +26596,7 @@
   },
   {
     "lemma": "বেকার",
-    "roman": "bibhritи",
+    "roman": "bibhriti",
     "english": "statement / declaration",
     "category": "abstract",
     "pos": "noun",
@@ -26623,7 +26623,7 @@
   },
   {
     "lemma": "ভাবছেন",
-    "roman": "byankе",
+    "roman": "byanke",
     "english": "in the bank",
     "category": "places",
     "pos": "noun",
@@ -27928,7 +27928,7 @@
   },
   {
     "lemma": "আতঙ্ক",
-    "roman": "ātaṅk",
+    "roman": "ātank",
     "english": "fear / terror / panic",
     "category": "emotions",
     "pos": "noun",
@@ -28072,7 +28072,7 @@
   },
   {
     "lemma": "খোঁজে",
-    "roman": "khōj̃e",
+    "roman": "khōje",
     "english": "searching for / looking for",
     "category": "verbs",
     "pos": "verb",
@@ -28117,7 +28117,7 @@
   },
   {
     "lemma": "জামায়াতের",
-    "roman": "jṅgle",
+    "roman": "jngle",
     "english": "in jungle / in forest",
     "category": "nature",
     "pos": "adverb",
@@ -28261,7 +28261,7 @@
   },
   {
     "lemma": "বাপ",
-    "roman": "pratiβā",
+    "roman": "pratibhā",
     "english": "talent",
     "category": "abstract",
     "pos": "noun",
@@ -28477,7 +28477,7 @@
   },
   {
     "lemma": "অবিলম্বে",
-    "roman": "obilombeー",
+    "roman": "obilombe",
     "english": "immediately / without delay",
     "category": "adverbs",
     "pos": "adverb",
@@ -28792,7 +28792,7 @@
   },
   {
     "lemma": "পড়েছেন",
-    "roman": "porẽchhen",
+    "roman": "porechhen",
     "english": "has read / has studied",
     "category": "verbs",
     "pos": "verb",
@@ -29701,7 +29701,7 @@
   },
   {
     "lemma": "অবস্থানের",
-    "roman": "hælo",
+    "roman": "haelo",
     "english": "hello",
     "category": "expressions",
     "pos": "interjection",
@@ -29800,7 +29800,7 @@
   },
   {
     "lemma": "উষ্ণ",
-    "roman": "ingreziте",
+    "roman": "ingrezite",
     "english": "in English",
     "category": "education",
     "pos": "adverb",
@@ -29809,7 +29809,7 @@
   },
   {
     "lemma": "একের",
-    "roman": "intarneте",
+    "roman": "intarnete",
     "english": "on the internet",
     "category": "technology",
     "pos": "adverb",
@@ -29971,7 +29971,7 @@
   },
   {
     "lemma": "দাঁড়াতে",
-    "roman": "dandtе",
+    "roman": "dandte",
     "english": "to stand / stand up",
     "category": "verbs",
     "pos": "verb",
@@ -29989,7 +29989,7 @@
   },
   {
     "lemma": "দুজনের",
-    "roman": "duјaner",
+    "roman": "dujaner",
     "english": "of two people / two person's",
     "category": "pronouns",
     "pos": "pronoun",
@@ -30034,7 +30034,7 @@
   },
   {
     "lemma": "নিষ্ঠুর",
-    "roman": "nish̖ṭhur",
+    "roman": "nishṭhur",
     "english": "cruel / harsh / merciless",
     "category": "adjectives",
     "pos": "adjective",
@@ -30133,7 +30133,7 @@
   },
   {
     "lemma": "বিষয়বস্তু",
-    "roman": "bishaybostু",
+    "roman": "bishaybost",
     "english": "content / subject matter / material",
     "category": "abstract",
     "pos": "noun",
@@ -30277,7 +30277,7 @@
   },
   {
     "lemma": "আইডি",
-    "roman": "anumoniт",
+    "roman": "anumonit",
     "english": "approved / sanctioned",
     "category": "adjectives",
     "pos": "adjective",
@@ -30358,7 +30358,7 @@
   },
   {
     "lemma": "কোর্টে",
-    "roman": "kandhе",
+    "roman": "kandhe",
     "english": "on shoulder / shoulder",
     "category": "body",
     "pos": "noun",
@@ -30367,7 +30367,7 @@
   },
   {
     "lemma": "ক্যারিয়ার",
-    "roman": "karkhanaгar",
+    "roman": "karkhanagar",
     "english": "factory's / of factory",
     "category": "places",
     "pos": "noun",
@@ -30376,7 +30376,7 @@
   },
   {
     "lemma": "ক্লাবে",
-    "roman": "korте",
+    "roman": "korte",
     "english": "in court / to court",
     "category": "places",
     "pos": "noun",
@@ -30394,7 +30394,7 @@
   },
   {
     "lemma": "খামার",
-    "roman": "klabе",
+    "roman": "klabe",
     "english": "in club / at club",
     "category": "places",
     "pos": "noun",
@@ -30403,7 +30403,7 @@
   },
   {
     "lemma": "খুশী",
-    "roman": "kshеtrеo",
+    "roman": "kshetreo",
     "english": "also in field / even in area",
     "category": "abstract",
     "pos": "adverb",
@@ -30448,7 +30448,7 @@
   },
   {
     "lemma": "তৈরিতে",
-    "roman": "jwaliyе",
+    "roman": "jwaliye",
     "english": "burning / setting fire",
     "category": "verbs",
     "pos": "verb",
@@ -30475,7 +30475,7 @@
   },
   {
     "lemma": "পল্লী",
-    "roman": "tairiте",
+    "roman": "tairite",
     "english": "in making / in creation",
     "category": "abstract",
     "pos": "adverb",
@@ -30502,7 +30502,7 @@
   },
   {
     "lemma": "পৌঁছেছে",
-    "roman": "netritvadhіn",
+    "roman": "netritvadhin",
     "english": "under leadership / led by",
     "category": "adjectives",
     "pos": "adjective",
@@ -30673,7 +30673,7 @@
   },
   {
     "lemma": "সংরক্ষণের",
-    "roman": "sṃrokṣoner",
+    "roman": "smrokṣoner",
     "english": "of preservation / conservation",
     "category": "abstract",
     "pos": "noun",
@@ -30682,7 +30682,7 @@
   },
   {
     "lemma": "সঙ্গীতের",
-    "roman": "sṃgiter",
+    "roman": "smgiter",
     "english": "of music / music's",
     "category": "education",
     "pos": "noun",
@@ -31978,7 +31978,7 @@
   },
   {
     "lemma": "কম্পিউটারের",
-    "roman": "kʰompʰiyuter-er",
+    "roman": "khomphiyuter-er",
     "english": "of computer / computer's",
     "category": "technology",
     "pos": "noun",
@@ -31987,7 +31987,7 @@
   },
   {
     "lemma": "কর্মকাণ্ডের",
-    "roman": "kʰormokʰanʰd-er",
+    "roman": "khormokhanhd-er",
     "english": "of activity / activity's",
     "category": "abstract",
     "pos": "noun",
@@ -31996,7 +31996,7 @@
   },
   {
     "lemma": "কাপের",
-    "roman": "kʰap-er",
+    "roman": "khap-er",
     "english": "of cup / cup's",
     "category": "home",
     "pos": "noun",
@@ -32059,7 +32059,7 @@
   },
   {
     "lemma": "চিনতে",
-    "roman": "chinté",
+    "roman": "chinte",
     "english": "to recognize / to know",
     "category": "verbs",
     "pos": "verb",
@@ -32662,7 +32662,7 @@
   },
   {
     "lemma": "উৎপাদনের",
-    "roman": "ederkе",
+    "roman": "ederke",
     "english": "them / these (accusative)",
     "category": "pronouns",
     "pos": "pronoun",
@@ -34363,7 +34363,7 @@
   },
   {
     "lemma": "ম্যানেজমেন্ট",
-    "roman": "menèjmènt",
+    "roman": "menejment",
     "english": "management",
     "category": "technology",
     "pos": "noun",
@@ -34804,7 +34804,7 @@
   },
   {
     "lemma": "নভেম্বরে",
-    "roman": "nobín",
+    "roman": "nobin",
     "english": "new / young",
     "category": "adjectives",
     "pos": "adjective",
@@ -34867,7 +34867,7 @@
   },
   {
     "lemma": "প্রশিক্ষণের",
-    "roman": "pŕotijña",
+    "roman": "protijña",
     "english": "promise / pledge",
     "category": "abstract",
     "pos": "noun",
@@ -35173,7 +35173,7 @@
   },
   {
     "lemma": "এদেশে",
-    "roman": "edeshе",
+    "roman": "edeshe",
     "english": "in this country",
     "category": "places",
     "pos": "noun",
@@ -35803,7 +35803,7 @@
   },
   {
     "lemma": "খেলাধুলা",
-    "roman": "khaladhuła",
+    "roman": "khaladhula",
     "english": "sports / games",
     "category": "education",
     "pos": "noun",
@@ -35821,7 +35821,7 @@
   },
   {
     "lemma": "গ্র্যান্ড",
-    "roman": "grând",
+    "roman": "grand",
     "english": "grand / large",
     "category": "adjectives",
     "pos": "adjective",
@@ -35875,7 +35875,7 @@
   },
   {
     "lemma": "জানাবেন",
-    "roman": "janabeⁿ",
+    "roman": "janaben",
     "english": "will inform / will let know",
     "category": "verbs",
     "pos": "verb",
@@ -35893,7 +35893,7 @@
   },
   {
     "lemma": "দাড়িয়ে",
-    "roman": "dãdẵbe",
+    "roman": "dadabe",
     "english": "will stand",
     "category": "verbs",
     "pos": "verb",
@@ -35938,7 +35938,7 @@
   },
   {
     "lemma": "নাসিম",
-    "roman": "देशtite",
+    "roman": "deshtite",
     "english": "in the country",
     "category": "places",
     "pos": "noun",
@@ -35965,7 +35965,7 @@
   },
   {
     "lemma": "পুরাই",
-    "roman": "neṭwarkér",
+    "roman": "neṭwarker",
     "english": "of network / network's",
     "category": "technology",
     "pos": "noun",
@@ -35992,7 +35992,7 @@
   },
   {
     "lemma": "পৌছে",
-    "roman": "poshaḱér",
+    "roman": "poshaker",
     "english": "of clothing / clothing's",
     "category": "clothing",
     "pos": "noun",
@@ -36010,7 +36010,7 @@
   },
   {
     "lemma": "প্রভু",
-    "roman": "protipokshér",
+    "roman": "protipoksher",
     "english": "of opponent / opponent's",
     "category": "abstract",
     "pos": "noun",
@@ -36073,7 +36073,7 @@
   },
   {
     "lemma": "বন্দরের",
-    "roman": "pheleⁿ",
+    "roman": "phelen",
     "english": "throws / discards",
     "category": "verbs",
     "pos": "verb",
@@ -36127,7 +36127,7 @@
   },
   {
     "lemma": "ভারতকে",
-    "roman": "byâṅk",
+    "roman": "byank",
     "english": "bank",
     "category": "places",
     "pos": "noun",
@@ -36226,7 +36226,7 @@
   },
   {
     "lemma": "সমন্বিত",
-    "roman": "sômônbît",
+    "roman": "sômônbit",
     "english": "coordinated / combined / integrated",
     "category": "adjectives",
     "pos": "adjective",
@@ -36442,7 +36442,7 @@
   },
   {
     "lemma": "ইয়েমেন",
-    "roman": "uthâ",
+    "roman": "utha",
     "english": "to get up / to rise / to stand up",
     "category": "verbs",
     "pos": "verb",
@@ -36523,7 +36523,7 @@
   },
   {
     "lemma": "ছেলেটি",
-    "roman": "chheloти",
+    "roman": "chheloti",
     "english": "the boy",
     "category": "pronouns",
     "pos": "noun",

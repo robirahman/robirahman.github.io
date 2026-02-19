@@ -10,6 +10,8 @@ permalink: /bengali/
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="manifest" href="manifest.json">
 <title>বাংলা শিক্ষা — Learn Bengali</title>
 <style>
 :root {
@@ -1603,6 +1605,15 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
       <button class="mode-chip" id="listenmode-mixed" onclick="setListeningMode('mixed')">Text + Audio</button>
       <button class="mode-chip" id="listenmode-listening" onclick="setListeningMode('listening')">Audio only</button>
     </div>
+    <details class="settings-collapsible" id="voice-settings">
+      <summary class="settings-section-label settings-collapsible-hdr">Voice</summary>
+      <div style="padding:8px 18px 12px">
+        <select id="voice-select" style="width:100%;padding:6px 8px;background:var(--card-hover);color:var(--text);border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:0.88rem;margin-bottom:8px" onchange="setPreferredVoice(this.value)">
+          <option value="">System default (Bengali)</option>
+        </select>
+        <button onclick="speakBengali('আমি বাংলা শিখছি')" style="font-size:0.84rem;padding:6px 14px;background:var(--card-hover)"><span class="pm-icon">🔊</span>Test voice</button>
+      </div>
+    </details>
     <details class="settings-collapsible">
       <summary class="settings-section-label settings-collapsible-hdr">Theme</summary>
       <div class="settings-theme-swatches" id="theme-swatches">
@@ -2467,13 +2478,41 @@ function startLearn(mod) {
 // ── Audio ──────────────────────────────────────────────────────────────────
 let _audioSlowMode = false;
 
+let _preferredVoiceName = localStorage.getItem('preferredVoice') || '';
+
 function speakBengali(text, rate) {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'bn-BD';
   utt.rate = rate !== undefined ? rate : (_audioSlowMode ? 0.5 : 0.85);
+  if (_preferredVoiceName) {
+    const voice = speechSynthesis.getVoices().find(v => v.name === _preferredVoiceName);
+    if (voice) utt.voice = voice;
+  }
   speechSynthesis.speak(utt);
+}
+
+function setPreferredVoice(name) {
+  _preferredVoiceName = name;
+  localStorage.setItem('preferredVoice', name);
+}
+
+function renderVoiceSelector() {
+  const sel = document.getElementById('voice-select');
+  if (!sel || !window.speechSynthesis) return;
+  const populate = () => {
+    const voices = speechSynthesis.getVoices();
+    const bn = voices.filter(v => v.lang.startsWith('bn'));
+    const list = bn.length ? bn : voices; // fall back to all voices
+    sel.innerHTML = '<option value="">System default (Bengali)</option>' +
+      list.map(v => `<option value="${v.name.replace(/"/g, '&quot;')}"${v.name === _preferredVoiceName ? ' selected' : ''}>${v.name} (${v.lang})</option>`).join('');
+  };
+  populate();
+  // Chrome loads voices asynchronously
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populate;
+  }
 }
 
 function toggleSlowAudio(btn) {
@@ -3007,6 +3046,7 @@ function _recordMiss(arr, q) {
 // equivalent of the expected answer is accepted — not arbitrary wrong letters.
 function _normRoman(s) {
   return s.toLowerCase()
+    // Diacritic normalizations (long vowels, retroflex consonants, etc.)
     .replace(/[āĀ]/g, 'a')
     .replace(/[ēĒ]/g, 'e')
     .replace(/[īĪ]/g, 'i')
@@ -3019,7 +3059,19 @@ function _normRoman(s) {
     .replace(/[ṣṢ]/g, 'sh')
     .replace(/[ṛṚ]/g, 'r')
     .replace(/ñ/g, 'ny')
-    .replace(/ô/g, 'o');
+    .replace(/ô/g, 'o')
+    // Aspirate consonant folding: kh≈k, gh≈g, ch≈c, jh≈j, th≈t, dh≈d, ph≈f≈p, bh≈b
+    // chh must precede ch to avoid double-replacement
+    .replace(/chh/g, 'c')
+    .replace(/ch/g, 'c')
+    .replace(/kh/g, 'k')
+    .replace(/gh/g, 'g')
+    .replace(/jh/g, 'j')
+    .replace(/th/g, 't')
+    .replace(/dh/g, 'd')
+    .replace(/ph/g, 'p')
+    .replace(/bh/g, 'b')
+    .replace(/f/g, 'p');
 }
 
 function showHint(btn) {
@@ -3253,11 +3305,19 @@ showScreen = function(id) {
 // ════════════════════════════════════════
 //  VOCAB PROGRESS
 // ════════════════════════════════════════
-function getVocabMastery(bengali) {
-  return progress.mastery['v:' + bengali] || 0;
+
+// Compute the mastery storage key for a word object or plain lemma string.
+// Words with a senseId (e.g. তারা/star vs তারা/they) get distinct keys.
+function _vocabKey(w) {
+  if (typeof w === 'string') return 'v:' + w;
+  return 'v:' + w.lemma + (w.senseId ? ':' + w.senseId : '');
 }
-function addVocabMastery(bengali, correct) {
-  const key = 'v:' + bengali;
+
+function getVocabMastery(w) {
+  return progress.mastery[_vocabKey(w)] || 0;
+}
+function addVocabMastery(w, correct) {
+  const key = _vocabKey(w);
   const cur = progress.mastery[key] || 0;
   if (correct) {
     progress.mastery[key] = Math.min(3, cur + 1);
@@ -3293,7 +3353,7 @@ function renderVocabHome() {
   mixCard.className = 'module-card';
   const vmUnlocked = getVocabMixedUnlockedCount();
   const vmTotal = VMIX_CURRICULUM.length;
-  const vmMastered = VMIX_CURRICULUM.filter(w => getVocabMastery(w.lemma) >= 3).length;
+  const vmMastered = VMIX_CURRICULUM.filter(w => getVocabMastery(w) >= 3).length;
   const vmPct = Math.round((vmMastered / vmTotal) * 100);
   const vmWave = Math.ceil(vmUnlocked / VMIX_WAVE_SIZE);
   const vmTotalWaves = Math.ceil(vmTotal / VMIX_WAVE_SIZE);
@@ -3330,7 +3390,7 @@ function renderVocabHome() {
     const cat = VOCAB_CATEGORIES[catId];
     const words = VOCAB_DATA.filter(w => w.category === catId);
     if (words.length === 0) return;
-    const mastered = words.filter(w => getVocabMastery(w.lemma) >= 3).length;
+    const mastered = words.filter(w => getVocabMastery(w) >= 3).length;
     const pct = Math.round((mastered / words.length) * 100);
 
     const card = document.createElement('div');
@@ -3493,7 +3553,7 @@ function getVocabMixedUnlockedCount() {
   while (unlocked < VMIX_CURRICULUM.length) {
     const waveStart = unlocked - VMIX_WAVE_SIZE;
     const wave = VMIX_CURRICULUM.slice(waveStart, unlocked);
-    const familiar = wave.filter(w => getVocabMastery(w.lemma) >= VMIX_UNLOCK_THR).length;
+    const familiar = wave.filter(w => getVocabMastery(w) >= VMIX_UNLOCK_THR).length;
     if (familiar >= Math.ceil(wave.length * 0.5)) {
       unlocked = Math.min(unlocked + VMIX_WAVE_SIZE, VMIX_CURRICULUM.length);
     } else {
@@ -3522,9 +3582,9 @@ function buildMixedVocabSession() {
     .filter(Boolean);
 
   // Words the user hasn't seen yet
-  const unseen = pool.filter(w => getVocabMastery(w.lemma) === 0);
+  const unseen = pool.filter(w => getVocabMastery(w) === 0);
   // Priority words that need teaching come first
-  const priorityUnseen = priorityWords.filter(w => getVocabMastery(w.lemma) === 0);
+  const priorityUnseen = priorityWords.filter(w => getVocabMastery(w) === 0);
   const regularUnseen = unseen.filter(w => !priorityLemmas.includes(w.lemma));
   const teach = [...priorityUnseen, ...regularUnseen].slice(0, VMIX_INTRO);
 
@@ -3534,7 +3594,7 @@ function buildMixedVocabSession() {
     const aIsPriority = priorityLemmas.includes(a.lemma);
     const bIsPriority = priorityLemmas.includes(b.lemma);
     if (aIsPriority !== bIsPriority) return aIsPriority ? -1 : 1;
-    const ma = getVocabMastery(a.lemma), mb = getVocabMastery(b.lemma);
+    const ma = getVocabMastery(a), mb = getVocabMastery(b);
     const sa = ma === 3 ? 4 : ma === 2 ? 1 : ma === 0 ? 0.5 : 0;
     const sb = mb === 3 ? 4 : mb === 2 ? 1 : mb === 0 ? 0.5 : 0;
     return (sa - sb)
@@ -3650,7 +3710,7 @@ function renderVocabList() {
 
   const container = document.getElementById('vocab-list');
   container.innerHTML = page.map(w => {
-    const m = getVocabMastery(w.lemma);
+    const m = getVocabMastery(w);
     return `<div class="vocab-row" onclick="showVocabDetail('${w.lemma.replace(/'/g,"\\'")}')">
       <div class="vr-bengali">${w.lemma}</div>
       <div class="vr-roman">${w.roman}</div>
@@ -3770,8 +3830,8 @@ function showVocabCardAt() {
   document.getElementById('vl-prev').style.visibility = vlIndex === 0 ? 'hidden' : 'visible';
 
   // Mark as seen
-  if (getVocabMastery(w.lemma) === 0) {
-    progress.mastery['v:' + w.lemma] = 1;
+  if (getVocabMastery(w) === 0) {
+    progress.mastery[_vocabKey(w)] = 1;
     saveProgress();
   }
 }
@@ -3816,9 +3876,9 @@ function generateVocabQuiz(words, forceMode) {
   const ls = progress.lastSeen || {};
   const now = Date.now();
   const urgency = w => {
-    const m = getVocabMastery(w.lemma);
+    const m = getVocabMastery(w);
     if (m === 0) return 500;
-    const seenAgo = ls['v:' + w.lemma] ? now - new Date(ls['v:' + w.lemma]).getTime() : Infinity;
+    const seenAgo = ls[_vocabKey(w)] ? now - new Date(ls[_vocabKey(w)]).getTime() : Infinity;
     return seenAgo / REVIEW_INTERVALS_MS[m];
   };
   const sorted = [...words].sort((a, b) => urgency(b) - urgency(a));
@@ -4018,8 +4078,8 @@ function answerVocabMC(btn, chosen) {
   } else {
     _recordMiss(vqMissed, q);
   }
-  addVocabMastery(q.word[0], correct);
-  _trackLastSeen('v:' + q.word[0]);
+  addVocabMastery(q.word, correct);
+  _trackLastSeen(_vocabKey(q.word));
   checkAchievements();
   showVocabFeedback(correct, q.correct, !correct && q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -4050,8 +4110,8 @@ function answerVocabFIB() {
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
   else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); }
-  addVocabMastery(q.word[0], correct);
-  _trackLastSeen('v:' + q.word[0]);
+  addVocabMastery(q.word, correct);
+  _trackLastSeen(_vocabKey(q.word));
   checkAchievements();
   showVocabFeedback(correct, q.answer, !correct && q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -4081,8 +4141,8 @@ function dontKnowVocab() {
     _showInlineAnswer('vq-answer-area', q.answer || q.correct);
   }
   _recordMiss(vqMissed, q);
-  addVocabMastery(q.word[0], false);
-  _trackLastSeen('v:' + q.word[0]);
+  addVocabMastery(q.word, false);
+  _trackLastSeen(_vocabKey(q.word));
   checkAchievements();
   showVocabFeedback(false, q.answer || q.correct, q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -5178,7 +5238,7 @@ function computePlacementMastery() {
       const waveIdx = Math.floor(i / VMIX_WAVE_SIZE);
       const waveResult = ptStageResults.vocabulary.waves[waveIdx];
       const level = (waveResult && waveResult.correct === 2) ? 3 : 2;
-      ptPendingMastery['v:' + w.lemma] = Math.max(level, getVocabMastery(w.lemma));
+      ptPendingMastery[_vocabKey(w)] = Math.max(level, getVocabMastery(w));
     }
   }
 
@@ -5406,6 +5466,7 @@ function openSettingsPanel() {
   _updateFibModeChips();
   _updateListenModeChips();
   _updateThemeSwatches();
+  renderVoiceSelector();
   document.getElementById('settings-overlay').classList.add('open');
   document.addEventListener('keydown', _settingsEsc);
 }
@@ -5430,7 +5491,7 @@ async function unlockAllContent(btn) {
   btn.disabled = true;
   btn.textContent = 'Loading packs…';
   await Promise.all([1, 2, 3].map(n => loadVocabPack(n)));
-  for (const w of VMIX_CURRICULUM) progress.mastery['v:' + w.lemma] = 3;
+  for (const w of VMIX_CURRICULUM) progress.mastery[_vocabKey(w)] = 3;
   for (const item of MIXED_CURRICULUM) progress.mastery[item.letter] = 3;
   saveProgress();
   closeSettingsPanel();
@@ -5491,7 +5552,7 @@ function startLetterListening() {
   showScreen('quiz'); renderQuestion();
 }
 function startVocabListening() {
-  const seen = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) > 0);
+  const seen = VOCAB_DATA.filter(w => getVocabMastery(w) > 0);
   const words = seen.length >= 4 ? seen : VOCAB_DATA.slice(0, 20);
   generateVocabQuiz(words, 'listening');
   vqIndex = 0; vqCorrect = 0; vqMissed = [];
@@ -5773,7 +5834,7 @@ function _buildVocabSection() {
   if (isOpen) {
     cats.forEach(cat => {
       const words = VOCAB_DATA.filter(w => w.category === cat);
-      const masteredCount = words.filter(w => getVocabMastery(w.lemma) >= 3).length;
+      const masteredCount = words.filter(w => getVocabMastery(w) >= 3).length;
       const total = words.length;
       const pct = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
       const grpId = 'vocab:' + cat;
@@ -5791,7 +5852,7 @@ function _buildVocabSection() {
       if (grpOpen) {
         html += `<div class="prog-chips">`;
         words.forEach(w => {
-          const lvl = getVocabMastery(w.lemma);
+          const lvl = getVocabMastery(w);
           const safeB = w.lemma.replace(/'/g, "\\'");
           const eng = (w.english || '').replace(/"/g, '&quot;');
           html += `<div class="prog-chip" data-level="${lvl}" onclick="cycleVocabChipMastery('${safeB}')" title="${eng}">${w.lemma}</div>`;
@@ -5889,8 +5950,8 @@ const ACHIEVEMENTS = [
   { id: 'vowel-master',     icon: '🔤', label: 'Vowel Master',       test: () => VOWELS.every(v => getMastery(v.letter) >= 3) },
   { id: 'alphabet-complete',icon: '📚', label: 'Full Alphabet',      test: () => ALL_LETTERS.every(l => getMastery(l.letter) >= 3) },
   { id: 'century',          icon: '⭐', label: 'Century',            test: () => progress.xp >= 100 },
-  { id: 'word-collector',   icon: '📖', label: 'Word Collector',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length >= 50 },
-  { id: 'vocab-champion',   icon: '🏆', label: 'Vocab Champion',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length >= 500 },
+  { id: 'word-collector',   icon: '📖', label: 'Word Collector',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w) >= 3).length >= 50 },
+  { id: 'vocab-champion',   icon: '🏆', label: 'Vocab Champion',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w) >= 3).length >= 500 },
   { id: 'grammar-start',    icon: '📝', label: 'Grammar Beginner',   test: () => GRAMMAR_LESSONS.some(l => getLessonProgress(l).pct === 100) },
   { id: 'grammar-graduate', icon: '🎓', label: 'Grammar Graduate',   test: () => GRAMMAR_LESSONS.every(l => getLessonProgress(l).pct === 100) },
   { id: 'streak-3',         icon: '🔥', label: 'On a Roll',          test: () => progress.streak >= 3 },
@@ -5973,7 +6034,7 @@ function renderStatsPanel() {
   cats.forEach(cat => {
     const words = VOCAB_DATA.filter(w => w.category === cat);
     if (words.length < 3) return;
-    const pct = Math.round((words.filter(w => getVocabMastery(w.lemma) >= 3).length / words.length) * 100);
+    const pct = Math.round((words.filter(w => getVocabMastery(w) >= 3).length / words.length) * 100);
     if (pct > bestPct) { bestPct = pct; bestCat = cat; }
     if (pct < worstPct) { worstPct = pct; worstCat = cat; }
   });
@@ -6000,7 +6061,7 @@ function renderStatsPanel() {
   Object.entries(VOCAB_CATEGORIES).forEach(([key, cat]) => {
     const words = VOCAB_DATA.filter(w => w.category === key);
     if (!words.length) return;
-    const mastered = words.filter(w => getVocabMastery(w.lemma) >= 2).length;
+    const mastered = words.filter(w => getVocabMastery(w) >= 2).length;
     const pct = Math.round((mastered / words.length) * 100);
     html += `<div class="stats-cat-row">
       <span class="stats-cat-icon">${cat.icon}</span>
@@ -6098,7 +6159,7 @@ function renderTodayScreen() {
   // Next unseen vocab words
   const unlocked = getVocabMixedUnlockedCount();
   const pool = VMIX_CURRICULUM.slice(0, unlocked);
-  const newWords = pool.filter(w => getVocabMastery(w.lemma) === 0).slice(0, 5);
+  const newWords = pool.filter(w => getVocabMastery(w) === 0).slice(0, 5);
 
   // Next grammar lesson user hasn't mastered
   const nextGrammar = GRAMMAR_LESSONS.find(l => {
@@ -6188,8 +6249,8 @@ function getDueItems() {
   });
   // Vocab
   VOCAB_DATA.forEach(w => {
-    const key = 'v:' + w.lemma;
-    const mastery = getVocabMastery(w.lemma);
+    const key = _vocabKey(w);
+    const mastery = getVocabMastery(w);
     if (mastery === 0) return;
     const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
     if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.vocab.push(w);
@@ -6619,5 +6680,11 @@ function openVocabBrowseSearch(query) {
   </div>
 </div>
 
+<script>
+// Register service worker for offline/PWA support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
 </body>
 </html>
