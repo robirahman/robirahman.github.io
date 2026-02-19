@@ -3239,7 +3239,9 @@
           <span style="font-size:13px;color:var(--text-dim)">${learnedConcepts}/${totalConcepts}</span>
         </div>
         <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px">
-          <div style="height:100%;width:${Math.round((learnedConcepts / totalConcepts) * 100)}%;background:var(--accent);border-radius:3px;transition:width .4s"></div>
+          <div style="height:100%;width:${Math.round(
+            (learnedConcepts / totalConcepts) * 100
+          )}%;background:var(--accent);border-radius:3px;transition:width .4s"></div>
         </div>
       </div>
     </div>
@@ -3258,7 +3260,10 @@
     <div class="section-label">Activity Heatmap</div>
     <div style="padding-bottom:14px">${buildHeatmap()}</div>
     <div class="section-label">Continue Studying</div>
-    ${reviewHTML || '<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">All caught up!</div><div class="empty-body">You\'ve reviewed everything. Great work!</div></div>'}
+    ${
+      reviewHTML ||
+      '<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">All caught up!</div><div class="empty-body">You\'ve reviewed everything. Great work!</div></div>'
+    }
     <div class="spacer"></div>
   `;
       }
@@ -4011,7 +4016,9 @@
       <div style="height:100%;width:${progressPct}%;background:var(--accent);transition:width .3s;border-radius:2px"></div>
     </div>
     <div class="quiz-body" style="padding:20px 16px 0">
-      <div style="font-size:11px;color:var(--text-dim);font-weight:600;margin-bottom:6px">${diffLabel} · ${pt.topics.filter((t) => t.done).length}/${pt.topics.length} topics assessed</div>
+      <div style="font-size:11px;color:var(--text-dim);font-weight:600;margin-bottom:6px">${diffLabel} · ${pt.topics.filter((t) => t.done).length}/${
+        pt.topics.length
+      } topics assessed</div>
       <div class="quiz-question">${q.question}</div>
       ${optionsHTML}
       <div class="quiz-feedback" id="pt-feedback"></div>
@@ -4086,7 +4093,9 @@
         const nx = document.getElementById("pt-next");
         if (fb) {
           fb.className = "quiz-feedback show " + (correct ? "correct" : "wrong");
-          fb.innerHTML = `<strong>${correct ? "✓ Correct!" : "✗ Incorrect"}</strong>${explanation ? `<div class="explanation">${explanation}</div>` : ""}`;
+          fb.innerHTML = `<strong>${correct ? "✓ Correct!" : "✗ Incorrect"}</strong>${
+            explanation ? `<div class="explanation">${explanation}</div>` : ""
+          }`;
         }
         if (nx) nx.style.display = "block";
       }
@@ -4124,7 +4133,9 @@
         <div style="font-size:22px;width:32px;text-align:center">${t.icon}</div>
         <div style="flex:1">
           <div style="font-size:14px;font-weight:600">${t.label}</div>
-          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t.correct}/${t.asked} correct · ${["Easy", "Medium", "Hard"][["easy", "medium", "hard"].indexOf(t.difficulty)] || ""} level reached</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${t.correct}/${t.asked} correct · ${
+            ["Easy", "Medium", "Hard"][["easy", "medium", "hard"].indexOf(t.difficulty)] || ""
+          } level reached</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:18px">${masteryIcon[m]}</div>
@@ -4207,7 +4218,9 @@
         // Filter bar
         let filterHTML = `<button class="filter-btn${!activeMLCategory ? " active" : ""}" onclick="setMLFilter(null)">All</button>`;
         cats.forEach((c) => {
-          filterHTML += `<button class="filter-btn${activeMLCategory === c.id ? " active" : ""}" onclick="setMLFilter('${c.id}')">${c.label}</button>`;
+          filterHTML += `<button class="filter-btn${activeMLCategory === c.id ? " active" : ""}" onclick="setMLFilter('${c.id}')">${
+            c.label
+          }</button>`;
         });
         document.getElementById("ml-filter-bar").innerHTML = filterHTML;
 
@@ -4239,7 +4252,9 @@
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
           <span class="chip ${chipCls}">${cat ? cat.label.split(" ")[0] : algo.category}</span>
-          <svg id="ac-arrow-${algo.id}" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:16px;height:16px;color:var(--text-dim);transition:transform .2s"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          <svg id="ac-arrow-${
+            algo.id
+          }" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:16px;height:16px;color:var(--text-dim);transition:transform .2s"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
         </div>
       </div>
       <div class="algo-expand" id="ae-${algo.id}">
@@ -4430,7 +4445,9 @@
             (t) =>
               `<div class="glossary-item">
       <div class="glossary-term">${t.term}</div>
-      <div style="flex:1"><div class="glossary-def">${t.def.slice(0, 120)}${t.def.length > 120 ? "…" : ""}</div><div style="font-size:11px;color:var(--accent);margin-top:3px">${t.src}</div></div>
+      <div style="flex:1"><div class="glossary-def">${t.def.slice(0, 120)}${
+        t.def.length > 120 ? "…" : ""
+      }</div><div style="font-size:11px;color:var(--accent);margin-top:3px">${t.src}</div></div>
     </div>`
           )
           .join("");

@@ -55,10 +55,12 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       caches.open(CACHE_VERSION).then((cache) =>
         cache.match(event.request).then((cached) => {
-          const networkFetch = fetch(event.request).then((response) => {
-            cacheAndReturn(event.request, response.clone());
-            return response;
-          }).catch(() => null);
+          const networkFetch = fetch(event.request)
+            .then((response) => {
+              cacheAndReturn(event.request, response.clone());
+              return response;
+            })
+            .catch(() => null);
           return cached || networkFetch;
         })
       )
