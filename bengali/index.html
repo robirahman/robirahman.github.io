@@ -66,9 +66,10 @@ nav h1 span { color: var(--accent); }
 .screen.active { display:block; }
 
 /* ─── HOME ─── */
-#home .hero, #vocab-home .hero, #grammar-home .hero { text-align:center; padding: 40px 0 30px; }
-#home .hero h2, #vocab-home .hero h2, #grammar-home .hero h2 { font-size: 2rem; margin-bottom: 8px; }
-#home .hero p, #vocab-home .hero p, #grammar-home .hero p, #today-screen .hero p { color: var(--text-dim); font-size: 1.05rem; }
+#home .hero, #vocab-home .hero, #grammar-home .hero, #phrases-home .hero { text-align:center; padding: 40px 0 30px; }
+#home .hero h2, #vocab-home .hero h2, #grammar-home .hero h2, #phrases-home .hero h2 { font-size: 2rem; margin-bottom: 8px; }
+#home .hero p, #vocab-home .hero p, #grammar-home .hero p, #phrases-home .hero p, #today-screen .hero p { color: var(--text-dim); font-size: 1.05rem; }
+.ge-notes { font-size: 0.82rem; color: var(--text-dim); margin-top: 8px; font-style: italic; line-height: 1.4; }
 /* ─── TODAY SCREEN ─── */
 .today-date { color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-bottom: 16px; }
 .today-section {
@@ -1573,6 +1574,7 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   <button class="tab-btn active" onclick="switchTab('alphabet')">Alphabet</button>
   <button class="tab-btn" onclick="switchTab('vocabulary')">Vocabulary</button>
   <button class="tab-btn" onclick="switchTab('grammar')">Grammar</button>
+  <button class="tab-btn" onclick="switchTab('phrases')">Phrases</button>
   <button class="pt-retake-btn" id="pt-retake-btn" style="display:none" onclick="startPlacementTest()">Retake Placement</button>
   <button class="review-due-btn" id="review-due-btn" style="display:none" onclick="startReviewSession()">🔔 Review Due (<span id="review-due-count">0</span>)</button>
 </div>
@@ -2007,6 +2009,63 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   <div id="gr-missed"></div>
 </div>
 
+<!-- PHRASES HOME -->
+<div class="screen" id="phrases-home">
+  <div class="hero">
+    <h2>বাক্যাংশ</h2>
+    <p>Learn conversational phrases for real-life situations</p>
+  </div>
+  <div class="module-grid" id="phrases-module-grid"></div>
+</div>
+
+<!-- PHRASES SITUATION VIEW -->
+<div class="screen" id="phrases-situation">
+  <div class="learn-header">
+    <button class="back-btn" onclick="showScreen('phrases-home')">← Back</button>
+    <h2 id="ps-title">Situation</h2>
+    <div></div>
+  </div>
+  <div class="grammar-content" id="ps-content"></div>
+</div>
+
+<!-- PHRASES QUIZ -->
+<div class="screen" id="phrases-quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="showScreen('phrases-home')">← Quit</button>
+    <h2 id="phq-title">Phrases Quiz</h2>
+    <div id="phq-score">0 / 0</div>
+  </div>
+  <div class="quiz-progress-bar">
+    <div class="quiz-progress-fill" id="phq-progress-fill"></div>
+  </div>
+  <div class="quiz-question-area" id="phq-question-area"></div>
+  <div id="phq-answer-area"></div>
+  <div class="quiz-feedback" id="phq-feedback"></div>
+  <button class="btn-primary quiz-next-btn" id="phq-next-btn" onclick="nextPhrasesQuestion()">Continue →</button>
+</div>
+
+<!-- PHRASES RESULTS -->
+<div class="screen" id="phrases-results">
+  <div class="results-circle" id="phr-circle">
+    <svg viewBox="0 0 160 160">
+      <circle class="bg-ring" cx="80" cy="80" r="72"/>
+      <circle class="fg-ring" id="phr-ring" cx="80" cy="80" r="72"
+        stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+    </svg>
+    <span id="phr-pct">0%</span>
+  </div>
+  <div class="results-title" id="phr-title">Great job!</div>
+  <div class="results-sub" id="phr-sub">You scored 8/10</div>
+  <div class="results-actions">
+    <button class="btn-primary" onclick="retryPhrasesQuiz()">Try Again</button>
+    <button class="nav-btn" id="phr-retry-missed" onclick="retryMissedPhrases()" style="display:none">Retry Missed</button>
+    <button class="nav-btn" onclick="showScreen('phrases-home')">Home</button>
+    <button class="btn-primary" id="phr-continue-review" onclick="_runNextReviewItem()" style="display:none">Continue →</button>
+  </div>
+  <div id="phr-missed"></div>
+</div>
+
+<script src="phrases.js"></script>
 <script src="grammar.js"></script>
 <script src="vocab.js"></script>
 <script>
@@ -3009,6 +3068,10 @@ function reportProblem(quizType) {
     q = vqQuestions[vqIndex];
     const inp = document.getElementById('vq-fib-input');
     userAnswer = inp ? inp.value : '';
+  } else if (quizType === 'phrases') {
+    q = phqQuestions[phqIndex];
+    const inp = document.getElementById('phq-fib-input');
+    userAnswer = inp ? inp.value : '';
   } else {
     q = gqQuestions[gqIndex];
     const inp = document.getElementById('gq-fib-input');
@@ -3269,6 +3332,7 @@ let currentTab = 'alphabet';
 const alphabetScreens = ['home','learn','quiz','results','chart'];
 const vocabScreens = ['vocab-home','vocab-browse','vocab-learn','vocab-quiz','vocab-results'];
 const grammarScreens = ['grammar-home','grammar-lesson','grammar-quiz','grammar-results'];
+const phrasesScreens = ['phrases-home','phrases-situation','phrases-quiz','phrases-results'];
 
 function switchTab(tab) {
   currentTab = tab;
@@ -3277,7 +3341,8 @@ function switchTab(tab) {
       (i === 0 && tab === 'today') ||
       (i === 1 && tab === 'alphabet') ||
       (i === 2 && tab === 'vocabulary') ||
-      (i === 3 && tab === 'grammar'));
+      (i === 3 && tab === 'grammar') ||
+      (i === 4 && tab === 'phrases'));
   });
   if (tab === 'today') {
     showScreen('today-screen');
@@ -3285,6 +3350,8 @@ function switchTab(tab) {
     showScreen('home');
   } else if (tab === 'vocabulary') {
     showScreen('vocab-home');
+  } else if (tab === 'phrases') {
+    showScreen('phrases-home');
   } else {
     showScreen('grammar-home');
   }
@@ -3299,6 +3366,7 @@ showScreen = function(id) {
   if (id === 'chart') renderChart();
   if (id === 'vocab-home') renderVocabHome();
   if (id === 'grammar-home') renderGrammarHome();
+  if (id === 'phrases-home') renderPhrasesHome();
   if (id === 'today-screen') renderTodayScreen();
   if (id === 'placement-results') renderPlacementResultsUI();
 };
@@ -6680,6 +6748,563 @@ function openVocabBrowseSearch(query) {
     <button class="bng-key bng-key-wide" onclick="appendBengaliChar('✕')">Clear</button>
   </div>
 </div>
+
+<script>
+// ════════════════════════════════════════
+//  PHRASES — MASTERY & PROGRESS
+// ════════════════════════════════════════
+
+function getPhraseMastery(phraseId) {
+  return progress.mastery['ph:' + phraseId] || 0;
+}
+
+function addPhraseMastery(phraseId, correct) {
+  const key = 'ph:' + phraseId;
+  const cur = progress.mastery[key] || 0;
+  if (correct) {
+    progress.mastery[key] = Math.min(3, cur + 1);
+  } else {
+    progress.mastery[key] = Math.max(1, cur - 1);
+  }
+  saveProgress();
+}
+
+function getSituationProgress(slug) {
+  const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+  const total = phrases.length;
+  let mastered = 0, seen = 0;
+  phrases.forEach(p => {
+    const m = getPhraseMastery(p.id);
+    if (m >= 3) mastered++;
+    if (m >= 1) seen++;
+  });
+  return { total, mastered, seen, pct: Math.round((mastered / total) * 100) };
+}
+
+function getPhrasesUnlockedSituationCount() {
+  // A situation unlocks when 60% of the previous situation's phrases reach mastery >= 2.
+  let unlocked = 1;
+  while (unlocked < PHRASES_WAVE_ORDER.length) {
+    const prevSlug = PHRASES_WAVE_ORDER[unlocked - 1];
+    const prevPhrases = PHRASES_DATA.filter(p => p.situation === prevSlug);
+    const familiarCount = prevPhrases.filter(p => getPhraseMastery(p.id) >= 2).length;
+    if (familiarCount >= Math.ceil(prevPhrases.length * 0.6)) {
+      unlocked++;
+    } else {
+      break;
+    }
+  }
+  return unlocked;
+}
+
+// ════════════════════════════════════════
+//  PHRASES HOME
+// ════════════════════════════════════════
+
+function renderPhrasesHome() {
+  const grid = document.getElementById('phrases-module-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const unlockedCount = getPhrasesUnlockedSituationCount();
+  const totalPhrases = PHRASES_DATA.length;
+  let masteredPhrases = 0;
+  PHRASES_DATA.forEach(p => { if (getPhraseMastery(p.id) >= 3) masteredPhrases++; });
+  const mixPct = Math.round((masteredPhrases / totalPhrases) * 100);
+
+  // Mixed practice card
+  const mixCard = document.createElement('div');
+  mixCard.className = 'module-card';
+  mixCard.innerHTML = `
+    <div class="module-icon">🗣️</div>
+    <h3>Mixed Practice</h3>
+    <p>Adaptive review across all unlocked situations</p>
+    <div class="module-progress"><div class="module-progress-fill" style="width:${mixPct}%;background:var(--accent)"></div></div>
+    <div class="progress-label">${masteredPhrases}/${totalPhrases} mastered · ${unlockedCount}/${PHRASES_WAVE_ORDER.length} situations unlocked</div>
+  `;
+  mixCard.onclick = () => startPhrasesMixedPractice();
+  grid.appendChild(mixCard);
+
+  // Situation cards
+  PHRASES_WAVE_ORDER.forEach((slug, idx) => {
+    const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+    if (!sit) return;
+    const card = document.createElement('div');
+    card.className = 'module-card';
+    const prog = getSituationProgress(slug);
+    const locked = idx >= unlockedCount;
+    card.innerHTML = `
+      ${locked ? '<span class="lock-badge">🔒</span>' : ''}
+      <div class="module-icon">${sit.icon}</div>
+      <h3>${sit.title}</h3>
+      <p>${sit.desc}</p>
+      <div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:var(--accent)"></div></div>
+      <div class="progress-label">${prog.mastered}/${prog.total} mastered</div>
+    `;
+    if (!locked) card.onclick = () => openPhrasesSituation(slug);
+    grid.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════
+//  PHRASES SITUATION VIEW (flashcards)
+// ════════════════════════════════════════
+
+let currentPhrasesSituation = null;
+let _psCardIdx = 0;
+
+function openPhrasesSituation(slug) {
+  const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+  if (!sit) return;
+  currentPhrasesSituation = slug;
+  _psCardIdx = 0;
+
+  document.getElementById('ps-title').textContent = sit.title;
+  const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+  const content = document.getElementById('ps-content');
+  content.innerHTML = `
+    <h2>${sit.title}</h2>
+    <div class="grammar-desc">${sit.desc}</div>
+    <h3 style="margin-bottom:12px;">Phrase Cards</h3>
+    <div class="gl-card-area">
+      <div class="gl-flashcard" id="ps-card" onclick="flipPsCard()">
+        <div class="gl-card-face gl-card-front" id="ps-card-front"></div>
+        <div class="gl-card-face gl-card-back" id="ps-card-back"></div>
+      </div>
+      <div class="gl-card-hint" id="ps-card-hint">Tap card to reveal</div>
+      <div class="learn-nav" style="margin-top:12px">
+        <button class="nav-btn" id="ps-prev-btn" onclick="prevPsCard()">← Prev</button>
+        <span id="ps-card-counter" style="font-size:0.85rem;color:var(--text-dim)"></span>
+        <button class="nav-btn" id="ps-next-btn" onclick="nextPsCard()">Next →</button>
+      </div>
+    </div>
+    <div class="grammar-lesson-actions">
+      <button class="btn-primary" onclick="startPhrasesQuiz()">Start Quiz →</button>
+    </div>
+  `;
+  renderPsCard();
+  showScreen('phrases-situation');
+}
+
+function renderPsCard() {
+  const slug = currentPhrasesSituation;
+  if (!slug) return;
+  const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+  const phrase = phrases[_psCardIdx];
+  if (!phrase) return;
+  const card = document.getElementById('ps-card');
+  if (!card) return;
+  card.classList.remove('flipped');
+  document.getElementById('ps-card-front').innerHTML =
+    `<div class="ge-bengali">${phrase.bengali}</div>`;
+  let backHtml = `<div class="ge-roman">${phrase.roman}</div><div class="ge-english">${phrase.english}</div>`;
+  if (phrase.notes) backHtml += `<div class="ge-notes">${phrase.notes}</div>`;
+  if (phrase.reply) backHtml += `<div class="ge-notes" style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:8px"><em>Natural reply:</em> ${phrase.reply.bengali} — ${phrase.reply.english}</div>`;
+  document.getElementById('ps-card-back').innerHTML = backHtml;
+  document.getElementById('ps-card-counter').textContent =
+    (_psCardIdx + 1) + ' / ' + phrases.length;
+  document.getElementById('ps-card-hint').textContent = 'Tap card to reveal';
+  document.getElementById('ps-prev-btn').style.visibility = _psCardIdx === 0 ? 'hidden' : 'visible';
+  document.getElementById('ps-next-btn').style.visibility =
+    _psCardIdx >= phrases.length - 1 ? 'hidden' : 'visible';
+}
+
+function flipPsCard() {
+  const card = document.getElementById('ps-card');
+  if (!card) return;
+  card.classList.toggle('flipped');
+  const hint = document.getElementById('ps-card-hint');
+  if (hint) hint.textContent = card.classList.contains('flipped') ? '' : 'Tap card to reveal';
+}
+
+function prevPsCard() {
+  if (_psCardIdx > 0) { _psCardIdx--; renderPsCard(); }
+}
+
+function nextPsCard() {
+  const phrases = PHRASES_DATA.filter(p => p.situation === currentPhrasesSituation);
+  if (_psCardIdx < phrases.length - 1) { _psCardIdx++; renderPsCard(); }
+}
+
+// ════════════════════════════════════════
+//  PHRASES QUIZ
+// ════════════════════════════════════════
+
+let phqQuestions = [];
+let phqIndex = 0;
+let phqCorrect = 0;
+let phqAnswered = false;
+let phqIsMixed = false;
+let phqMissed = [];
+let phqCurrentSituationSlug = null;
+
+function buildPhrasesQuizQuestions(phrases) {
+  const questions = [];
+
+  phrases.forEach(p => {
+    const m = getPhraseMastery(p.id);
+    // Build a pool of distractor phrases (anything except this phrase)
+    const distractorPool = shuffleArr(PHRASES_DATA.filter(x => x.id !== p.id));
+
+    // Determine which question types are appropriate for this phrase's mastery level
+    const types = ['phrases-mc'];
+    if (m >= 1) types.push('phrases-mc-reverse');
+    if (m >= 1) types.push('phrases-listening');
+    // FIB only for short phrases (≤4 roman words) — avoids asking users to type full sentences
+    if (m >= 2 && p.roman.split(' ').length <= 4) types.push('phrases-fib');
+    if (p.reply) types.push('phrases-dialogue');
+
+    // Pick 1–2 question types per phrase, weighted toward unseen/low-mastery
+    const shuffledTypes = shuffleArr([...types]);
+    const numQ = m >= 2 ? 2 : 1;
+
+    shuffledTypes.slice(0, numQ).forEach(type => {
+      if (type === 'phrases-mc') {
+        const picks = distractorPool.slice(0, 3).map(x => x.english);
+        questions.push({
+          type: 'phrases-mc',
+          prompt: 'What does this phrase mean?',
+          bengali: p.bengali,
+          roman: p.roman,
+          correct: p.english,
+          options: shuffleArr([p.english, ...picks]),
+          _phraseId: p.id,
+        });
+
+      } else if (type === 'phrases-mc-reverse') {
+        const picks = distractorPool.slice(0, 3).map(x => x.bengali);
+        questions.push({
+          type: 'phrases-mc-reverse',
+          prompt: 'How do you say this in Bengali?',
+          english: p.english,
+          correct: p.bengali,
+          options: shuffleArr([p.bengali, ...picks]),
+          _phraseId: p.id,
+        });
+
+      } else if (type === 'phrases-listening') {
+        const picks = distractorPool.slice(0, 3).map(x => x.english);
+        questions.push({
+          type: 'phrases-listening',
+          prompt: 'Listen and choose the correct meaning:',
+          audio: p.bengali,
+          correct: p.english,
+          options: shuffleArr([p.english, ...picks]),
+          _phraseId: p.id,
+        });
+
+      } else if (type === 'phrases-fib') {
+        questions.push({
+          type: 'phrases-fib',
+          prompt: 'Type the romanization for:',
+          english: p.english,
+          acceptable: [p.roman],
+          answer: p.roman,
+          bengali: p.bengali,
+          _phraseId: p.id,
+        });
+
+      } else if (type === 'phrases-dialogue') {
+        const picks = distractorPool.slice(0, 3).map(x => x.bengali);
+        questions.push({
+          type: 'phrases-dialogue',
+          prompt: 'Choose the natural reply:',
+          speaker: p.bengali,
+          speakerEnglish: p.english,
+          correct: p.reply.bengali,
+          correctEnglish: p.reply.english,
+          options: shuffleArr([p.reply.bengali, ...picks]),
+          _phraseId: p.id,
+        });
+      }
+    });
+  });
+
+  return shuffleArr(questions);
+}
+
+function startPhrasesQuiz() {
+  const slug = currentPhrasesSituation;
+  if (!slug) return;
+  phqIsMixed = false;
+  phqCurrentSituationSlug = slug;
+  const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+  const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+  phqQuestions = buildPhrasesQuizQuestions(phrases).slice(0, 12);
+  phqIndex = 0;
+  phqCorrect = 0;
+  phqMissed = [];
+  document.getElementById('phq-title').textContent = (sit ? sit.title : 'Phrases') + ' Quiz';
+  showScreen('phrases-quiz');
+  renderPhrasesQuestion();
+  updateStreak();
+}
+
+function startPhrasesMixedPractice() {
+  const unlockedCount = getPhrasesUnlockedSituationCount();
+  const unlockedSlugs = PHRASES_WAVE_ORDER.slice(0, unlockedCount);
+  const pool = PHRASES_DATA.filter(p => unlockedSlugs.includes(p.situation));
+
+  // Sort by mastery ascending so unseen/weak phrases appear first, with randomness for mastered
+  const withMastery = pool.map(p => ({ ...p, _mastery: getPhraseMastery(p.id) }));
+  withMastery.sort((a, b) => {
+    const sa = a._mastery === 3 ? 3 + Math.random() * 2 : a._mastery === 0 ? 0.5 : a._mastery;
+    const sb = b._mastery === 3 ? 3 + Math.random() * 2 : b._mastery === 0 ? 0.5 : b._mastery;
+    return sa - sb;
+  });
+
+  const selected = withMastery.slice(0, 15);
+  phqQuestions = buildPhrasesQuizQuestions(selected).slice(0, 15);
+  phqIndex = 0;
+  phqCorrect = 0;
+  phqMissed = [];
+  phqIsMixed = true;
+  phqCurrentSituationSlug = null;
+  document.getElementById('phq-title').textContent = 'Mixed Phrases Practice';
+  showScreen('phrases-quiz');
+  renderPhrasesQuestion();
+  updateStreak();
+}
+
+function renderPhrasesQuestion() {
+  if (phqIndex >= phqQuestions.length) {
+    showPhrasesResults();
+    return;
+  }
+  phqAnswered = false;
+  const q = phqQuestions[phqIndex];
+
+  document.getElementById('phq-progress-fill').style.width =
+    ((phqIndex / phqQuestions.length) * 100) + '%';
+  document.getElementById('phq-score').textContent = phqCorrect + ' / ' + phqIndex;
+
+  const qa = document.getElementById('phq-question-area');
+  const aa = document.getElementById('phq-answer-area');
+  const fb = document.getElementById('phq-feedback');
+  fb.className = 'quiz-feedback';
+  fb.textContent = '';
+  document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn';
+
+  if (q.type === 'phrases-mc') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="vq-bengali">${q.bengali}</div>
+      <div class="vq-hint">${escHtml(q.roman)}</div>
+    `;
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerPhrasesMC(this, '${opt.replace(/'/g, "\\'")}')">${escHtml(opt)}<span class="mc-key-hint">[${i+1}]</span></button>`
+      ).join('') + '</div>' +
+      '<button class="idk-btn" onclick="dontKnowPhrases()">I don\'t know</button>';
+    attachQuizKeyHandler('phq');
+
+  } else if (q.type === 'phrases-mc-reverse') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="vq-hint">${escHtml(q.english)}</div>
+    `;
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerPhrasesMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
+      ).join('') + '</div>' +
+      '<button class="idk-btn" onclick="dontKnowPhrases()">I don\'t know</button>';
+    attachQuizKeyHandler('phq');
+
+  } else if (q.type === 'phrases-listening') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play phrase">▶ Play</button>
+    `;
+    setTimeout(() => speakBengali(q.audio, 0.85), 300);
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerPhrasesMC(this, '${opt.replace(/'/g, "\\'")}')">${escHtml(opt)}<span class="mc-key-hint">[${i+1}]</span></button>`
+      ).join('') + '</div>' +
+      '<button class="idk-btn" onclick="dontKnowPhrases()">I don\'t know</button>';
+    attachQuizKeyHandler('phq');
+
+  } else if (q.type === 'phrases-fib') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="vq-hint">${escHtml(q.english)}</div>
+    `;
+    aa.innerHTML = `<div class="fib-area">
+      <input type="text" class="fib-input" id="phq-fib-input" placeholder="Type romanization…"
+        onkeydown="if(event.key==='Enter')answerPhrasesFIB()" autocomplete="off" autocapitalize="off">
+      <button class="btn-primary fib-submit" onclick="answerPhrasesFIB()">Check</button>
+    </div>
+    <button class="idk-btn" onclick="dontKnowPhrases()">I don't know</button>`;
+    setTimeout(() => document.getElementById('phq-fib-input')?.focus(), 100);
+
+  } else if (q.type === 'phrases-dialogue') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <div class="vq-bengali">${q.speaker}</div>
+      <div class="vq-hint">"${escHtml(q.speakerEnglish)}"</div>
+    `;
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) =>
+        `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerPhrasesMC(this, '${opt.replace(/'/g, "\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
+      ).join('') + '</div>' +
+      '<button class="idk-btn" onclick="dontKnowPhrases()">I don\'t know</button>';
+    attachQuizKeyHandler('phq');
+  }
+}
+
+function answerPhrasesMC(btn, chosen) {
+  if (phqAnswered) return;
+  phqAnswered = true;
+  const q = phqQuestions[phqIndex];
+  const correct = chosen === q.correct;
+  document.querySelectorAll('#phq-answer-area .mc-btn').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) {
+    phqCorrect++;
+    addXP(10);
+    setTimeout(() => { const nb = document.getElementById('phq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
+  } else {
+    _recordMiss(phqMissed, q);
+  }
+  addPhraseMastery(q._phraseId, correct);
+  _trackLastSeen('ph:' + q._phraseId);
+  checkAchievements();
+  // Build a meaningful feedback string
+  let fbAnswer = q.correct;
+  if (q.type === 'phrases-dialogue') fbAnswer = q.correct + ' — ' + q.correctEnglish;
+  else if (q.type === 'phrases-mc-reverse') fbAnswer = q.correct;
+  showPhrasesFeedback(correct, fbAnswer);
+  document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function answerPhrasesFIB() {
+  if (phqAnswered) return;
+  const input = document.getElementById('phq-fib-input');
+  if (!input) return;
+  const rawInput = input.value.trim();
+  const val = rawInput.toLowerCase();
+  if (!val) return;
+  phqAnswered = true;
+  const q = phqQuestions[phqIndex];
+  const normVal = _normRoman(val);
+  const correct = q.acceptable.some(a => a.toLowerCase() === val || _normRoman(a) === normVal);
+  input.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) {
+    phqCorrect++;
+    addXP(15);
+  } else {
+    _showInlineAnswer('phq-answer-area', q.answer);
+    _recordMiss(phqMissed, q);
+  }
+  addPhraseMastery(q._phraseId, correct);
+  _trackLastSeen('ph:' + q._phraseId);
+  checkAchievements();
+  showPhrasesFeedback(correct, q.bengali + ' (' + q.answer + ')');
+  document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function dontKnowPhrases() {
+  if (phqAnswered) return;
+  phqAnswered = true;
+  const q = phqQuestions[phqIndex];
+  if (q.type === 'phrases-fib') {
+    const input = document.getElementById('phq-fib-input');
+    if (input) { input.disabled = true; input.classList.add('wrong'); }
+    _showInlineAnswer('phq-answer-area', q.answer);
+    showPhrasesFeedback(false, q.bengali + ' (' + q.answer + ')');
+  } else {
+    document.querySelectorAll('#phq-answer-area .mc-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
+    });
+    let fbAnswer = q.correct;
+    if (q.type === 'phrases-dialogue') fbAnswer = q.correct + ' — ' + q.correctEnglish;
+    showPhrasesFeedback(false, fbAnswer);
+  }
+  _recordMiss(phqMissed, q);
+  addPhraseMastery(q._phraseId, false);
+  _trackLastSeen('ph:' + q._phraseId);
+  checkAchievements();
+  document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function showPhrasesFeedback(correct, answer, notes) {
+  const fb = document.getElementById('phq-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  let html = correct ? '✓ Correct! ' + escHtml(answer) : '✗ Correct answer: ' + escHtml(answer);
+  if (!correct && notes) html += '<div class="fb-example">' + escHtml(notes) + '</div>';
+  html += ' <button class="report-problem-btn active-quiz-phrases" onclick="reportProblem(\'phrases\')" title="Report a problem with this card">⚑ Report</button>';
+  fb.innerHTML = html;
+}
+
+function nextPhrasesQuestion() {
+  phqIndex++;
+  renderPhrasesQuestion();
+}
+
+// ════════════════════════════════════════
+//  PHRASES RESULTS
+// ════════════════════════════════════════
+
+function showPhrasesResults() {
+  showScreen('phrases-results');
+  const total = phqQuestions.length;
+  const pct = Math.round((phqCorrect / total) * 100);
+  setTimeout(() => {
+    const offset = 452.4 * (1 - pct / 100);
+    document.getElementById('phr-ring').style.strokeDashoffset = offset;
+  }, 100);
+  document.getElementById('phr-pct').textContent = pct + '%';
+  const title = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  document.getElementById('phr-title').textContent = title;
+  const phid = phqIsMixed ? 'phrases-mixed' : (phqCurrentSituationSlug || 'phrases');
+  const phist = progress.quizHistory || (progress.quizHistory = {});
+  const phprev = phist[phid] || { best: -1 };
+  if (pct > phprev.best) { phist[phid] = { best: pct }; saveProgress(); }
+  const subParts = [`You scored ${phqCorrect}/${total}`];
+  if (pct > phprev.best && phprev.best >= 0) subParts.push('🌟 New best!');
+  else if (phprev.best >= 0 && phprev.best > pct) subParts.push(`Best: ${phprev.best}%`);
+  if (progress.streak > 1) subParts.push(`🔥 ${progress.streak} day streak`);
+  document.getElementById('phr-sub').textContent = subParts.join(' · ');
+  addXP(5);
+  detachQuizKeyHandler();
+  updateNav();
+  checkAchievements();
+  _renderMissedSection(phqMissed, 'phr-missed', 'phr-retry-missed');
+  const contBtn = document.getElementById('phr-continue-review');
+  if (contBtn) contBtn.style.display = _reviewQueue.length > 0 ? 'inline-block' : 'none';
+}
+
+function retryPhrasesQuiz() {
+  if (phqIsMixed) {
+    startPhrasesMixedPractice();
+  } else if (phqCurrentSituationSlug) {
+    currentPhrasesSituation = phqCurrentSituationSlug;
+    startPhrasesQuiz();
+  }
+}
+
+function retryMissedPhrases() {
+  if (!phqMissed || phqMissed.length === 0) return;
+  const seen = new Set();
+  const phraseIds = [];
+  phqMissed.forEach(m => {
+    if (m._q && m._q._phraseId && !seen.has(m._q._phraseId)) {
+      seen.add(m._q._phraseId);
+      phraseIds.push(m._q._phraseId);
+    }
+  });
+  if (phraseIds.length === 0) return;
+  const phrases = PHRASES_DATA.filter(p => phraseIds.includes(p.id));
+  phqQuestions = buildPhrasesQuizQuestions(phrases);
+  phqIndex = 0; phqCorrect = 0; phqMissed = [];
+  document.getElementById('phq-title').textContent = 'Retry Missed';
+  showScreen('phrases-quiz');
+  renderPhrasesQuestion();
+}
+</script>
 
 <script>
 // Register service worker for offline/PWA support

@@ -1,12 +1,13 @@
 // Bengali App — Service Worker
 // Cache-first strategy for offline support.
 // Bump CACHE_VERSION to force cache refresh after major updates.
-const CACHE_VERSION = "bengali-v2";
+const CACHE_VERSION = "bengali-v3";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
   "./vocab.js",
   "./grammar.js",
+  "./phrases.js",
   "./guide.html",
   "./vocab-pack-1.json",
   "./vocab-pack-2.json",
