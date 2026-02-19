@@ -264,6 +264,10 @@ def rewrite_vocab_js(vocab_js_path: Path, pack0_words: list[dict], total_words: 
     lines.append('];')
     new_block = '\n'.join(lines)
 
+    # Verify the pattern exists before replacing
+    if not re.search(r'const VOCAB_DATA_RAW\s*=\s*\[.+?\];', text, re.DOTALL):
+        sys.exit("ERROR: Failed to locate VOCAB_DATA_RAW in vocab.js")
+
     # Replace old VOCAB_DATA_RAW block
     new_text = re.sub(
         r'const VOCAB_DATA_RAW\s*=\s*\[.+?\];',
@@ -272,11 +276,8 @@ def rewrite_vocab_js(vocab_js_path: Path, pack0_words: list[dict], total_words: 
         flags=re.DOTALL,
     )
 
-    if new_text == text:
-        sys.exit("ERROR: Failed to locate and replace VOCAB_DATA_RAW in vocab.js")
-
     new_text = re.sub(
-        r'const VOCAB_TOTAL_WORDS\s*=\s*\d+;',
+        r'const VOCAB_TOTAL_WORDS\s*=\s*\d+;(?:\s*//[^\n]*)?',
         f'const VOCAB_TOTAL_WORDS = {total_words}; // updated by build_vocab_packs.py',
         new_text,
     )
