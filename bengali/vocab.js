@@ -258,7 +258,7 @@ const VOCAB_DATA_RAW = [
 ["প্রতি","proti","toward / per / each","grammar","postposition","প্রতি মানুষের প্রতি সদয় হও। (proti manusher proti shodoy hao — Be kind to every person.)"],
 ["তখন","tokhon","then (at that time)","grammar","conjunction","তখন আমি ছোট ছিলাম। (tokhon ami chhoto chhilam — I was small then.)"],
 ["সঙ্গে","shonge","with","grammar","postposition","আমি তোমার সঙ্গে যাবো। (ami tomar shonge jabo — I will go with you.)"],
-["যেন","jeno","as if / so that","grammar","conjunction","মনে হচ্ছে যেন স্বপ্ন দেখছি। (mone hochhhe jeno shopno dekhchhi — It feels as if I am dreaming.)"],
+["যেন","jeno","as if / so that","grammar","conjunction","মনে হচ্ছে যেন স্বপ্ন দেখছি। (mone hocche jeno shopno dekhchhi — It feels as if I am dreaming.)"],
 ["ফলে","phole","as a result","grammar","conjunction","পরিশ্রমের ফলে সে সফল হলো। (porishhromer phole she shophol holo — As a result of hard work, she succeeded.)"],
 ["ছাড়া","chhara","without / except","grammar","postposition","তুমি ছাড়া আমি একা। (tumi chhara ami eka — Without you, I am alone.)"],
 ["যেমন","jemon","as / like / for example","grammar","conjunction","যেমন কর্ম তেমন ফল। (jemon kormo temon phol — As you act, so you reap.)"],
@@ -360,6 +360,7 @@ const VOCAB_DATA_RAW = [
 ["মারা","mara","to hit / to beat","verbs","verb","কাউকে মারা ঠিক না। (kauke mara thik na — Hitting someone is not right.)"],
 ];
 
+const VOCAB_TOTAL_WORDS = 5278; // updated by build_vocab_packs.py
 
 // VOCAB_DATA is mutable so lazy-loaded packs can be appended at runtime.
 // Pack 0 is inlined here; packs 1-3 are fetched from vocab-pack-N.json.

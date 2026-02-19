@@ -754,6 +754,31 @@ nav h1 span { color: var(--accent); }
   transition: background 0.2s ease; flex-shrink: 0;
 }
 .nav-settings-btn:hover { background: rgba(255,255,255,0.18); }
+/* Help overlay — same layout as settings overlay but scrollable for longer content */
+.help-overlay {
+  display: none; position: fixed; inset: 0; z-index: 450;
+  background: rgba(0,0,0,0.72);
+  align-items: flex-start; justify-content: flex-end;
+  padding: 60px 16px 16px;
+}
+.help-overlay.open { display: flex; }
+.help-panel {
+  background: var(--card); border-radius: 12px; overflow-y: auto;
+  max-height: calc(100vh - 80px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); width: 340px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.help-panel kbd {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px; padding: 1px 6px; font-size: 0.82rem; font-family: monospace;
+}
+[data-theme="light"] .help-panel kbd {
+  background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.2);
+}
+@media (max-width: 600px) {
+  .help-overlay { justify-content: center; padding: 80px 16px 16px; }
+  .help-panel { width: 100%; max-width: 380px; }
+}
 /* Settings overlay */
 .settings-overlay {
   display: none; position: fixed; inset: 0; z-index: 450;
@@ -1429,6 +1454,7 @@ nav h1 span { color: var(--accent); }
       <span class="icon">⭐</span><span id="xp-count">0</span> XP
     </div>
     <div class="streak-bar"><div class="streak-fill" id="streak-bar-fill" style="width:0%"></div></div>
+    <button class="nav-settings-btn" id="nav-help-btn" onclick="openHelpPanel()" aria-label="Help" style="font-size:0.85rem;font-weight:700">?</button>
     <button class="nav-settings-btn" id="nav-settings-btn" onclick="openSettingsPanel()" aria-label="Settings">⚙️</button>
     <button class="nav-theme-btn" id="nav-theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
     <button class="nav-search-btn" onclick="openSearch()" aria-label="Search">🔍</button>
@@ -1494,6 +1520,52 @@ nav h1 span { color: var(--accent); }
     <div class="settings-divider"></div>
     <div class="settings-section-label">Debug</div>
     <button onclick="unlockAllContent(this)"><span class="pm-icon">🔓</span>Unlock All &amp; Mark Mastered</button>
+  </div>
+</div>
+
+<!-- HELP PANEL -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)closeHelpPanel()">
+  <div class="help-panel">
+    <div class="settings-panel-hdr">
+      <div style="font-weight:600;font-size:1rem">How to Use</div>
+      <button class="settings-close-btn" onclick="closeHelpPanel()">✕</button>
+    </div>
+
+    <div class="settings-section-label">Mastery Levels</div>
+    <div style="padding:8px 18px 14px;font-size:0.87rem;line-height:1.8;color:var(--text-dim)">
+      <div>⬜ <strong style="color:var(--text)">Level 0</strong> — Not yet seen</div>
+      <div>🔴 <strong style="color:var(--text)">Level 1</strong> — Just introduced</div>
+      <div>🟡 <strong style="color:var(--text)">Level 2</strong> — Still learning</div>
+      <div>🟢 <strong style="color:var(--text)">Level 3</strong> — Mastered</div>
+      <div style="margin-top:8px;font-size:0.81rem">Answer correctly to level up; answer wrong to drop back. Mastered items are scheduled for spaced-repetition review.</div>
+    </div>
+
+    <div class="settings-divider"></div>
+    <div class="settings-section-label">Romanization Guide</div>
+    <div style="padding:8px 18px 14px;font-size:0.85rem;line-height:1.9;color:var(--text-dim)">
+      <table style="border-collapse:collapse;width:100%">
+        <tr><td style="padding-right:10px;font-family:monospace;color:var(--text)">ô / o</td><td>অ — like "o" in <em>hot</em></td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">a</td><td>আ — like "a" in <em>father</em></td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">i / ii</td><td>ই / ঈ — short / long "ee"</td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">u / uu</td><td>উ / ঊ — short / long "oo"</td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">e</td><td>এ — like "ay" in <em>say</em></td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">oi</td><td>ঐ — like "oy" in <em>boy</em></td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">sh</td><td>শ / ষ — like "sh" in <em>she</em></td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">kh / gh</td><td>খ / ঘ — aspirated k / g</td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">chh / jh</td><td>ছ / ঝ — aspirated ch / j</td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">ṭ / ḍ / ṛ</td><td>ট / ড / ড় — retroflex sounds</td></tr>
+        <tr><td style="font-family:monospace;color:var(--text)">~ / n̐</td><td>ঁ — nasalizes the vowel</td></tr>
+      </table>
+    </div>
+
+    <div class="settings-divider"></div>
+    <div class="settings-section-label">Keyboard Shortcuts</div>
+    <div style="padding:8px 18px 14px;font-size:0.87rem;line-height:1.9;color:var(--text-dim)">
+      <div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> — select a multiple-choice answer</div>
+      <div><kbd>0</kbd> — "I don't know"</div>
+      <div><kbd>Enter</kbd> — submit fill-in-the-blank answer</div>
+      <div><kbd>Esc</kbd> — close panels / go back</div>
+    </div>
   </div>
 </div>
 
@@ -1803,7 +1875,7 @@ nav h1 span { color: var(--accent); }
 //  BENGALI ALPHABET DATA
 // ════════════════════════════════════════
 const VOWELS = [
-  { letter:"অ", name:"Ô (Shôro Ô)", romanized:"ô / o", ipa:"/ɔ/", sound:'Like "o" in "hot"', example:"অজ (ôj) — indigestion" },
+  { letter:"অ", name:"Ô (Shôro Ô)", romanized:"ô / o", ipa:"/ɔ/", sound:'Like "o" in "hot"', example:"অনেক (ônek) — many/much" },
   { letter:"আ", name:"A (Shôro A)", romanized:"a / aa", ipa:"/a/", sound:'Like "a" in "father"', example:"আম (am) — mango" },
   { letter:"ই", name:"I (Hrôshsho I)", romanized:"i", ipa:"/i/", sound:'Like "ee" in "see" (short)', example:"ইট (iṭ) — brick" },
   { letter:"ঈ", name:"II (Dirgho II)", romanized:"ii / ī", ipa:"/iː/", sound:'Like "ee" in "see" (long)', example:"ঈদ (īd) — Eid" },
@@ -1870,7 +1942,7 @@ const CONSONANTS_SPECIAL = [
   { letter:"ড়", name:"Ṛô (Ḍô-e Shunno)", romanized:"ṛ / ṛô", ipa:"/ɽ/", sound:'Flapped retroflex "r"', example:"পড়া (pôṛa) — to read" },
   { letter:"ঢ়", name:"Ṛhô (Ḍhô-e Shunno)", romanized:"ṛh / ṛhô", ipa:"/ɽʱ/", sound:'Aspirated flapped retroflex', example:"আষাঢ় (ashaṛh) — month name" },
   { letter:"য়", name:"Yô (Ôntohsthô Yô)", romanized:"y / yô", ipa:"/j/", sound:'Like "y" in "yes"', example:"যায় (jay) — goes" },
-  { letter:"ৎ", name:"Khônḍô Tô", romanized:"t", ipa:"/t/", sound:'Abrupt "t" (unreleased stop)', example:"হাৎ (hat) — sudden stop" },
+  { letter:"ৎ", name:"Khônḍô Tô", romanized:"t", ipa:"/t/", sound:'Abrupt "t" (unreleased stop)', example:"হঠাৎ (hothat) — suddenly" },
   { letter:"ং", name:"Anushshar", romanized:"ng / ṃ", ipa:"/ŋ/", sound:'Nasal "ng" at end of syllable', example:"বাংলা (bangla) — Bengali" },
   { letter:"ঃ", name:"Bishôrgô", romanized:"h / ḥ", ipa:"/h/", sound:'Light aspiration / breath', example:"দুঃখ (dukhkhô) — sorrow" },
   { letter:"ঁ", name:"Chôndrobindu", romanized:"~n / n̐", ipa:"/◌̃/", sound:'Nasalizes the preceding vowel', example:"চাঁদ (chãd) — moon" },
@@ -3060,8 +3132,9 @@ function renderVocabHome() {
   // "All Words" browser card
   const allCard = document.createElement('div');
   allCard.className = 'module-card';
-  const totalWords = VOCAB_DATA.length;
-  const masteredWords = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length;
+  const totalWords = VOCAB_TOTAL_WORDS;
+  const masteredWords = Object.entries(progress.mastery)
+    .filter(([k, v]) => k.startsWith('v:') && v >= 3).length;
   const allPct = Math.round((masteredWords / totalWords) * 100);
   allCard.innerHTML = `
     <div class="module-icon">📖</div>
@@ -3562,10 +3635,11 @@ function generateVocabQuiz(words, forceMode) {
         correct, options: shuffleArr([correct, ...picks]), word: w,
       });
     } else if (qtype === 'mc-bn') {
-      // Show English, pick Bengali
+      // Show English, pick Bengali — exclude synonyms (same English gloss) from distractors
       const correct = w.lemma;
-      const distractors = words.filter(x => x.lemma !== w.lemma).map(x => x.lemma);
-      const allPool = VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.lemma);
+      const notSynonym = x => x.lemma !== w.lemma && !_englishOverlaps(x.english, w.english);
+      const distractors = words.filter(notSynonym).map(x => x.lemma);
+      const allPool = VOCAB_DATA.filter(notSynonym).map(x => x.lemma);
       const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
       const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
       vqQuestions.push({
@@ -3587,12 +3661,18 @@ function generateVocabQuiz(words, forceMode) {
         answer: w.english, hint: 'Romanized: ' + w.roman, word: w,
       });
     } else if (qtype === 'fib-bn') {
-      // Show English, type romanized Bengali
+      // Show English, type Bengali (script or romanized depending on fibMode)
+      const _fibMode = getFibMode();
       const acceptable = [w.roman.toLowerCase()];
+      const prompt = _fibMode === 'bengali' ? 'Type the Bengali word:' :
+                     _fibMode === 'mixed'   ? 'Type the Bengali word or romanization:' :
+                                             'Type the romanized Bengali:';
+      const answer = _fibMode === 'bengali' ? w.lemma :
+                     _fibMode === 'mixed'   ? `${w.lemma} (${w.roman})` :
+                                             w.roman;
       vqQuestions.push({
         type: 'fib-reverse', english: w.english,
-        prompt: 'Type the romanized Bengali:',
-        acceptable, answer: w.roman,
+        prompt, acceptable, answer,
         hint: 'Category: ' + (VOCAB_CATEGORIES[w.category]?.title || w.category), word: w,
       });
     } else if (qtype === 'listening-mc') {
@@ -3608,13 +3688,19 @@ function generateVocabQuiz(words, forceMode) {
         correct, options: shuffleArr([correct, ...picks]), word: w,
       });
     } else {
-      // listening-fib: play word; type romanized form
+      // listening-fib: play word; type Bengali (script or romanized depending on fibMode)
+      const _fibMode = getFibMode();
       const acceptable = [w.roman.toLowerCase()];
+      const lfPrompt = _fibMode === 'bengali' ? 'Type the Bengali word you hear:' :
+                       _fibMode === 'mixed'   ? 'Type the Bengali word or romanization:' :
+                                               'Type the romanized form of what you hear:';
+      const lfAnswer = _fibMode === 'bengali' ? w.lemma :
+                       _fibMode === 'mixed'   ? `${w.lemma} (${w.roman})` :
+                                               w.roman;
       vqQuestions.push({
         type: 'listening-fib', audio: w.lemma,
         bengali: w.lemma, roman: w.roman,
-        prompt: 'Type the romanized form of what you hear:',
-        acceptable, answer: w.roman,
+        prompt: lfPrompt, acceptable, answer: lfAnswer,
         hint: 'Hint: ' + w.english, word: w,
       });
     }
@@ -3628,6 +3714,13 @@ function shuffleArr(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// Returns true if two English glosses share a primary meaning token (e.g. "water" and "water (formal)").
+// Used to filter synonyms from MC distractor pools so a valid synonym never appears as a wrong option.
+function _englishOverlaps(a, b) {
+  const tok = s => s.toLowerCase().split('/').map(t => t.trim()).filter(Boolean);
+  return tok(a).some(t => tok(b).includes(t));
 }
 
 function renderVocabQuestion() {
@@ -3726,12 +3819,12 @@ function answerVocabFIB() {
   const fibMode = getFibMode();
   let correct;
   if (fibMode === 'bengali') {
-    correct = (q.word && rawInput === q.word[0]) ||
+    correct = (q.word && rawInput === q.word.lemma) ||
               q.acceptable.some(a => _isBengali(a) && a === rawInput);
   } else {
     correct = q.acceptable.some(a => a === val || _normRoman(a) === normVal);
     if (fibMode === 'mixed') {
-      correct = correct || (q.word && rawInput === q.word[0]) ||
+      correct = correct || (q.word && rawInput === q.word.lemma) ||
                 q.acceptable.some(a => _isBengali(a) && a === rawInput);
     }
   }
@@ -5078,6 +5171,16 @@ function closeSettingsPanel() {
   document.removeEventListener('keydown', _settingsEsc);
 }
 function _settingsEsc(e) { if (e.key === 'Escape') closeSettingsPanel(); }
+
+function openHelpPanel() {
+  document.getElementById('help-overlay').classList.add('open');
+  document.addEventListener('keydown', _helpEsc);
+}
+function closeHelpPanel() {
+  document.getElementById('help-overlay').classList.remove('open');
+  document.removeEventListener('keydown', _helpEsc);
+}
+function _helpEsc(e) { if (e.key === 'Escape') closeHelpPanel(); }
 
 // ── Debug: Unlock All & Mark Mastered ───────────────────────────────
 async function unlockAllContent(btn) {
