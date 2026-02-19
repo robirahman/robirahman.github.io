@@ -4,21 +4,19 @@
     - name: Full Name
       value: Robi Rahman
     - name: Location
-      value: # TODO: city, state
+      value: Brooklyn, NY
 
 - title: Education
   type: time_table
   contents:
-    - title: # TODO: Degree (e.g. B.S. in ...)
+    - title: B.S. in Chemistry
       institution: College of William & Mary
       year: 2013–2016
-      description:
-        -  # TODO: major, thesis, honors, etc.
-    - title: # TODO: Graduate degree or program
+    - title: M.A. in Data Science
       institution: Harvard University
       year: 2020–2022
       description:
-        -  # TODO: program, research focus
+        - "Activities: Harvard Graduate Council, IDEA Fellowship"
 
 - title: Experience
   type: time_table
@@ -26,35 +24,32 @@
     - title: Staff Engineer
       institution: Froehling & Robertson
       year: 2017–2020
-      description:
-        -  # TODO: brief description of role and accomplishments
     - title: Data Scientist
       institution: Epoch AI
       year: 2023–2025
       description:
-        -  # TODO: brief description of role and accomplishments
-    - title: # TODO: title
-      institution: MIRI / TGT (AI Governance)
+        - Built databases of machine learning hardware, GPU clusters, and AI models
+        - Researched training costs, algorithmic progress, and compute infrastructure
+        - Contributor to the Stanford AI Index (2023, 2024)
+    - title: Data Scientist
+      institution: MIRI Technical Governance Team
       year: 2025–present
       description:
-        -  # TODO: brief description
-
-- title: Skills
-  type: list
-  contents:
-    -  # TODO: e.g. Python, R, machine learning, etc.
+        - Tracks the inputs and development of advanced AI systems
 
 - title: Open Source Projects
   type: list
   contents:
     - <a href="/bengali/">Learn Bengali</a> — interactive offline-first language learning app
+    - <a href="/data_science/">Data Science</a> — statistics and ML reference app
 
 - title: Interests
   type: nested_list
   contents:
     - title: Academic
       items:
-        -  # TODO: research interests
+        - AI governance and policy
+        - Trends in AI development
     - title: Personal
       items:
         - Chess (USCF ~1900)

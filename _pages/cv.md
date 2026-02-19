@@ -29,7 +29,7 @@ nav_order: 3
   </li>
   <li>
     <span class="badge badge-toc">2025–present</span>
-    AI Governance at <a href="https://techgov.intelligence.org/">MIRI TGT</a>
+    Data Scientist at <a href="https://techgov.intelligence.org/">MIRI Technical Governance Team</a>
   </li>
 </ul>
 
