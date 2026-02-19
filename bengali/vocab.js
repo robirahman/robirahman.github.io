@@ -1073,7 +1073,9 @@ const VOCAB_DATA_RAW = [
 ];
 
 
-const VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example], index) => ({
+// VOCAB_DATA is mutable so lazy-loaded packs can be appended at runtime.
+// Pack 0 is inlined here; packs 1-3 are fetched from vocab-pack-N.json.
+let VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example], index) => ({
   lemma,
   roman,
   english,
