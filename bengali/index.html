@@ -1571,6 +1571,28 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   transition: all 0.2s; white-space: nowrap;
 }
 .review-due-btn:hover { background: rgba(244,165,50,0.28); }
+
+/* ─── TAB REVIEW BADGE ─── */
+.tab-btn { position: relative; }
+.tab-review-badge {
+  position: absolute; top: 2px; right: 2px;
+  background: var(--accent); color: #000;
+  border-radius: 50%; width: 16px; height: 16px;
+  font-size: 0.6rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+
+/* ─── TODAY SCREEN REVIEW ALERT ─── */
+.today-review-alert {
+  background: rgba(244,165,50,0.12); border: 1.5px solid var(--accent);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.today-review-alert .tra-left { display: flex; align-items: center; gap: 12px; }
+.today-review-alert .tra-icon { font-size: 1.5rem; }
+.today-review-alert .tra-count { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+.today-review-alert .tra-label { font-size: 0.85rem; color: var(--text-dim); }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -1610,7 +1632,7 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 </nav>
 
 <div class="tab-bar" id="tab-bar" style="display:none">
-  <button class="tab-btn" onclick="switchTab('today')">Today</button>
+  <button class="tab-btn" id="tab-today" onclick="switchTab('today')">Today<span class="tab-review-badge" id="today-tab-badge" style="display:none"></span></button>
   <button class="tab-btn active" onclick="switchTab('alphabet')">Alphabet</button>
   <button class="tab-btn" onclick="switchTab('vocabulary')">Vocabulary</button>
   <button class="tab-btn" onclick="switchTab('grammar')">Grammar</button>
@@ -1719,6 +1741,9 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
         <tr><td style="font-family:monospace;color:var(--text)">ṭ / ḍ / ṛ</td><td>ট / ড / ড় — retroflex sounds</td></tr>
         <tr><td style="font-family:monospace;color:var(--text)">~ / n̐</td><td>ঁ — nasalizes the vowel</td></tr>
       </table>
+      <div style="margin-top:10px;padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:0.82rem;line-height:1.6">
+        <strong style="color:var(--text)">Note on সে:</strong> Throughout this app, সে is romanized as <em>"she"</em> — but it means <strong>he, she, or they</strong> (third-person singular, informal). It is <em>not</em> the English feminine pronoun. The romanization reflects the Bengali pronunciation /ʃe/.
+      </div>
     </div>
 
     <div class="settings-divider"></div>
@@ -1728,6 +1753,12 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
       <div><kbd>0</kbd> — "I don't know"</div>
       <div><kbd>Enter</kbd> — submit fill-in-the-blank answer</div>
       <div><kbd>Esc</kbd> — close panels / go back</div>
+    </div>
+
+    <div class="settings-divider"></div>
+    <div class="settings-section-label">About This App</div>
+    <div style="padding:8px 18px 14px;font-size:0.83rem;line-height:1.7;color:var(--text-dim)">
+      This app teaches <strong style="color:var(--text)">Standard Bangladeshi Bengali</strong> (Dhaka dialect), the prestige variety spoken in Bangladesh and used in formal media. West Bengal Bengali (Kolkata) shares the same script and core grammar but differs in some vocabulary, verb forms, and pronunciation — for example, the Bangladeshi present continuous suffix <em>-চ্ছ</em> vs. the West Bengali <em>-ছ</em>. Most learners will find the differences minor at the beginner level.
     </div>
 
     <div class="settings-divider"></div>
@@ -2374,6 +2405,7 @@ function launchMixedQuiz() {
   generateQuiz(currentModule.letters);
   quizIndex = 0;
   quizCorrect = 0;
+  _quizStartTime = Date.now();
   document.getElementById('quiz-title').textContent = 'Mixed Practice';
   showScreen('quiz');
   renderQuestion();
@@ -2741,6 +2773,14 @@ let quizCorrect = 0;
 let quizAnswered = false;
 let quizModuleRef = null;
 let quizMissed = [];
+let _quizStartTime = 0;
+
+// Format elapsed milliseconds as "Xm Ys" or "Xs"
+function _formatElapsed(ms) {
+  const s = Math.round(ms / 1000);
+  if (s < 60) return s + 's';
+  return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+}
 
 function startQuiz() {
   quizModuleRef = currentModule;
@@ -2748,6 +2788,7 @@ function startQuiz() {
   quizIndex = 0;
   quizCorrect = 0;
   quizMissed = [];
+  _quizStartTime = Date.now();
   document.getElementById('quiz-title').textContent = currentModule.title + ' Quiz';
   showScreen('quiz');
   renderQuestion();
@@ -3307,6 +3348,7 @@ function showResults() {
   const prev = hist[qid] || { best: -1 };
   if (pct > prev.best) { hist[qid] = { best: pct }; saveProgress(); }
   const subParts = [`You scored ${quizCorrect}/${total}`];
+  if (_quizStartTime) subParts.push('⏱ ' + _formatElapsed(Date.now() - _quizStartTime));
   if (pct > prev.best && prev.best >= 0) subParts.push('🌟 New best!');
   else if (prev.best >= 0 && prev.best > pct) subParts.push(`Best: ${prev.best}%`);
   if (progress.streak > 1) subParts.push(`🔥 ${progress.streak} day streak`);
@@ -3809,6 +3851,7 @@ function launchMixedVocabQuiz() {
   vqIndex = 0;
   vqCorrect = 0;
   vqMissed = [];
+  _quizStartTime = Date.now();
   document.getElementById('vq-title').textContent = 'Mixed Vocab Practice';
   showScreen('vocab-quiz');
   renderVocabQuestion();
@@ -4032,6 +4075,7 @@ function startVocabQuiz() {
   vqIndex = 0;
   vqCorrect = 0;
   vqMissed = [];
+  _quizStartTime = Date.now();
   const cat = VOCAB_CATEGORIES[vlCatId];
   document.getElementById('vq-title').textContent = (cat ? cat.title : 'Vocab') + ' Quiz';
   showScreen('vocab-quiz');
@@ -4338,6 +4382,7 @@ function showVocabResults() {
   const vprev = vhist[vqid] || { best: -1 };
   if (pct > vprev.best) { vhist[vqid] = { best: pct }; saveProgress(); }
   const vSubParts = [`You scored ${vqCorrect}/${total}`];
+  if (_quizStartTime) vSubParts.push('⏱ ' + _formatElapsed(Date.now() - _quizStartTime));
   if (pct > vprev.best && vprev.best >= 0) vSubParts.push('🌟 New best!');
   else if (vprev.best >= 0 && vprev.best > pct) vSubParts.push(`Best: ${vprev.best}%`);
   if (progress.streak > 1) vSubParts.push(`🔥 ${progress.streak} day streak`);
@@ -4563,6 +4608,7 @@ function startGrammarQuiz() {
   gqIndex = 0;
   gqCorrect = 0;
   gqMissed = [];
+  _quizStartTime = Date.now();
   document.getElementById('gq-title').textContent = currentGrammarLesson.title + ' Quiz';
   showScreen('grammar-quiz');
   renderGrammarQuestion();
@@ -4825,6 +4871,7 @@ function showGrammarResults() {
   const gprev = ghist[gqid] || { best: -1 };
   if (pct > gprev.best) { ghist[gqid] = { best: pct }; saveProgress(); }
   const gSubParts = [`You scored ${gqCorrect}/${total}`];
+  if (_quizStartTime) gSubParts.push('⏱ ' + _formatElapsed(Date.now() - _quizStartTime));
   if (pct > gprev.best && gprev.best >= 0) gSubParts.push('🌟 New best!');
   else if (gprev.best >= 0 && gprev.best > pct) gSubParts.push(`Best: ${gprev.best}%`);
   if (progress.streak > 1) gSubParts.push(`🔥 ${progress.streak} day streak`);
@@ -4918,6 +4965,7 @@ function startGrammarMixedPractice() {
   gqCorrect = 0;
   gqMissed = [];
   gqIsMixed = true;
+  _quizStartTime = Date.now();
   currentGrammarLesson = currentGrammarLesson || GRAMMAR_LESSONS[0]; // fallback
   document.getElementById('gq-title').textContent = 'Mixed Grammar Practice';
   showScreen('grammar-quiz');
@@ -6351,6 +6399,18 @@ function renderTodayScreen() {
   let html = `<div class="today-date">${today}</div>`;
 
   // ── Reviews ──
+  if (dueCount > 0) {
+    html += `<div class="today-review-alert">
+      <div class="tra-left">
+        <div class="tra-icon">🔔</div>
+        <div>
+          <div class="tra-count">${dueCount} <span style="font-size:1rem;font-weight:600">due</span></div>
+          <div class="tra-label">item${dueCount !== 1 ? 's' : ''} ready for review</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startReviewSession();switchTab('alphabet')" style="white-space:nowrap">Start Review →</button>
+    </div>`;
+  }
   html += `<div class="today-section">
     <div class="today-section-hdr">
       <span class="today-section-icon">🔔</span>
@@ -6459,6 +6519,12 @@ function updateReviewDueBadge() {
     if (cntEl) cntEl.textContent = count;
   } else {
     btn.style.display = 'none';
+  }
+  // Update tab badge on Today button
+  const tabBadge = document.getElementById('today-tab-badge');
+  if (tabBadge) {
+    tabBadge.style.display = count > 0 ? 'flex' : 'none';
+    tabBadge.textContent = count > 9 ? '9+' : count;
   }
 }
 
@@ -7148,6 +7214,7 @@ function startPhrasesQuiz() {
   phqIndex = 0;
   phqCorrect = 0;
   phqMissed = [];
+  _quizStartTime = Date.now();
   document.getElementById('phq-title').textContent = (sit ? sit.title : 'Phrases') + ' Quiz';
   showScreen('phrases-quiz');
   renderPhrasesQuestion();
@@ -7174,6 +7241,7 @@ function startPhrasesMixedPractice() {
   phqMissed = [];
   phqIsMixed = true;
   phqCurrentSituationSlug = null;
+  _quizStartTime = Date.now();
   document.getElementById('phq-title').textContent = 'Mixed Phrases Practice';
   showScreen('phrases-quiz');
   renderPhrasesQuestion();
@@ -7378,6 +7446,7 @@ function showPhrasesResults() {
   const phprev = phist[phid] || { best: -1 };
   if (pct > phprev.best) { phist[phid] = { best: pct }; saveProgress(); }
   const subParts = [`You scored ${phqCorrect}/${total}`];
+  if (_quizStartTime) subParts.push('⏱ ' + _formatElapsed(Date.now() - _quizStartTime));
   if (pct > phprev.best && phprev.best >= 0) subParts.push('🌟 New best!');
   else if (phprev.best >= 0 && phprev.best > pct) subParts.push(`Best: ${phprev.best}%`);
   if (progress.streak > 1) subParts.push(`🔥 ${progress.streak} day streak`);

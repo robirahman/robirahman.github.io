@@ -80,7 +80,9 @@ Third person also has two levels: সে (she) is informal for "he/she," while �
 
 Common patterns: আমি verb-ই (ami verb-i), তুমি verb-ও (tumi verb-o), আপনি/তিনি verb-এন (apni/tini verb-en), সে verb-এ (she verb-e).
 
-For example, the root "করা" (kora — to do): আমি করি (ami kori), তুমি করো (tumi koro), সে করে (she kore), আপনি করেন (apni koren). This conjugation pattern applies to most regular verbs.`,
+For example, the root "করা" (kora — to do): আমি করি (ami kori), তুমি করো (tumi koro), সে করে (she kore), আপনি করেন (apni koren). This conjugation pattern applies to most regular verbs.
+
+Note: সে (he/she/they singular) and তারা (they plural) share the same verb ending in the present simple — both take -এ (-e). So "সে করে" and "তারা করে" look identical; context tells you whether the subject is singular or plural.`,
     examples: [
       { bengali: 'আমি কাজ করি', roman: 'ami kaj kori', english: 'I work / I do work' },
       { bengali: 'তুমি গান গাও', roman: 'tumi gan gao', english: 'You sing songs' },
@@ -405,7 +407,7 @@ The আপনি form doubles as a polite request. Adding "দয়া কর�
       { type: 'translate-mc', prompt: '"চুপ কর!" is at which formality level?', bengali: 'চুপ কর!', roman: 'chup kor!', correct: 'তুই (very informal)', options: ['তুই (very informal)', 'তুমি (informal)', 'আপনি (formal)', 'তিনি (formal 3rd person)'] },
       { type: 'word-order', prompt: 'Arrange: "Please sit down (formal)"', words: ['বসুন', 'করে', 'দয়া'], correct: ['দয়া', 'করে', 'বসুন'], english: 'Please sit down', roman: 'doya kore boshun' },
       { type: 'translate-mc', prompt: '"এটা দেখো" means:', bengali: 'এটা দেখো', roman: 'eta dekho', correct: 'Look at this', options: ['Look at this', 'I see this', 'This is visible', 'Can you see?'] },
-      { type: 'fib', prompt: '"দয়া করে" means:', sentence: 'দয়া করে ___', roman: 'doya kore ___', english: 'Please ___ (wait, formal)', acceptable: ['অপেক্ষা করুন', 'opekkha korun'], answer: 'অপেক্ষা করুন' },
+      { type: 'fib', prompt: 'Complete the polite request: "Please wait" (formal)', sentence: 'দয়া করে ___', roman: 'doya kore ___', english: 'Please wait (formal)', acceptable: ['অপেক্ষা করুন', 'opekkha korun'], answer: 'অপেক্ষা করুন' },
       { type: 'error-spot', prompt: 'Which correctly says "Come here" at তুমি level?', options: ['এখানে আয়', 'এখানে আসো', 'এখানে আসুন', 'এখানে আসছে'], correct: 'এখানে আসো', explanation: 'আসো is the তুমি imperative. আয় is তুই, আসুন is আপনি.' },
     ]
   },
@@ -694,7 +696,9 @@ For example: "আম কলার থেকে মিষ্টি" means "Mango 
 
 For superlatives (the most), use সবচেয়ে before the adjective: "সে সবচেয়ে লম্বা" = "He/she is the tallest." সবচেয়ে means "among all" or "most of all."
 
-আরো means "more/further" (আরো বড় = bigger), while বেশি emphasizes quantity or degree (বেশি ভালো = better, আরো বেশি = even more).`,
+আরো means "more/further" (আরো বড় = bigger), while বেশি emphasizes quantity or degree (বেশি ভালো = better, আরো বেশি = even more).
+
+Note for English speakers: Bengali does NOT add a comparative suffix to adjectives. Where English says "sweet-er," Bengali uses the base adjective মিষ্টি unchanged — the comparison is expressed by the structure A থেকে B adjective, not by modifying the adjective itself.`,
     examples: [
       { bengali: 'আম কলার থেকে মিষ্টি', roman: 'am kolar theke mishti', english: 'Mango is sweeter than banana' },
       { bengali: 'সে আমার থেকে লম্বা', roman: 'she amar theke lomba', english: 'He/she is taller than me' },

@@ -53,7 +53,7 @@ const VOCAB_DATA_RAW = [
 ["হয়ে","hoye","becoming / by","verbs","verb","সে একজন ডাক্তার হয়ে গেছে। (she ekjon daktar hoye gechhe — He has become a doctor.)"],
 ["ছিল","chhil","was / were","verbs","verb","সে গতকাল ঘরে ছিল। (she gotkal ghore chhilo — He was home yesterday.)"],
 ["যায়","jay","goes / goes away","verbs","verb","প্রতিদিন সকালে সে স্কুলে যায়। (protidine sakale she schoole jay — He goes to school every morning.)"],
-["হচ্ছে","hchhche","is happening / is being","verbs","verb","বৃষ্টি হচ্ছে। (brishti hchhche — It is raining.)"],
+["হচ্ছে","hochhe","is happening / is being","verbs","verb","বৃষ্টি হচ্ছে। (brishti hochhe — It is raining.)"],
 ["করেন","koren","do / make (formal)","verbs","verb","আপনি কী করেন? (apni ki koren — What do you do?)"],
 ["করার","korar","of doing / of making","verbs","verb","কাজ করার জন্য সময় দরকার। (kaj korar jonno somoy dorkar — Time is needed for doing work.)"],
 ["আছে","ache","is / are / have","verbs","verb","আমাদের একটি বাগান আছে। (amader ekti bagan ache — We have a garden.)"],
@@ -66,8 +66,8 @@ const VOCAB_DATA_RAW = [
 ["অনেক","onek","many / much / a lot","adjectives","adjective","আমাদের অনেক কাজ আছে। (amader onek kaj achhe — We have a lot of work.)"],
 // ─── TIME ───
 ["সময়","shomoy","time","time","noun","এখন সময় নেই। (ekhon shomoy nei — There is no time now.)"],
-["এখন","ekhon","now","time","adverb","এখন বাড়ি যাও।"],
-["বছর","bochor","year","time","noun","নতুন বছর শুরু হলো।"],
+["এখন","ekhon","now","time","adverb","এখন বাড়ি যাও। (ekhon bari jao — Go home now.)"],
+["বছর","bochor","year","time","noun","নতুন বছর শুরু হলো। (notun bochor shuru holo — The new year has begun.)"],
 // ─── ADVERBS ───
 ["কিন্তু","kintu","but","adverbs","conjunction","চাই, কিন্তু পারছি না। (chai, kintu parchi na — I want to, but I can't.)"],
 ["যদি","jodi","if","adverbs","conjunction","যদি আসো তাহলে জানাও। (jodi asho tahole janao — If you come, let me know.)"],
@@ -162,13 +162,13 @@ const VOCAB_DATA_RAW = [
 ["সাধারণ","shadharon","ordinary / common","adjectives","adjective","এটা একটা সাধারণ ব্যাপার। (eta ekta shadharon byapar — This is an ordinary matter.)"],
 ["ছোট","choto","small / little","adjectives","adjective","এটি একটি ছোট বাড়ি। (eti ekti choto bāri — This is a small house.)"],
 // ─── TIME ───
-["দিন","din","day","time","noun","আজ ভালো দিন।"],
-["আজ","aj","today","time","adverb","আজ আকাশ পরিষ্কার।"],
+["দিন","din","day","time","noun","আজ ভালো দিন। (aj bhalo din — Today is a good day.)"],
+["আজ","aj","today","time","adverb","আজ আকাশ পরিষ্কার। (aj akash porishkar — Today the sky is clear.)"],
 ["সালে","sale","in the year","time","noun","২০২০ সালে এটি ঘটেছে। (2020 sale eti ghoteche — This happened in 2020.)"],
 ["সালের","saler","of the year","time","noun","এই সালের শুরু খুবই ভাল ছিল। (ei saler shuru khuboei bhal chilo — The beginning of this year was very good.)"],
 ["বছরের","bochhorer","of the year","time","noun","এই বছরের শেষে মিলিত হব। (ei bochhorer sheshe mili hob — We will meet at the end of this year.)"],
 // ─── HOME ───
-["টাকা","taka","money","home","noun","টাকা সঠিকভাবে খরচ করো।"],
+["টাকা","taka","money","home","noun","টাকা সঠিকভাবে খরচ করো। (taka shothikbhabe khoroch koro — Spend money wisely.)"],
 ["ছবি","chhobi","picture / photo","home","noun","সে সুন্দর ছবি আঁকে। (she shundor chhobi ake — She draws beautiful pictures.)"],
 // ─── BODY ───
 ["হাতে","hāte","in hand / in possession","body","noun","আমার হাতে একটি বই আছে। (āmār hāte ekti boi āche — I have a book in my hand.)"],
@@ -176,7 +176,7 @@ const VOCAB_DATA_RAW = [
 ["দেশের","desher","of the country","places","noun","দেশের উন্নয়ন সবার লক্ষ্য। (desher unnoyom sbar lokkhyo — The country's development is everyone's goal.)"],
 ["জেলা","jelā","district","places","noun","আমি ঢাকা জেলায় থাকি। (āmi ḍhākā jelāy thāki — I live in Dhaka district.)"],
 ["দেশে","deshe","in the country / in the nation","places","noun","দেশে অনেক সমস্যা আছে। (deshe onek somosshā āche — There are many problems in the country.)"],
-["দেশ","desh","country","places","noun","আমার দেশ সুন্দর।"],
+["দেশ","desh","country","places","noun","আমার দেশ সুন্দর। (amar desh shundor — My country is beautiful.)"],
 // ─── ADVERBS ───
 ["তবে","tobe","then / however","adverbs","conjunction","ভালো, তবে আরো চেষ্টা করো। (bhalo, tobe aro cheshta koro — Good, but try more.)"],
 ["আগে","age","before / earlier","adverbs","adverb","ঘুমানোর আগে বই পড়ো। (ghumanoar age boi poro — Read a book before sleeping.)"],
