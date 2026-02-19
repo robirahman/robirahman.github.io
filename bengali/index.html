@@ -444,6 +444,10 @@ nav h1 span { color: var(--accent); }
   font-size: 0.8rem; color: var(--text-dim); margin-top: 8px;
   font-style: italic; text-align: center; padding: 0 8px; line-height: 1.4;
 }
+.wm-sound-row {
+  display: flex; gap: 8px; justify-content: center; margin-top: 8px; flex-wrap: wrap;
+}
+.wm-sound-row .card-sound-btn { font-size: 0.8rem; padding: 4px 10px; }
 
 /* ─── RESULTS SCREEN ─── */
 #results { text-align: center; padding-top: 60px; }
@@ -670,6 +674,36 @@ nav h1 span { color: var(--accent); }
 .grammar-content .grammar-explanation {
   line-height: 1.7; font-size: 1rem; white-space: pre-line; margin-bottom: 24px;
 }
+/* ── Conjugation Reference Table ─────────────────────── */
+.conj-table-section { margin: 0 0 20px; }
+.conj-table-toggle {
+  width: 100%; background: var(--card); border: none; border-radius: 10px;
+  color: var(--text); padding: 12px 16px; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; text-align: left; display: flex; justify-content: space-between;
+  align-items: center; transition: background 0.15s;
+}
+.conj-table-toggle:hover { background: var(--card-hover); }
+.conj-toggle-arrow { transition: transform 0.2s; }
+.conj-table-toggle[aria-expanded="true"] .conj-toggle-arrow { transform: rotate(90deg); }
+.conj-table-wrap { padding: 12px 0 4px; }
+.conj-table-note { font-size: 0.82rem; color: var(--text-dim); margin: 0 0 10px; }
+.conj-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.conj-table {
+  border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 500px;
+}
+.conj-table th, .conj-table td {
+  border: 1px solid rgba(255,255,255,0.08); padding: 7px 10px;
+  text-align: center; white-space: nowrap;
+}
+.conj-table thead th {
+  background: rgba(255,255,255,0.05); font-weight: 700; font-size: 0.8rem;
+}
+.conj-table tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.02); }
+.conj-table td:first-child { text-align: left; font-weight: 600; }
+.conj-th-sub { font-weight: 400; color: var(--text-dim); font-size: 0.72rem; display: block; }
+.conj-bn { font-family: 'Noto Sans Bengali', sans-serif; font-size: 1rem; }
+.conj-rom { color: var(--text-dim); font-size: 0.75rem; display: block; }
+
 .grammar-example {
   background: rgba(255,255,255,0.03);
   border-left: 3px solid var(--accent);
@@ -1114,9 +1148,15 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   .learn-nav .nav-btn { min-width: 76px; padding: 8px 10px; font-size: 0.85rem; }
   .learn-nav .btn-primary { padding: 10px 18px; }
 
-  /* Vocab browse: drop romanization column, keep Bengali + English + mastery dot */
-  .vocab-row { grid-template-columns: 72px 1fr auto; }
-  .vocab-row .vr-roman { display: none; }
+  /* Vocab browse: stack Bengali + romanization vertically, keep English + mastery dot */
+  .vocab-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "bengali mastery" "roman mastery" "english mastery";
+  }
+  .vocab-row .vr-bengali { grid-area: bengali; }
+  .vocab-row .vr-roman   { grid-area: roman; display: block; font-size: 0.78rem; margin-top: 1px; }
+  .vocab-row .vr-english { grid-area: english; }
+  .vocab-row .vr-mastery { grid-area: mastery; align-self: center; }
 
   /* Search: allow shrinking below 200px default */
   .vb-search { min-width: 0; }
@@ -1868,7 +1908,10 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
         <div class="vocab-card-english" id="vc-english">word</div>
         <div class="vocab-card-cat" id="vc-cat">Education</div>
         <div class="vocab-card-example" id="vc-example"></div>
-        <button class="card-sound-btn" id="vc-sound-btn" onclick="event.stopPropagation(); speakCurrentVocab();" aria-label="Play pronunciation">🔊</button>
+        <div class="wm-sound-row">
+          <button class="card-sound-btn" id="vc-sound-btn" onclick="event.stopPropagation(); speakCurrentVocab();" aria-label="Play word">🔊 Word</button>
+          <button class="card-sound-btn" id="vc-example-btn" onclick="event.stopPropagation(); speakCurrentVocabExample();" aria-label="Play example sentence">🔊 Example</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1995,6 +2038,155 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   <div class="hero">
     <h2>ব্যাকরণ</h2>
     <p>Master Bengali grammar in 30 structured lessons</p>
+  </div>
+  <div class="conj-table-section">
+    <button class="conj-table-toggle" onclick="toggleConjTable()" aria-expanded="false" id="conj-toggle-btn">
+      করা — Verb Conjugation Reference <span class="conj-toggle-arrow">▸</span>
+    </button>
+    <div class="conj-table-wrap" id="conj-table-wrap" hidden>
+      <p class="conj-table-note">করা (to do) — base form used to show endings. Informal registers only; very formal omitted.</p>
+      <div class="conj-table-scroll">
+        <table class="conj-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Present<br><span class="conj-th-sub">habitual</span>
+</th>
+              <th>Past<br><span class="conj-th-sub">simple</span>
+</th>
+              <th>Future<br><span class="conj-th-sub">simple</span>
+</th>
+              <th>Continuous<br><span class="conj-th-sub">present</span>
+</th>
+              <th>Perfect<br><span class="conj-th-sub">past</span>
+</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+<td>
+<span class="conj-bn">আমি</span> <span class="conj-rom">ami</span>
+</td>
+<td>
+<span class="conj-bn">করি</span> <span class="conj-rom">kori</span>
+</td>
+<td>
+<span class="conj-bn">করলাম</span> <span class="conj-rom">korlam</span>
+</td>
+<td>
+<span class="conj-bn">করব</span> <span class="conj-rom">korbo</span>
+</td>
+<td>
+<span class="conj-bn">করছি</span> <span class="conj-rom">korchi</span>
+</td>
+<td>
+<span class="conj-bn">করেছি</span> <span class="conj-rom">korechi</span>
+</td>
+</tr>
+            <tr>
+<td>
+<span class="conj-bn">তুমি</span> <span class="conj-rom">tumi</span>
+</td>
+<td>
+<span class="conj-bn">করো</span> <span class="conj-rom">koro</span>
+</td>
+<td>
+<span class="conj-bn">করলে</span> <span class="conj-rom">korle</span>
+</td>
+<td>
+<span class="conj-bn">করবে</span> <span class="conj-rom">korbe</span>
+</td>
+<td>
+<span class="conj-bn">করছ</span> <span class="conj-rom">korcho</span>
+</td>
+<td>
+<span class="conj-bn">করেছ</span> <span class="conj-rom">korecho</span>
+</td>
+</tr>
+            <tr>
+<td>
+<span class="conj-bn">তুই</span> <span class="conj-rom">tui</span>
+</td>
+<td>
+<span class="conj-bn">করিস</span> <span class="conj-rom">koris</span>
+</td>
+<td>
+<span class="conj-bn">করলি</span> <span class="conj-rom">korli</span>
+</td>
+<td>
+<span class="conj-bn">করবি</span> <span class="conj-rom">korbi</span>
+</td>
+<td>
+<span class="conj-bn">করছিস</span> <span class="conj-rom">korchis</span>
+</td>
+<td>
+<span class="conj-bn">করেছিস</span> <span class="conj-rom">korechis</span>
+</td>
+</tr>
+            <tr>
+<td>
+<span class="conj-bn">আপনি</span> <span class="conj-rom">apni</span>
+</td>
+<td>
+<span class="conj-bn">করেন</span> <span class="conj-rom">koren</span>
+</td>
+<td>
+<span class="conj-bn">করলেন</span> <span class="conj-rom">korlen</span>
+</td>
+<td>
+<span class="conj-bn">করবেন</span> <span class="conj-rom">korben</span>
+</td>
+<td>
+<span class="conj-bn">করছেন</span> <span class="conj-rom">korchen</span>
+</td>
+<td>
+<span class="conj-bn">করেছেন</span> <span class="conj-rom">korechen</span>
+</td>
+</tr>
+            <tr>
+<td>
+<span class="conj-bn">সে / এ</span> <span class="conj-rom">she / e</span>
+</td>
+<td>
+<span class="conj-bn">করে</span> <span class="conj-rom">kore</span>
+</td>
+<td>
+<span class="conj-bn">করল</span> <span class="conj-rom">korlo</span>
+</td>
+<td>
+<span class="conj-bn">করবে</span> <span class="conj-rom">korbe</span>
+</td>
+<td>
+<span class="conj-bn">করছে</span> <span class="conj-rom">korche</span>
+</td>
+<td>
+<span class="conj-bn">করেছে</span> <span class="conj-rom">koreche</span>
+</td>
+</tr>
+            <tr>
+<td>
+<span class="conj-bn">তারা / ওরা</span> <span class="conj-rom">tara / ora</span>
+</td>
+<td>
+<span class="conj-bn">করে</span> <span class="conj-rom">kore</span>
+</td>
+<td>
+<span class="conj-bn">করল</span> <span class="conj-rom">korlo</span>
+</td>
+<td>
+<span class="conj-bn">করবে</span> <span class="conj-rom">korbe</span>
+</td>
+<td>
+<span class="conj-bn">করছে</span> <span class="conj-rom">korche</span>
+</td>
+<td>
+<span class="conj-bn">করেছে</span> <span class="conj-rom">koreche</span>
+</td>
+</tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <div class="module-grid" id="grammar-module-grid"></div>
 </div>
@@ -2626,6 +2818,27 @@ function speakCurrentLetter() {
 function speakCurrentVocab() {
   const entry = typeof vlWords !== 'undefined' && vlWords[vlIndex];
   if (entry) speakBengali(entry[0]);
+}
+
+// Extract the Bengali-script portion of a vocab example string.
+// Examples are formatted as "Bengali text। (roman — english)"
+// Returns everything before the first " (" delimiter, or the full string.
+function _exampleBengali(exampleStr) {
+  if (!exampleStr) return '';
+  const cut = exampleStr.indexOf(' (');
+  return cut > 0 ? exampleStr.slice(0, cut).trim() : exampleStr.trim();
+}
+
+// Speak the example sentence for the currently open word modal.
+function speakVocabExample() {
+  const exEl = document.getElementById('wm-example');
+  if (exEl && exEl.textContent) speakBengali(_exampleBengali(exEl.textContent));
+}
+
+// Speak the example sentence for the currently shown vocab flashcard.
+function speakCurrentVocabExample() {
+  const entry = typeof vlWords !== 'undefined' && vlWords[vlIndex];
+  if (entry && entry[5]) speakBengali(_exampleBengali(entry[5]));
 }
 
 function showCard() {
@@ -3850,6 +4063,10 @@ function showVocabDetail(bengali) {
   document.getElementById('wm-pos').textContent = w.pos;
   document.getElementById('wm-english').textContent = w.english;
   document.getElementById('wm-cat').textContent = cat ? cat.title : w.category;
+  const wmEx = document.getElementById('wm-example');
+  if (wmEx) wmEx.textContent = w.example || '';
+  const wmExBtn = document.getElementById('wm-example-btn');
+  if (wmExBtn) wmExBtn.style.display = w.example ? '' : 'none';
   // Update study button
   const studyBtn = document.getElementById('wm-study-btn');
   if (studyBtn) {
@@ -3930,6 +4147,8 @@ function showVocabCardAt() {
   document.getElementById('vc-cat').textContent = cat ? cat.title : w.category;
   const exEl = document.getElementById('vc-example');
   if (exEl) exEl.textContent = w.example || '';
+  const exBtn = document.getElementById('vc-example-btn');
+  if (exBtn) exBtn.style.display = w.example ? '' : 'none';
   document.getElementById('vl-counter').textContent = (vlIndex + 1) + ' / ' + vlWords.length;
   document.getElementById('vl-prev').style.visibility = vlIndex === 0 ? 'hidden' : 'visible';
 
@@ -5565,6 +5784,15 @@ function dismissOnboarding() {
   saveProgress();
 }
 
+function toggleConjTable() {
+  const wrap = document.getElementById('conj-table-wrap');
+  const btn  = document.getElementById('conj-toggle-btn');
+  if (!wrap || !btn) return;
+  const open = !wrap.hidden;
+  wrap.hidden = open;
+  btn.setAttribute('aria-expanded', String(!open));
+}
+
 function openSettingsPanel() {
   updateProfileMenuHeader();
   _updateFibModeChips();
@@ -5592,6 +5820,7 @@ function _helpEsc(e) { if (e.key === 'Escape') closeHelpPanel(); }
 
 // ── Debug: Unlock All & Mark Mastered ───────────────────────────────
 async function unlockAllContent(btn) {
+  if (!confirm('This will mark all 50 letters and all 4,399+ words as fully mastered. This cannot be undone.\n\nContinue?')) return;
   btn.disabled = true;
   btn.textContent = 'Loading packs…';
   await Promise.all([1, 2, 3].map(n => loadVocabPack(n)));
@@ -6559,7 +6788,11 @@ showProfileScreen();
         <div class="vocab-card-pos" id="wm-pos"></div>
         <div class="vocab-card-english" id="wm-english"></div>
         <div class="vocab-card-cat" id="wm-cat"></div>
-        <button class="card-sound-btn" onclick="event.stopPropagation(); speakBengali(document.getElementById('wm-bengali').textContent);" aria-label="Play pronunciation">🔊</button>
+        <div class="vocab-card-example" id="wm-example"></div>
+        <div class="wm-sound-row">
+          <button class="card-sound-btn" onclick="event.stopPropagation(); speakBengali(document.getElementById('wm-bengali').textContent);" aria-label="Play word">🔊 Word</button>
+          <button class="card-sound-btn" id="wm-example-btn" onclick="event.stopPropagation(); speakVocabExample();" aria-label="Play example sentence">🔊 Example</button>
+        </div>
       </div>
     </div>
     <p class="word-modal-hint">Tap card to flip</p>
