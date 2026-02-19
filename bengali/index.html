@@ -2230,6 +2230,7 @@ function renderQuestion() {
     qa.innerHTML = `
       <div class="quiz-prompt">${q.prompt}</div>
       <div class="quiz-letter">${q.letter}</div>
+      <button class="card-sound-btn" onclick="speakBengali('${escapeStr(q.letter)}')" aria-label="Play pronunciation">🔊</button>
     `;
   }
 
@@ -3013,6 +3014,7 @@ function renderVocabQuestion() {
       <div class="quiz-prompt">${q.prompt}</div>
       <div class="vq-bengali">${q.bengali}</div>
       <div class="vq-hint">${q.roman}</div>
+      <button class="card-sound-btn" onclick="speakBengali('${escapeStr(q.bengali)}')" aria-label="Play pronunciation">🔊</button>
     `;
   } else {
     qa.innerHTML = `
@@ -3718,6 +3720,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
     qa.innerHTML = `
       <div class="quiz-prompt">${q.prompt}</div>
       <div class="quiz-letter">${q.letter}</div>
+      <button class="card-sound-btn" onclick="speakBengali('${escapeStr(q.letter)}')" aria-label="Play pronunciation">🔊</button>
     `;
     if (q.type === 'mc') {
       aa.innerHTML = '<div class="mc-options">' +
@@ -3742,6 +3745,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
       <div class="quiz-prompt">${q.prompt}</div>
       <div class="vq-bengali">${q.bengali}</div>
       <div class="vq-hint">${q.roman}</div>
+      <button class="card-sound-btn" onclick="speakBengali('${escapeStr(q.bengali)}')" aria-label="Play pronunciation">🔊</button>
     `;
     if (q.type === 'mc') {
       aa.innerHTML = '<div class="mc-options">' +
@@ -3767,6 +3771,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
         <div class="quiz-prompt">${q.prompt}</div>
         <div class="vq-bengali">${q.bengali}</div>
         ${q.roman ? '<div class="vq-hint">' + q.roman + '</div>' : ''}
+        <button class="card-sound-btn" onclick="speakBengali('${escapeStr(q.bengali)}')" aria-label="Play pronunciation">🔊</button>
       `;
     } else {
       qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div>`;
