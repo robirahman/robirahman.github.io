@@ -15,4 +15,4 @@ social: true # includes social icons at the bottom of the page
 
 Hi, I'm Robi Rahman. I work on AI governance at [MIRI TGT](https://techgov.intelligence.org/). Previously, I was a data scientist at [Epoch AI](https://epoch.ai/), where I researched trends in AI development. I studied at [Harvard University](https://www.harvard.edu/) and the [College of William & Mary](https://www.wm.edu/).
 
-The best way to reach me is by email at [robirahman94@gmail.com](mailto:robirahman94@gmail.com). You can also contact me anonymously [here](https://admonymous.co/robirahman).
+The best way to reach me is by email. You can also contact me using [this Google Form](https://www.robirahman.com/contact/) or anonymously [here](https://admonymous.co/robirahman).
