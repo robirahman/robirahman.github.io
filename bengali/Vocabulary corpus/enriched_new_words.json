@@ -392,7 +392,7 @@
     "english": "will be / shall be",
     "category": "verbs",
     "pos": "verb",
-    "example": "আগামীকাল ছুটির দিন হবে। (agamical chutir din hobe — Tomorrow will be a holiday.)",
+    "example": "আগামীকাল ছুটির দিন হবে। (agamikal chutir din hobe — Tomorrow will be a holiday.)",
     "freqRank": 19
   },
   {
@@ -770,7 +770,7 @@
     "english": "will do / will make",
     "category": "verbs",
     "pos": "verb",
-    "example": "আগামীকাল আমি পড়াশোনা করব। (agamical ami porasona korbo — I will study tomorrow.)",
+    "example": "আগামীকাল আমি পড়াশোনা করব। (agamikal ami porasona korbo — I will study tomorrow.)",
     "freqRank": 113
   },
   {
@@ -1931,7 +1931,7 @@
     "english": "is coming / are coming",
     "category": "verbs",
     "pos": "verb",
-    "example": "সে আগামীকাল আসছে। (she agamical aschche — He is coming tomorrow.)",
+    "example": "সে আগামীকাল আসছে। (she agamikal aschche — He is coming tomorrow.)",
     "freqRank": 343
   },
   {
@@ -4757,7 +4757,7 @@
     "english": "committee",
     "category": "society",
     "pos": "noun",
-    "example": "কমিটির সভা আগামীকাল হবে। (komitir sobha agamical hobe — The committee meeting will be tomorrow.)",
+    "example": "কমিটির সভা আগামীকাল হবে। (komitir sobha agamikal hobe — The committee meeting will be tomorrow.)",
     "freqRank": 840
   },
   {
@@ -4973,7 +4973,7 @@
     "english": "remaining / rest",
     "category": "abstract",
     "pos": "adjective",
-    "example": "বাকি টাকা আগামীকাল দেব। (baki taka agamical debo — I will give the remaining money tomorrow.)",
+    "example": "বাকি টাকা আগামীকাল দেব। (baki taka agamikal debo — I will give the remaining money tomorrow.)",
     "freqRank": 866
   },
   {
@@ -13442,7 +13442,7 @@
     "english": "come / coming",
     "category": "verbs",
     "pos": "verb",
-    "example": "আমি আসি আগামীকাল। (ami asi agamical — I'm coming tomorrow.)",
+    "example": "আমি আসি আগামীকাল। (ami asi agamikal — I'm coming tomorrow.)",
     "freqRank": 2164
   },
   {
@@ -21110,7 +21110,7 @@
     "english": "journey / crossing / departure",
     "category": "transport",
     "pos": "noun",
-    "example": "আমাদের পাড়ি দেব আগামীকাল। (amader pari deb agamical — We will depart tomorrow.)",
+    "example": "আমাদের পাড়ি দেব আগামীকাল। (amader pari deb agamikal — We will depart tomorrow.)",
     "freqRank": 3315
   },
   {
@@ -23333,7 +23333,7 @@
     "english": "again / once more",
     "category": "adverbs",
     "pos": "adverb",
-    "example": "তিনি ফের আসবেন আগামীকাল। (tini pher asben agamical — He will come again tomorrow.)",
+    "example": "তিনি ফের আসবেন আগামীকাল। (tini pher asben agamikal — He will come again tomorrow.)",
     "freqRank": 3638
   },
   {

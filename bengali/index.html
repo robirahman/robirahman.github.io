@@ -66,7 +66,38 @@ nav h1 span { color: var(--accent); }
 /* ─── HOME ─── */
 #home .hero, #vocab-home .hero, #grammar-home .hero { text-align:center; padding: 40px 0 30px; }
 #home .hero h2, #vocab-home .hero h2, #grammar-home .hero h2 { font-size: 2rem; margin-bottom: 8px; }
-#home .hero p, #vocab-home .hero p, #grammar-home .hero p { color: var(--text-dim); font-size: 1.05rem; }
+#home .hero p, #vocab-home .hero p, #grammar-home .hero p, #today-screen .hero p { color: var(--text-dim); font-size: 1.05rem; }
+/* ─── TODAY SCREEN ─── */
+.today-date { color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-bottom: 16px; }
+.today-section {
+  background: var(--card); border-radius: var(--radius);
+  padding: 18px 20px; margin-bottom: 14px;
+  border: 1.5px solid rgba(255,255,255,0.07);
+}
+.today-section-hdr { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+.today-section-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+.today-section-title { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+.today-section-sub { font-size: 0.82rem; color: var(--text-dim); line-height: 1.4; }
+.today-action-btn { width: 100%; margin-top: 4px; }
+.btn-secondary {
+  display: block; width: 100%; padding: 10px 20px;
+  background: rgba(255,255,255,0.07); color: var(--text); border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-align: center;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.13); }
+.today-done-badge { display: inline-block; font-size: 0.8rem; color: var(--accent); font-weight: 600; padding: 4px 0; }
+.today-word-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.today-word-chip { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 10px; min-width: 70px; }
+.today-word-bn { font-size: 1.15rem; font-weight: 700; }
+.today-word-en { font-size: 0.7rem; color: var(--text-dim); text-align: center; }
+.today-xp-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border-radius: var(--radius); padding: 14px 20px;
+  font-size: 0.85rem; color: var(--text-dim);
+}
+.today-xp-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+.today-streak { font-size: 0.9rem; font-weight: 600; }
 .module-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px; margin-top: 24px;
@@ -197,6 +228,13 @@ nav h1 span { color: var(--accent); }
   font-size: 0.85rem;
   margin: 0;
 }
+.wm-study-btn {
+  background: rgba(62,201,122,0.12); color: var(--accent);
+  border: 1.5px solid rgba(62,201,122,0.35); border-radius: 10px;
+  padding: 8px 20px; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; width: 100%;
+}
+.wm-study-btn:hover { background: rgba(62,201,122,0.22); }
 .card-sound-btn {
   margin-top: 1rem;
   background: rgba(255,255,255,0.08);
@@ -354,6 +392,18 @@ nav h1 span { color: var(--accent); }
 .quiz-feedback.wrong-fb {
   background: rgba(255,75,75,0.1); color: var(--wrong);
 }
+.fb-example {
+  font-size: 0.82rem; margin-top: 6px; opacity: 0.85;
+  font-style: italic; line-height: 1.4;
+}
+.report-problem-btn {
+  float: right; margin-top: 2px;
+  background: none; border: 1px solid currentColor; border-radius: 6px;
+  padding: 2px 7px; font-size: 0.72rem; cursor: pointer;
+  opacity: 0.55; color: inherit;
+  transition: opacity 0.2s;
+}
+.report-problem-btn:hover { opacity: 1; }
 .quiz-next-btn {
   margin-top: 20px; display: none;
 }
@@ -1294,8 +1344,9 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .ml-chip.lvl2 { border-color: var(--accent-dim); color: var(--text); background: rgba(244,165,50,0.08); }
 .ml-chip.lvl3 { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.15); }
 .ml-label { color: var(--text-dim); }
+.listening-controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px auto 8px; }
 .listening-play-btn {
-  display: block; margin: 20px auto 8px;
+  display: block;
   background: var(--accent); color: #fff; border: none;
   border-radius: 50%; width: 5rem; height: 5rem; font-size: 1.8rem;
   cursor: pointer; box-shadow: 0 4px 16px rgba(62,201,122,0.35);
@@ -1304,6 +1355,13 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .listening-play-btn:hover { transform: scale(1.07); box-shadow: 0 6px 24px rgba(62,201,122,0.45); }
 .listening-play-btn:active { transform: scale(0.96); }
 [data-theme="light"] .listening-play-btn { box-shadow: 0 4px 16px rgba(0,140,60,0.3); }
+.slow-audio-btn {
+  background: rgba(255,255,255,0.08); color: var(--text-dim); border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 50%; width: 2.8rem; height: 2.8rem; font-size: 1.2rem;
+  cursor: pointer; transition: all 0.2s; align-self: center;
+}
+.slow-audio-btn:hover { background: rgba(255,255,255,0.15); }
+.slow-audio-btn.active { background: rgba(62,201,122,0.2); border-color: var(--accent); color: var(--accent); }
 .stats-letter-grid {
   display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
 }
@@ -1443,6 +1501,25 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .ach-card-name { font-size: 0.78rem; font-weight: 600; color: var(--text-dim); }
 .ach-card.earned .ach-card-name { color: var(--text); }
 
+/* ─── ONBOARDING MODAL ─── */
+.onboarding-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,0.7); display: flex;
+  align-items: center; justify-content: center; padding: 1.5rem;
+}
+.onboarding-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 2rem 1.75rem; max-width: 400px; width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  border: 1.5px solid rgba(62,201,122,0.25);
+}
+.onboarding-title { font-size: 1.4rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
+.onboarding-sub { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem; }
+.onboarding-steps { padding-left: 1.4em; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px; }
+.onboarding-steps li { font-size: 0.9rem; line-height: 1.45; }
+.onboarding-tip { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.25rem; line-height: 1.5; }
+.onboarding-btn { width: 100%; }
+
 /* ─── REVIEW DUE BUTTON ─── */
 .review-due-btn {
   background: rgba(244,165,50,0.15); border: 1.5px solid var(--accent);
@@ -1490,6 +1567,7 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 </nav>
 
 <div class="tab-bar" id="tab-bar" style="display:none">
+  <button class="tab-btn" onclick="switchTab('today')">Today</button>
   <button class="tab-btn active" onclick="switchTab('alphabet')">Alphabet</button>
   <button class="tab-btn" onclick="switchTab('vocabulary')">Vocabulary</button>
   <button class="tab-btn" onclick="switchTab('grammar')">Grammar</button>
@@ -1657,6 +1735,15 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   </div>
 </div>
 
+<!-- TODAY SCREEN -->
+<div class="screen" id="today-screen">
+  <div class="hero">
+    <h2>আজকের পরিকল্পনা</h2>
+    <p>Today's study plan</p>
+  </div>
+  <div id="today-body" style="padding:0 1rem 2rem"></div>
+</div>
+
 <!-- HOME (Alphabet) -->
 <div class="screen active" id="home">
   <div class="hero">
@@ -1670,7 +1757,7 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 <div class="screen" id="vocab-home">
   <div class="hero">
     <h2>শব্দভাণ্ডার</h2>
-    <p>Learn the 5000 most common Bengali words</p>
+    <p>Learn 5,000+ common Bengali words</p>
   </div>
   <div class="module-grid" id="vocab-module-grid"></div>
 </div>
@@ -2378,13 +2465,23 @@ function startLearn(mod) {
 }
 
 // ── Audio ──────────────────────────────────────────────────────────────────
-function speakBengali(text) {
+let _audioSlowMode = false;
+
+function speakBengali(text, rate) {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'bn-BD';
-  utt.rate = 0.85;
+  utt.rate = rate !== undefined ? rate : (_audioSlowMode ? 0.5 : 0.85);
   speechSynthesis.speak(utt);
+}
+
+function toggleSlowAudio(btn) {
+  _audioSlowMode = !_audioSlowMode;
+  document.querySelectorAll('.slow-audio-btn').forEach(b => {
+    b.classList.toggle('active', _audioSlowMode);
+    b.title = _audioSlowMode ? 'Slow mode on — click to restore normal speed' : 'Play at half speed';
+  });
 }
 
 function speakCurrentLetter() {
@@ -2688,7 +2785,10 @@ function renderQuestion() {
   if (q.type === 'listening-mc' || q.type === 'listening-fib') {
     qa.innerHTML = `
       <div class="quiz-prompt">${q.prompt}</div>
-      <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play sound">▶</button>
+      <div class="listening-controls">
+        <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play sound">▶</button>
+        <button class="slow-audio-btn${_audioSlowMode ? ' active' : ''}" onclick="toggleSlowAudio(this)" title="${_audioSlowMode ? 'Slow mode on — click to restore normal speed' : 'Play at half speed'}" aria-label="Toggle slow audio">🐢</button>
+      </div>
       <div style="font-size:0.8rem;color:var(--muted);margin-top:4px">Tap to replay</div>
     `;
     setTimeout(() => speakBengali(q.audio), 300);
@@ -2859,10 +2959,41 @@ function answerFIB() {
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
+function reportProblem(quizType) {
+  let q, userAnswer;
+  if (quizType === 'alphabet') {
+    q = quizQuestions[quizIndex];
+    const inp = document.getElementById('fib-input');
+    userAnswer = inp ? inp.value : '';
+  } else if (quizType === 'vocab') {
+    q = vqQuestions[vqIndex];
+    const inp = document.getElementById('vq-fib-input');
+    userAnswer = inp ? inp.value : '';
+  } else {
+    q = gqQuestions[gqIndex];
+    const inp = document.getElementById('gq-fib-input');
+    userAnswer = inp ? inp.value : '';
+  }
+  if (!q) return;
+  const report = {
+    quizType,
+    prompt: q.prompt || '',
+    bengali: q.letter || q.bengali || '',
+    correctAnswer: q.fullAnswer || q.answer || q.correct || '',
+    userAnswer,
+    timestamp: new Date().toISOString()
+  };
+  navigator.clipboard.writeText(JSON.stringify(report, null, 2)).then(() => {
+    const btn = document.querySelector('.report-problem-btn.active-quiz-' + quizType);
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = '⚑ Report'; }, 2000); }
+  }).catch(() => alert('Could not copy to clipboard.'));
+}
+
 function showFeedback(correct, answer) {
   const fb = document.getElementById('quiz-feedback');
   fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
-  fb.textContent = correct ? '✓ Correct! ' + answer : '✗ The answer is: ' + answer;
+  fb.innerHTML = (correct ? '✓ Correct! ' + escHtml(answer) : '✗ The answer is: ' + escHtml(answer)) +
+    ' <button class="report-problem-btn active-quiz-alphabet" onclick="reportProblem(\'alphabet\')" title="Report a problem with this card">⚑ Report</button>';
 }
 
 function _recordMiss(arr, q) {
@@ -2877,12 +3008,15 @@ function _recordMiss(arr, q) {
 function _normRoman(s) {
   return s.toLowerCase()
     .replace(/[āĀ]/g, 'a')
+    .replace(/[ēĒ]/g, 'e')
     .replace(/[īĪ]/g, 'i')
+    .replace(/[ōŌ]/g, 'o')
     .replace(/[ūŪ]/g, 'u')
     .replace(/[ṭṬ]/g, 't')
     .replace(/[ḍḌ]/g, 'd')
     .replace(/[ṇṆ]/g, 'n')
-    .replace(/[ṣṢ]/g, 's')   // ṣh → sh
+    .replace(/[śŚ]/g, 'sh')
+    .replace(/[ṣṢ]/g, 'sh')
     .replace(/[ṛṚ]/g, 'r')
     .replace(/ñ/g, 'ny')
     .replace(/ô/g, 'o');
@@ -3087,11 +3221,14 @@ function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach((btn, i) => {
     btn.classList.toggle('active',
-      (i === 0 && tab === 'alphabet') ||
-      (i === 1 && tab === 'vocabulary') ||
-      (i === 2 && tab === 'grammar'));
+      (i === 0 && tab === 'today') ||
+      (i === 1 && tab === 'alphabet') ||
+      (i === 2 && tab === 'vocabulary') ||
+      (i === 3 && tab === 'grammar'));
   });
-  if (tab === 'alphabet') {
+  if (tab === 'today') {
+    showScreen('today-screen');
+  } else if (tab === 'alphabet') {
     showScreen('home');
   } else if (tab === 'vocabulary') {
     showScreen('vocab-home');
@@ -3109,6 +3246,7 @@ showScreen = function(id) {
   if (id === 'chart') renderChart();
   if (id === 'vocab-home') renderVocabHome();
   if (id === 'grammar-home') renderGrammarHome();
+  if (id === 'today-screen') renderTodayScreen();
   if (id === 'placement-results') renderPlacementResultsUI();
 };
 
@@ -3377,12 +3515,25 @@ function buildMixedVocabSession() {
   const unlocked = getVocabMixedUnlockedCount();
   const pool = VMIX_CURRICULUM.slice(0, unlocked);
 
+  // Priority queue: words user flagged via "Study this"
+  const priorityLemmas = progress.vmixPriority || [];
+  const priorityWords = priorityLemmas
+    .map(lemma => VOCAB_DATA.find(w => w.lemma === lemma))
+    .filter(Boolean);
+
   // Words the user hasn't seen yet
   const unseen = pool.filter(w => getVocabMastery(w.lemma) === 0);
-  const teach = unseen.slice(0, VMIX_INTRO);
+  // Priority words that need teaching come first
+  const priorityUnseen = priorityWords.filter(w => getVocabMastery(w.lemma) === 0);
+  const regularUnseen = unseen.filter(w => !priorityLemmas.includes(w.lemma));
+  const teach = [...priorityUnseen, ...regularUnseen].slice(0, VMIX_INTRO);
 
-  // Prioritise low-mastery words for the quiz
-  const prioritized = [...pool].sort((a, b) => {
+  // Prioritise low-mastery words for the quiz; priority queue goes first
+  const poolWithPriority = [...priorityWords, ...pool.filter(w => !priorityLemmas.includes(w.lemma))];
+  const prioritized = [...poolWithPriority].sort((a, b) => {
+    const aIsPriority = priorityLemmas.includes(a.lemma);
+    const bIsPriority = priorityLemmas.includes(b.lemma);
+    if (aIsPriority !== bIsPriority) return aIsPriority ? -1 : 1;
     const ma = getVocabMastery(a.lemma), mb = getVocabMastery(b.lemma);
     const sa = ma === 3 ? 4 : ma === 2 ? 1 : ma === 0 ? 0.5 : 0;
     const sb = mb === 3 ? 4 : mb === 2 ? 1 : mb === 0 ? 0.5 : 0;
@@ -3392,7 +3543,12 @@ function buildMixedVocabSession() {
       || a.english.localeCompare(b.english);
   });
 
-  const quiz = prioritized.slice(0, Math.min(VMIX_QUIZ_SIZE, pool.length));
+  const quiz = prioritized.slice(0, Math.min(VMIX_QUIZ_SIZE, poolWithPriority.length));
+  // Remove from priority queue words that have been quizzed (mastery > 0)
+  if (priorityLemmas.length > 0) {
+    progress.vmixPriority = priorityLemmas.filter(l => getVocabMastery(l) === 0);
+    saveProgress();
+  }
   return { teach, quiz, unlocked, total: VMIX_CURRICULUM.length };
 }
 
@@ -3518,18 +3674,38 @@ function renderVocabList() {
   `;
 }
 
+let _wordModalLemma = null;
+
 function showVocabDetail(bengali) {
   const w = VOCAB_DATA.find(w => w.lemma === bengali);
   if (!w) return;
+  _wordModalLemma = w.lemma;
   const cat = VOCAB_CATEGORIES[w.category];
   document.getElementById('wm-bengali').textContent = w.lemma;
   document.getElementById('wm-roman').textContent = w.roman;
   document.getElementById('wm-pos').textContent = w.pos;
   document.getElementById('wm-english').textContent = w.english;
   document.getElementById('wm-cat').textContent = cat ? cat.title : w.category;
+  // Update study button
+  const studyBtn = document.getElementById('wm-study-btn');
+  if (studyBtn) {
+    const inQueue = (progress.vmixPriority || []).includes(w.lemma);
+    studyBtn.textContent = inQueue ? '✓ In study queue' : '+ Study this word';
+    studyBtn.dataset.lemma = w.lemma;
+  }
   document.getElementById('word-modal-card').classList.remove('flipped');
   document.getElementById('word-modal').classList.add('open');
   document.addEventListener('keydown', _wordModalEsc);
+}
+
+function studyWordNext(lemma) {
+  if (!progress.vmixPriority) progress.vmixPriority = [];
+  if (!progress.vmixPriority.includes(lemma)) {
+    progress.vmixPriority.unshift(lemma);
+    saveProgress();
+  }
+  const btn = document.getElementById('wm-study-btn');
+  if (btn) btn.textContent = '✓ In study queue';
 }
 
 function closeWordModal() {
@@ -3776,7 +3952,10 @@ function renderVocabQuestion() {
   if (q.type === 'listening-mc' || q.type === 'listening-fib') {
     qa.innerHTML = `
       <div class="quiz-prompt">${q.prompt}</div>
-      <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play sound">▶</button>
+      <div class="listening-controls">
+        <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play sound">▶</button>
+        <button class="slow-audio-btn${_audioSlowMode ? ' active' : ''}" onclick="toggleSlowAudio(this)" title="${_audioSlowMode ? 'Slow mode on — click to restore normal speed' : 'Play at half speed'}" aria-label="Toggle slow audio">🐢</button>
+      </div>
       <div style="font-size:0.8rem;color:var(--muted);margin-top:4px">Tap to replay</div>
     `;
     setTimeout(() => speakBengali(q.audio), 300);
@@ -3842,7 +4021,7 @@ function answerVocabMC(btn, chosen) {
   addVocabMastery(q.word[0], correct);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
-  showVocabFeedback(correct, q.correct);
+  showVocabFeedback(correct, q.correct, !correct && q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -3874,14 +4053,17 @@ function answerVocabFIB() {
   addVocabMastery(q.word[0], correct);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
-  showVocabFeedback(correct, q.answer);
+  showVocabFeedback(correct, q.answer, !correct && q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
-function showVocabFeedback(correct, answer) {
+function showVocabFeedback(correct, answer, example) {
   const fb = document.getElementById('vq-feedback');
   fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
-  fb.textContent = correct ? '✓ Correct! ' + answer : '✗ The answer is: ' + answer;
+  let html = correct ? '✓ Correct! ' + escHtml(answer) : '✗ The answer is: ' + escHtml(answer);
+  if (!correct && example) html += '<div class="fb-example">' + escHtml(example) + '</div>';
+  html += ' <button class="report-problem-btn active-quiz-vocab" onclick="reportProblem(\'vocab\')" title="Report a problem with this card">⚑ Report</button>';
+  fb.innerHTML = html;
 }
 
 function dontKnowVocab() {
@@ -3902,7 +4084,7 @@ function dontKnowVocab() {
   addVocabMastery(q.word[0], false);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
-  showVocabFeedback(false, q.answer || q.correct);
+  showVocabFeedback(false, q.answer || q.correct, q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -4289,7 +4471,7 @@ function answerGrammarFIB() {
   addGrammarMastery(lessonId, qIdx, correct);
   _trackLastSeen('g:' + lessonId);
   checkAchievements();
-  showGrammarFeedback(correct, q.answer);
+  showGrammarFeedback(correct, q.answer, !correct && q.explanation);
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
@@ -4346,14 +4528,17 @@ function checkWordOrder() {
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
-  showGrammarFeedback(correct, q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
+  showGrammarFeedback(correct, q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''), !correct && q.explanation);
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
-function showGrammarFeedback(correct, answer) {
+function showGrammarFeedback(correct, answer, explanation) {
   const fb = document.getElementById('gq-feedback');
   fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
-  fb.textContent = correct ? '✓ Correct! ' + answer : '✗ Correct answer: ' + answer;
+  let html = correct ? '✓ Correct! ' + escHtml(answer) : '✗ Correct answer: ' + escHtml(answer);
+  if (!correct && explanation && explanation !== answer) html += '<div class="fb-example">' + escHtml(explanation) + '</div>';
+  html += ' <button class="report-problem-btn active-quiz-grammar" onclick="reportProblem(\'grammar\')" title="Report a problem with this card">⚑ Report</button>';
+  fb.innerHTML = html;
 }
 
 function dontKnowGrammar() {
@@ -4369,13 +4554,13 @@ function dontKnowGrammar() {
   } else if (q.type === 'fib') {
     const input = document.getElementById('gq-fib-input');
     if (input) { input.disabled = true; input.classList.add('wrong'); }
-    showGrammarFeedback(false, q.answer);
+    showGrammarFeedback(false, q.answer, q.explanation);
     _showInlineAnswer('gq-answer-area', q.answer);
   } else if (q.type === 'word-order') {
     document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
     document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
     const woAnswer = q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : '');
-    showGrammarFeedback(false, woAnswer);
+    showGrammarFeedback(false, woAnswer, q.explanation);
     _showInlineAnswer('gq-answer-area', woAnswer);
   }
   _recordMiss(gqMissed, q);
@@ -5142,7 +5327,8 @@ function renderProfileList(forceShowPicker) {
         <div class="pc-stats">⭐ ${u.xp} XP &nbsp; 🔥 ${u.streak}</div>
       </div>
       <div class="pc-actions">
-        <button class="pc-action-btn" onclick="exportProfileData('${safeNameJs}')" title="Export progress">⬇</button>
+        <button class="pc-action-btn" onclick="exportProfileData('${safeNameJs}')" title="Download progress as JSON">⬇</button>
+        <button class="pc-action-btn" onclick="copyProfileDataToClipboard('${safeNameJs}')" title="Copy progress to clipboard">📋</button>
         <button class="pc-action-btn pc-action-delete" onclick="deleteProfile('${safeNameJs}')" title="Delete profile">🗑</button>
       </div>
     `;
@@ -5203,6 +5389,16 @@ function enterApp() {
   updateNav();
   updatePlacementRetakeButton();
   switchTab('alphabet');
+  // Show onboarding for first-time users
+  if (!progress.seenOnboarding) {
+    document.getElementById('onboarding-modal').style.display = 'flex';
+  }
+}
+
+function dismissOnboarding() {
+  document.getElementById('onboarding-modal').style.display = 'none';
+  progress.seenOnboarding = true;
+  saveProgress();
 }
 
 function openSettingsPanel() {
@@ -5362,6 +5558,15 @@ function exportProfileData(name) {
   a.download = 'bengali-progress-' + name.replace(/\s+/g, '-') + '-' + new Date().toISOString().slice(0, 10) + '.json';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function copyProfileDataToClipboard(name) {
+  const data = _loadProgressLS(name) || {};
+  const envelope = { exportedBy: name, exportedAt: new Date().toISOString(), version: 1, progress: data };
+  const json = JSON.stringify(envelope, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    alert('Progress for "' + name + '" copied to clipboard.');
+  }).catch(() => alert('Could not copy to clipboard.'));
 }
 
 function deleteProfile(name) {
@@ -5881,6 +6086,85 @@ function _buildHeatmap() {
 }
 
 // ════════════════════════════════════════
+//  TODAY SCREEN
+// ════════════════════════════════════════
+function renderTodayScreen() {
+  const body = document.getElementById('today-body');
+  if (!body) return;
+
+  const due = getDueItems();
+  const dueCount = due.letters.length + due.vocab.length + due.grammar.length;
+
+  // Next unseen vocab words
+  const unlocked = getVocabMixedUnlockedCount();
+  const pool = VMIX_CURRICULUM.slice(0, unlocked);
+  const newWords = pool.filter(w => getVocabMastery(w.lemma) === 0).slice(0, 5);
+
+  // Next grammar lesson user hasn't mastered
+  const nextGrammar = GRAMMAR_LESSONS.find(l => {
+    const prog = getLessonProgress(l);
+    return prog.seen < prog.total || prog.mastered < prog.total;
+  });
+
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  let html = `<div class="today-date">${today}</div>`;
+
+  // ── Reviews ──
+  html += `<div class="today-section">
+    <div class="today-section-hdr">
+      <span class="today-section-icon">🔔</span>
+      <div>
+        <div class="today-section-title">Due for Review</div>
+        <div class="today-section-sub">${dueCount > 0 ? dueCount + ' item' + (dueCount !== 1 ? 's' : '') + ' ready to review' : 'All caught up! Nothing due right now.'}</div>
+      </div>
+    </div>
+    ${dueCount > 0 ? `<button class="btn-primary today-action-btn" onclick="startReviewSession();switchTab('alphabet')">Start Review →</button>` : '<div class="today-done-badge">✓ Done</div>'}
+  </div>`;
+
+  // ── New vocab ──
+  html += `<div class="today-section">
+    <div class="today-section-hdr">
+      <span class="today-section-icon">📖</span>
+      <div>
+        <div class="today-section-title">New Vocabulary</div>
+        <div class="today-section-sub">${newWords.length > 0 ? newWords.length + ' new word' + (newWords.length !== 1 ? 's' : '') + ' in your queue' : 'No new words queued — keep practicing!'}</div>
+      </div>
+    </div>`;
+  if (newWords.length > 0) {
+    html += '<div class="today-word-list">' + newWords.map(w =>
+      `<div class="today-word-chip"><span class="today-word-bn">${escHtml(w.lemma)}</span><span class="today-word-en">${escHtml(w.english)}</span></div>`
+    ).join('') + '</div>';
+    html += `<button class="btn-secondary today-action-btn" onclick="switchTab('vocabulary');startMixedVocabPractice()">Study These →</button>`;
+  } else {
+    html += '<div class="today-done-badge">✓ All unlocked words seen</div>';
+  }
+  html += '</div>';
+
+  // ── Grammar ──
+  html += `<div class="today-section">
+    <div class="today-section-hdr">
+      <span class="today-section-icon">📚</span>
+      <div>
+        <div class="today-section-title">Grammar</div>
+        <div class="today-section-sub">${nextGrammar ? 'Lesson ' + nextGrammar.number + ': ' + escHtml(nextGrammar.title) : 'All lessons complete!'}</div>
+      </div>
+    </div>
+    ${nextGrammar ? `<button class="btn-secondary today-action-btn" onclick="switchTab('grammar');openGrammarLesson('${nextGrammar.id}')">Open Lesson →</button>` : '<div class="today-done-badge">✓ Done</div>'}
+  </div>`;
+
+  // ── Streak / XP summary ──
+  const xpToday = (progress.practiceLog || {})[new Date().toISOString().slice(0,10)] || 0;
+  html += `<div class="today-xp-bar">
+    <span class="today-xp-label">Today's XP</span>
+    <span class="today-xp-val">${xpToday} XP</span>
+    <span class="today-streak">🔥 ${progress.streak || 0} day streak</span>
+  </div>`;
+
+  body.innerHTML = html;
+}
+
+// ════════════════════════════════════════
 //  SPACED REPETITION REVIEW
 // ════════════════════════════════════════
 const REVIEW_INTERVALS_MS = {
@@ -6080,6 +6364,21 @@ function navigateToLetter(letterChar) {
 showProfileScreen();
 </script>
 
+<!-- ── First-run Onboarding Modal ─────────────────────────────── -->
+<div id="onboarding-modal" class="onboarding-overlay" style="display:none" onclick="if(event.target===this)dismissOnboarding()">
+  <div class="onboarding-card">
+    <h2 class="onboarding-title">Welcome to বাংলা শিক্ষা!</h2>
+    <p class="onboarding-sub">Here's a recommended path to get started:</p>
+    <ol class="onboarding-steps">
+      <li><strong>Alphabet</strong> — Learn the Bengali script with Mixed Practice (letters first)</li>
+      <li><strong>Vocabulary</strong> — Build your word bank with spaced repetition</li>
+      <li><strong>Grammar</strong> — Study sentence structure once you know ~50 words</li>
+    </ol>
+    <p class="onboarding-tip">Tip: Try <em>Romanized</em> input mode first (Settings → Fill-in-the-blank mode), then switch to Bengali script as you progress.</p>
+    <button class="btn-primary onboarding-btn" onclick="dismissOnboarding()">Got it — let's start!</button>
+  </div>
+</div>
+
 <div id="word-modal" class="word-modal" onclick="if(event.target===this)closeWordModal()">
   <div class="word-modal-inner">
     <button class="word-modal-close" onclick="closeWordModal()" aria-label="Close">&#x2715;</button>
@@ -6096,6 +6395,7 @@ showProfileScreen();
       </div>
     </div>
     <p class="word-modal-hint">Tap card to flip</p>
+    <button id="wm-study-btn" class="wm-study-btn" onclick="studyWordNext(this.dataset.lemma)">+ Study this word</button>
   </div>
 </div>
 

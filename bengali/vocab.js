@@ -18,7 +18,7 @@ const VOCAB_DATA_RAW = [
 ["করে","kore","does / makes","verbs","verb","সে প্রতিদিন কাজ করে। (se protidine kaj kore — She does work every day.)"],
 ["করা","kora","to do / to make","verbs","verb","তুমি কী করছ? (tumi ki korchho — What are you doing?)"],
 ["করতে","korte","to do / to make","verbs","verb","আমি এটা করতে চাই। (ami eta korte chai — I want to do this.)"],
-["হবে","hobe","will be / shall be","verbs","verb","আগামীকাল ছুটির দিন হবে। (agamical chutir din hobe — Tomorrow will be a holiday.)"],
+["হবে","hobe","will be / shall be","verbs","verb","আগামীকাল ছুটির দিন হবে। (agamikal chutir din hobe — Tomorrow will be a holiday.)"],
 // ─── ADVERBS ───
 ["না","na","no / not","adverbs","particle","আমি এখন যাব না। (ami ekhon jabo na — I will not go now.)"],
 ["এবং","ebong","and","adverbs","conjunction","সে এবং আমি বন্ধু। (she ebong ami bondhu — She and I are friends.)"],
@@ -129,7 +129,7 @@ const VOCAB_DATA_RAW = [
 ["থাকে","thake","stays / remains / keeps","verbs","verb","সে ঘরে থাকে। (she ghore thake — He stays at home.)"],
 ["দিতে","dite","to give","verbs","verb","আমাকে একটি বই দিতে পারবেন? (amake ekti boi dite parben — Can you give me a book?)"],
 ["করছে","korchhe","is doing / is making","verbs","verb","সে এখন কাজ করছে। (she ekhon kaj korchhe — He is doing work now.)"],
-["করবে","korbe","will do / will make","verbs","verb","আগামীকাল সে পড়াশোনা করবে। (agamical she porasona korbe — He will study tomorrow.)"],
+["করবে","korbe","will do / will make","verbs","verb","আগামীকাল সে পড়াশোনা করবে। (agamikal she porasona korbe — He will study tomorrow.)"],
 ["করি","kori","do / make","verbs","verb","আমি কাজ করি। (ami kaj kori — I do work.)"],
 ["যাবে","jabe","will go","verbs","verb","সে আগামীকাল যাবে। (she agamikalal jabe — He will go tomorrow.)"],
 ["ব্যবহার","byabhar","use / usage","verbs","noun","এই যন্ত্রের ব্যবহার সহজ। (ei jontrer byabhar shohoj — The use of this instrument is easy.)"],
@@ -199,6 +199,7 @@ const VOCAB_DATA_RAW = [
 ["প্রায়","pray","almost / often","adverbs","adverb","সে প্রায় প্রতিদিন আসে। (she pray protidin ashe — He comes almost every day.)"],
 ["শুধু","shudhu","only / just","adverbs","adverb","শুধু তুমিই পারবে। (shudhu tumii parbe — Only you can do it.)"],
 ["তাহলে","tahole","then / in that case","adverbs","conjunction","সে এলে তাহলে কথা বলব। (she ele tahole kotha bolbo — If he comes, then I'll talk.)"],
+["আরো","aro","more","adverbs","adverb","আরো বই দাও। (aro boi dao — Give me more books.)"],
 // ─── EDUCATION ───
 ["বাংলা","bangla","Bengali","education","noun","বাংলা পৃথিবীর সুন্দর ভাষা। (bangla prithibir shundor bhasha — Bengali is a beautiful language of the world.)"],
 ["উত্তর","uttor","answer / north","education","noun","সে সব প্রশ্নের উত্তর দিল। (she shob proshner uttor dilo — She answered all the questions.)"],
@@ -233,7 +234,7 @@ const VOCAB_DATA_RAW = [
 ["দেওয়া","deowa","to give","verbs","verb","আমাকে একটু সময় দাও। (amake ektu shomoy dao — Give me a little time.)"],
 ["যেতে","jete","to go","verbs","verb","আমাকে যেতে হবে। (amake jete hobe — I have to go.)"],
 ["হওয়ার","howar","of being / to become","verbs","verb","ভালো হওয়ার জন্য ওষুধ খান। (bhālo howar jonno oshudh khān — Take medicine to get better.)"],
-["করবেন","korben","will do / shall do","verbs","verb","আগামীকাল আপনি কাজ করবেন। (agamical apni kaj korben — You will do the work tomorrow.)"],
+["করবেন","korben","will do / shall do","verbs","verb","আগামীকাল আপনি কাজ করবেন। (agamikal apni kaj korben — You will do the work tomorrow.)"],
 ["দেয়া","deoyā","to give / given","verbs","verb","তাকে একটি উপহার দেওয়া হয়েছে। (tāke ekti uphār deoyā hoyeche — He was given a gift.)"],
 ["দেখুন","dekhun","see / look / watch","verbs","verb","দেখুন এই ছবিটি কতো সুন্দর! (dekhun ei chhobit koto sunder — Look at how beautiful this picture is!)"],
 ["পারেন","pāren","can / able to / capable of","verbs","verb","তিনি এটি করতে পারেন। (tini eti korte pāren — He can do this.)"],
@@ -246,7 +247,6 @@ const VOCAB_DATA_RAW = [
 ["কম","kom","few / less","adjectives","adjective","আজ কম ঘুমিয়েছি। (aj kom ghumiyechhi — I slept less today.)"],
 ["ধরনের","dhoroner","of the kind / type of","adjectives","adjective","এই ধরনের সমস্যা সাধারণ। (ei dhoroner somosshā sādhāron — This type of problem is common.)"],
 // ─── ADVERBS ───
-["আরো","aro","more","adverbs","adverb","আরো বই দাও। (aro boi dao — Give me more books.)"],
 ["আরও","aro","more","adverbs","adverb","আরও সময় লাগবে। (aro shomoy lagbe — More time will be needed.)"],
 ["সবচেয়ে","sobcheye","most / the most","adverbs","adverb","এটি সবচেয়ে ভাল উপায়। (eti sobcheye bhal upay — This is the best way.)"],
 ["সেখানে","shekhane","there","adverbs","adverb","সে সেখানে আছে। (she shekhane achhe — She is there.)"],
@@ -340,7 +340,7 @@ const VOCAB_DATA_RAW = [
 ["শতাংশ","shotansh","percent / percentage","numbers","number","আশি শতাংশ মানুষ সম্মত। (ashi shotansh manush shomot — Eighty percent of people agree.)"],
 // ─── VERBS ───
 ["আসে","āse","comes / happens","verbs","verb","প্রতিদিন সকালে সে আসে। (protidin sokale she ashe — He comes every morning.)"],
-["থাকবে","thākbe","will be / will remain / will stay","verbs","verb","সে আগামীকাল এখানে থাকবে। (she agamical ekhane thakbe — He will be here tomorrow.)"],
+["থাকবে","thākbe","will be / will remain / will stay","verbs","verb","সে আগামীকাল এখানে থাকবে। (she agamikal ekhane thakbe — He will be here tomorrow.)"],
 ["করছেন","korchen","is doing / are doing","verbs","verb","তারা এখন কাজ করছেন। (tārā ekhon kāj korchen — They are working now.)"],
 ["চায়","chāy","wants / wishes / desires","verbs","verb","সে শিক্ষা চায়। (she shikshā chāy — She wants education.)"],
 ["তুলে","tule","raising / lifting / picking up","verbs","verb","তিনি হাত তুলে প্রশ্ন জিজ্ঞাসা করেছেন। (tini hāt tule proshn jijjnāsā korechen — He raised his hand and asked a question.)"],
@@ -360,7 +360,7 @@ const VOCAB_DATA_RAW = [
 ["মারা","mara","to hit / to beat","verbs","verb","কাউকে মারা ঠিক না। (kauke mara thik na — Hitting someone is not right.)"],
 ];
 
-const VOCAB_TOTAL_WORDS = 5278; // updated by build_vocab_packs.py
+const VOCAB_TOTAL_WORDS = 4413; // updated by build_vocab_packs.py // updated by build_vocab_packs.py
 
 // VOCAB_DATA is mutable so lazy-loaded packs can be appended at runtime.
 // Pack 0 is inlined here; packs 1-3 are fetched from vocab-pack-N.json.

@@ -297,6 +297,7 @@ code {
   <h2>Contents</h2>
   <ul class="toc-list">
     <li><a href="#getting-started">Getting started</a></li>
+    <li><a href="#today">Today tab</a></li>
     <li><a href="#alphabet">Alphabet</a></li>
     <li><a href="#vocabulary">Vocabulary</a></li>
     <li><a href="#grammar">Grammar</a></li>
@@ -316,9 +317,14 @@ code {
 <section class="guide-section" id="getting-started">
   <h2><span class="icon">🚀</span> Getting Started</h2>
 
-  <p>The app has three main learning areas, accessible from the tab bar at the top:</p>
+  <p>The app has four tabs in the navigation bar:</p>
 
   <div class="feature-grid">
+    <div class="feature-tile">
+      <div class="ft-icon">📋</div>
+      <div class="ft-title">Today</div>
+      <div class="ft-desc">Your daily study plan — due reviews, new words queued, and today's suggested grammar lesson, all in one place.</div>
+    </div>
     <div class="feature-tile">
       <div class="ft-icon">🔤</div>
       <div class="ft-title">Alphabet</div>
@@ -336,10 +342,33 @@ code {
     </div>
   </div>
 
-  <p>If you're a complete beginner, start with the <strong>Alphabet</strong> tab — the app will introduce letters in waves and quiz you on them as you go. If you already know some Bengali, take the <a href="#placement">placement test</a> to skip ahead.</p>
+  <p>If you're a complete beginner, start with the <strong>Alphabet</strong> tab — the app will introduce letters in waves and quiz you on them as you go. If you already know some Bengali, take the <a href="#placement">placement test</a> to skip ahead. After your first session, check the <strong>Today</strong> tab each day to see exactly what's due.</p>
 
   <div class="card tip">
-    You can use all three sections independently. Many learners study vocabulary alongside grammar before fully finishing the alphabet.
+    On your very first login the app will show a short welcome card suggesting a recommended path (Alphabet → Vocabulary → Grammar). You can dismiss it immediately or read it for a quick orientation.
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<section class="guide-section" id="today">
+  <h2><span class="icon">📋</span> Today Tab</h2>
+
+  <p>The <strong>Today</strong> tab gives you a single answer to "what should I study right now?" It assembles a daily plan from three sources:</p>
+
+  <table>
+    <thead><tr><th>Section</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td>🔔 <strong>Due for Review</strong></td><td>The count of letters, words, and grammar items whose spaced-repetition interval has elapsed. A <em>Start Review</em> button launches the review session directly.</td></tr>
+      <tr><td>📖 <strong>New Vocabulary</strong></td><td>The next batch of unseen words in your Mixed Practice queue. Previews the words by Bengali script and English meaning, with a <em>Study These</em> button.</td></tr>
+      <tr><td>📚 <strong>Grammar</strong></td><td>The next grammar lesson you haven't yet mastered, with an <em>Open Lesson</em> button.</td></tr>
+    </tbody>
+  </table>
+
+  <p>At the bottom of the screen you'll also see today's XP total and your current streak at a glance.</p>
+
+  <div class="card tip">
+    Make the Today tab your daily starting point. Clearing the review queue first, then studying new vocabulary, then reviewing grammar keeps you moving through all three areas in balance.
   </div>
 </section>
 
@@ -440,7 +469,8 @@ code {
   <ul style="padding-left:1.4em;margin:8px 0 12px">
     <li style="margin-bottom:5px">Search by Bengali script, romanization, or English meaning</li>
     <li style="margin-bottom:5px">Filter by category</li>
-    <li>Tap any word to see its full entry: pronunciation, part of speech, and an example sentence</li>
+    <li style="margin-bottom:5px">Tap any word to see its full entry: pronunciation, part of speech, and an example sentence</li>
+    <li>Tap <strong>+ Study this word</strong> on any word card to add it to the front of your Mixed Practice queue — useful when you encounter an unknown word and want to learn it next session</li>
   </ul>
 
   <h3>Question types</h3>
@@ -455,6 +485,9 @@ code {
       <tr><td>Listening FIB</td><td>Hear a word, type its English meaning or Bengali form</td></tr>
     </tbody>
   </table>
+
+  <h3>Wrong-answer feedback</h3>
+  <p>When you get a vocabulary question wrong, the feedback bar shows the correct answer <em>and</em> the word's example sentence in context — so you can see the word used naturally right away.</p>
 
   <div class="card tip">
     The Bengali typing mode (set in Settings → FIB Answer Mode) lets you practice writing in the Bengali script. Use the on-screen Bengali keyboard (বাং ▲ button) if you don't have a physical Bengali keyboard.
@@ -498,6 +531,9 @@ code {
     <li style="margin-bottom:5px"><strong>Error spot:</strong> Identify which sentence is grammatically correct</li>
     <li><strong>Fill-in-the-blank:</strong> Type the missing word or phrase</li>
   </ul>
+
+  <h3>Wrong-answer feedback</h3>
+  <p>When you answer a grammar question incorrectly, the feedback shows the correct answer. For fill-in-the-blank and word-order questions, it also shows any additional explanation attached to that question, so you understand <em>why</em> that answer is correct — not just what the correct answer is.</p>
 
   <div class="card tip">
     Grammar lessons are best studied alongside vocabulary. When you encounter a grammar rule, look up the words used in the examples in the Vocabulary section to reinforce both at once.
@@ -544,6 +580,7 @@ code {
 
   <h3>Review Due</h3>
   <p>When any mastered item is due for review, a <strong>🔔 Review Due (N)</strong> button appears in the tab bar. Tapping it runs a mixed review session covering alphabet letters, vocabulary words, and grammar items that have passed their review interval.</p>
+  <p>The <strong>Today</strong> tab also shows your review count at the top of the daily plan, with a direct button to start the session.</p>
   <p>Keeping up with reviews is the key to long-term retention — the spaced repetition schedule spaces them out so you review items just as you're about to forget them.</p>
 
   <div class="card tip">
@@ -600,6 +637,8 @@ code {
       <tr><td><strong>Audio only</strong></td><td>Only listening-based questions — challenging mode for advanced learners</td></tr>
     </tbody>
   </table>
+  <p style="margin-top:10px"><strong>Slow audio:</strong> On listening questions, a 🐢 button appears next to the play button. Tap it to toggle half-speed playback (0.5× vs. the default 0.85×) — useful if the speech is too fast to catch individual sounds. The setting stays on until you tap it again.</p>
+  <p style="margin-top:8px"><strong>Note on audio quality:</strong> Pronunciation is generated by your browser's built-in text-to-speech (TTS) engine using the <code>bn-BD</code> voice. Quality and accent vary by browser and operating system — Chrome on Android typically gives the best Bengali TTS. If you don't hear audio, your device may not have a Bengali voice installed; check your system's language/speech settings.</p>
 
   <h3>Themes</h3>
   <p>11 color palettes inspired by Bengali culture and geography, each available in light and dark mode. Switch light/dark with the ☀️ button.</p>
@@ -639,7 +678,12 @@ code {
   </ul>
 
   <h3>Export &amp; import</h3>
-  <p>Back up your progress anytime with <strong>Settings → Export Progress</strong>, which downloads a JSON file. To restore it on another device or browser, use <strong>Import Progress</strong>. This is the recommended way to move your data between devices.</p>
+  <p>Back up your progress anytime from the profile picker. Each profile card has two export options:</p>
+  <ul style="padding-left:1.4em;margin:8px 0 12px">
+    <li style="margin-bottom:5px"><strong>⬇ Download</strong> — saves a JSON file to your device. This is the recommended backup method.</li>
+    <li><strong>📋 Copy to clipboard</strong> — copies the same JSON to your clipboard, useful for pasting into a note or email.</li>
+  </ul>
+  <p>To restore on another device or browser, use <strong>Import Progress</strong> in Settings. This is the recommended way to move your data between devices.</p>
 
   <h3>Progress adjustment</h3>
   <p>If the placement test set something wrong, you can fine-tune individual mastery levels from <strong>Settings → Adjust Progress</strong>.</p>
@@ -723,7 +767,25 @@ code {
   </table>
 
   <div class="card accent-border">
-    <p><strong>Diacritics are optional in romanized FIB answers.</strong> The app accepts simplified spellings: <code>t</code> for <code>ṭ</code>, <code>d</code> for <code>ḍ</code>, <code>r</code> for <code>ṛ</code>, etc. So <code>taka</code> and <code>ṭaka</code> are both accepted for <span class="bn">টাকা</span>.</p>
+    <p><strong>Diacritics are optional in romanized FIB answers.</strong> The app normalizes a wide range of diacritics so you can type plain ASCII without penalty:</p>
+    <table style="margin-top:8px">
+      <thead><tr><th>Diacritic form</th><th>Accepted plain form</th></tr></thead>
+      <tbody>
+        <tr><td><code>ā / Ā</code></td><td><code>a</code></td></tr>
+        <tr><td><code>ē / Ē</code></td><td><code>e</code></td></tr>
+        <tr><td><code>ī / Ī</code></td><td><code>i</code></td></tr>
+        <tr><td><code>ō / Ō</code></td><td><code>o</code></td></tr>
+        <tr><td><code>ū / Ū</code></td><td><code>u</code></td></tr>
+        <tr><td><code>ṭ / Ṭ</code></td><td><code>t</code></td></tr>
+        <tr><td><code>ḍ / Ḍ</code></td><td><code>d</code></td></tr>
+        <tr><td><code>ṇ / Ṇ</code></td><td><code>n</code></td></tr>
+        <tr><td><code>ś / Ś</code> and <code>ṣ / Ṣ</code></td><td><code>sh</code></td></tr>
+        <tr><td><code>ṛ / Ṛ</code></td><td><code>r</code></td></tr>
+        <tr><td><code>ñ</code></td><td><code>ny</code></td></tr>
+        <tr><td><code>ô</code></td><td><code>o</code></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:8px">For example, <code>taka</code> and <code>ṭaka</code> are both accepted for <span class="bn">টাকা</span>; <code>shomoy</code> and <code>śomoy</code> are both accepted for <span class="bn">সময়</span>.</p>
   </div>
 </section>
 
@@ -753,7 +815,15 @@ code {
   </div>
 
   <div class="card tip">
-    <strong>Export your progress regularly.</strong> The app stores everything in your browser's local storage. Export a backup (Settings → Export Progress) so you don't lose your data if you clear your browser history.
+    <strong>Export your progress regularly.</strong> The app stores everything in your browser's local storage. Download a backup from the profile picker (⬇ button) so you don't lose your data if you clear your browser history.
+  </div>
+
+  <div class="card tip">
+    <strong>Spotted a mistake?</strong> Every quiz card has a small <strong>⚑ Report</strong> button in the feedback bar after you answer. Tap it to copy a problem report (question, correct answer, your answer, timestamp) to your clipboard.
+  </div>
+
+  <div class="card tip">
+    <strong>Found a word you want to learn now?</strong> Search for it (🔍 button top-right), open its card, and tap <strong>+ Study this word</strong>. It will move to the front of your Mixed Practice queue next time you open it.
   </div>
 </section>
 

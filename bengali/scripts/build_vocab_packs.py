@@ -241,9 +241,10 @@ def format_vocab_entry(w: dict) -> str:
     return f'["{lemma}","{roman}","{english}","{cat}","{pos}","{example}"]'
 
 
-def rewrite_vocab_js(vocab_js_path: Path, pack0_words: list[dict]) -> None:
+def rewrite_vocab_js(vocab_js_path: Path, pack0_words: list[dict], total_words: int) -> None:
     """
     Rewrite VOCAB_DATA_RAW in vocab.js to contain only pack-0 words.
+    Also updates VOCAB_TOTAL_WORDS to reflect the full corpus size.
     All other content (VOCAB_CATEGORIES, etc.) is preserved.
     """
     text = vocab_js_path.read_text(encoding='utf-8')
@@ -274,8 +275,15 @@ def rewrite_vocab_js(vocab_js_path: Path, pack0_words: list[dict]) -> None:
     if new_text == text:
         sys.exit("ERROR: Failed to locate and replace VOCAB_DATA_RAW in vocab.js")
 
+    new_text = re.sub(
+        r'const VOCAB_TOTAL_WORDS\s*=\s*\d+;',
+        f'const VOCAB_TOTAL_WORDS = {total_words}; // updated by build_vocab_packs.py',
+        new_text,
+    )
+
     vocab_js_path.write_text(new_text, encoding='utf-8')
     print(f"Updated vocab.js VOCAB_DATA_RAW with {len(pack0_words)} pack-0 words.")
+    print(f"Updated vocab.js VOCAB_TOTAL_WORDS to {total_words}.")
 
 
 # ── Pack JSON writer ─────────────────────────────────────────────────────────
@@ -376,7 +384,7 @@ def main():
 
     # ── Write outputs ─────────────────────────────────────────────────────────
     print()
-    rewrite_vocab_js(args.vocab, pack0)
+    rewrite_vocab_js(args.vocab, pack0, total_words=len(curriculum))
 
     for pack_num, pack_words in [(1, pack1), (2, pack2), (3, pack3)]:
         if pack_words:
