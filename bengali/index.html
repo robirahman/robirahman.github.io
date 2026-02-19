@@ -1091,6 +1091,17 @@ nav h1 span { color: var(--accent); }
 .ml-chip.lvl2 { border-color: var(--accent-dim); color: var(--text); background: rgba(244,165,50,0.08); }
 .ml-chip.lvl3 { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.15); }
 .ml-label { color: var(--text-dim); }
+.stats-letter-grid {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.stats-letter-grid .ml-chip { cursor: default; font-size: 1rem; min-width: 2.4rem; text-align: center; }
+.stats-cat-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.stats-cat-row {
+  display: flex; align-items: center; gap: 8px; font-size: 0.82rem;
+}
+.stats-cat-icon { font-size: 1rem; flex-shrink: 0; }
+.stats-cat-name { flex: 0 0 160px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stats-cat-frac { flex-shrink: 0; color: var(--text-dim); font-size: 0.75rem; min-width: 40px; text-align: right; }
 
 /* ─── MC KEYBOARD HINTS ─── */
 .mc-btn { position: relative; }
@@ -4969,6 +4980,48 @@ function renderStatsPanel() {
       <div class="cat-insight-card"><div class="cat-insight-tag">📚 Needs Work</div><div class="cat-insight-name">${worstCat}</div><div class="cat-insight-pct">${worstPct}% mastered</div></div>
     </div>`;
   }
+
+  // Per-letter alphabet grid
+  html += `<div class="stats-section-title" style="margin-top:20px">Letters Detail</div>
+  <div class="stats-letter-grid">`;
+  ALL_LETTERS.forEach(l => {
+    const lvl = getMastery(l.letter);
+    html += `<div class="ml-chip lvl${lvl}" title="${l.name} — level ${lvl}">${l.letter}</div>`;
+  });
+  html += `</div>`;
+
+  // Per-category vocab rows
+  html += `<div class="stats-section-title" style="margin-top:20px">Vocabulary by Category</div>
+  <div class="stats-cat-list">`;
+  Object.entries(VOCAB_CATEGORIES).forEach(([key, cat]) => {
+    const words = VOCAB_DATA.filter(w => w[3] === key);
+    if (!words.length) return;
+    const mastered = words.filter(w => getVocabMastery(w[0]) >= 2).length;
+    const pct = Math.round((mastered / words.length) * 100);
+    html += `<div class="stats-cat-row">
+      <span class="stats-cat-icon">${cat.icon}</span>
+      <span class="stats-cat-name">${cat.title}</span>
+      <div class="mastery-bar-track" style="flex:1"><div class="mastery-bar-fill" style="width:${pct}%"></div></div>
+      <span class="stats-cat-frac">${mastered}/${words.length}</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Per-lesson grammar rows
+  html += `<div class="stats-section-title" style="margin-top:20px">Grammar Lessons</div>
+  <div class="stats-cat-list">`;
+  GRAMMAR_LESSONS.forEach(lesson => {
+    const total = lesson.quiz.length;
+    const mastered = lesson.quiz.filter((_, i) => getGrammarMastery(lesson.id, i) >= 2).length;
+    const pct = total ? Math.round((mastered / total) * 100) : 0;
+    html += `<div class="stats-cat-row">
+      <span class="stats-cat-icon">📝</span>
+      <span class="stats-cat-name">${lesson.number}. ${lesson.title}</span>
+      <div class="mastery-bar-track" style="flex:1"><div class="mastery-bar-fill" style="width:${pct}%"></div></div>
+      <span class="stats-cat-frac">${mastered}/${total}</span>
+    </div>`;
+  });
+  html += `</div>`;
 
   // Achievements grid
   html += `<div class="stats-section-title" style="margin-top:20px">Achievements</div>
