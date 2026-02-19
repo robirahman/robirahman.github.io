@@ -1149,6 +1149,16 @@ nav h1 span { color: var(--accent); }
 .ml-chip.lvl2 { border-color: var(--accent-dim); color: var(--text); background: rgba(244,165,50,0.08); }
 .ml-chip.lvl3 { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.15); }
 .ml-label { color: var(--text-dim); }
+.listening-play-btn {
+  display: block; margin: 20px auto 8px;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 50%; width: 5rem; height: 5rem; font-size: 1.8rem;
+  cursor: pointer; box-shadow: 0 4px 16px rgba(62,201,122,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.listening-play-btn:hover { transform: scale(1.07); box-shadow: 0 6px 24px rgba(62,201,122,0.45); }
+.listening-play-btn:active { transform: scale(0.96); }
+[data-theme="light"] .listening-play-btn { box-shadow: 0 4px 16px rgba(0,140,60,0.3); }
 .stats-letter-grid {
   display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
 }
@@ -1363,6 +1373,12 @@ nav h1 span { color: var(--accent); }
       <button class="mode-chip" id="fibmode-mixed" onclick="setFibMode('mixed')">Latin or বাংলা</button>
       <button class="mode-chip" id="fibmode-bengali" onclick="setFibMode('bengali')">বাংলা only</button>
     </div>
+    <div class="settings-section-label">Quiz Modality</div>
+    <div class="settings-mode-group">
+      <button class="mode-chip" id="listenmode-text" onclick="setListeningMode('text')">Text only</button>
+      <button class="mode-chip" id="listenmode-mixed" onclick="setListeningMode('mixed')">Text + Audio</button>
+      <button class="mode-chip" id="listenmode-listening" onclick="setListeningMode('listening')">Audio only</button>
+    </div>
     <div class="settings-divider"></div>
     <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
     <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
@@ -1435,6 +1451,29 @@ nav h1 span { color: var(--accent); }
     <p>Learn the 1000 most common Bengali words</p>
   </div>
   <div class="module-grid" id="vocab-module-grid"></div>
+</div>
+
+<!-- LISTENING HOME -->
+<div class="screen" id="listening-home">
+  <div class="learn-header">
+    <button class="back-btn" onclick="showScreen('home')">← Back</button>
+    <h2>🎧 Listening Practice</h2>
+  </div>
+  <div style="text-align:center;padding:20px 0 12px;color:var(--text-dim);font-size:0.9rem">
+    Identify Bengali sounds and words by ear only.
+  </div>
+  <div class="module-grid" style="max-width:480px;margin:0 auto">
+    <div class="module-card" onclick="startLetterListening()">
+      <div class="module-icon">🔤</div>
+      <h3>Letter Sounds</h3>
+      <p>Hear a letter — identify which one</p>
+    </div>
+    <div class="module-card" onclick="startVocabListening()">
+      <div class="module-icon">📖</div>
+      <h3>Vocabulary</h3>
+      <p>Hear a word — give its meaning</p>
+    </div>
+  </div>
 </div>
 
 <!-- VOCAB BROWSE -->
@@ -2084,6 +2123,18 @@ function renderHome() {
     };
     grid.appendChild(card);
   });
+
+  // Listening Practice card (appended after module cards)
+  const listenCard = document.createElement('div');
+  listenCard.className = 'module-card';
+  listenCard.innerHTML = `
+    <div class="module-icon">🎧</div>
+    <h3>Listening Practice</h3>
+    <p>Train your ear — identify letters and words by sound alone.</p>
+    <div class="progress-label">Audio-only mode</div>
+  `;
+  listenCard.onclick = () => showScreen('listening-home');
+  grid.appendChild(listenCard);
 }
 
 // ════════════════════════════════════════
@@ -2202,7 +2253,7 @@ function generateStringPair(pool) {
   return { bengali, roman, letters: picked };
 }
 
-function generateQuiz(letters) {
+function generateQuiz(letters, forceMode) {
   quizQuestions = [];
   const shuffled = [...letters].sort(() => Math.random() - 0.5);
 
@@ -2222,9 +2273,18 @@ function generateQuiz(letters) {
   const count = Math.min(10, weighted.length);
   const selected = weighted.slice(0, count);
 
+  const listenMode = forceMode || getListeningMode();
+
   selected.forEach((item, i) => {
     // Alternate between MC-name, MC-sound, fill-in-blank, and string types
-    const types = ['mc-name', 'mc-sound', 'fib-name', 'fib-romanized', 'read-string', 'spell-string'];
+    let types;
+    if (listenMode === 'listening') {
+      types = ['listening-mc', 'listening-fib'];
+    } else if (listenMode === 'mixed') {
+      types = ['mc-name', 'mc-sound', 'fib-name', 'fib-romanized', 'listening-mc', 'listening-fib'];
+    } else {
+      types = ['mc-name', 'mc-sound', 'fib-name', 'fib-romanized', 'read-string', 'spell-string'];
+    }
     const qtype = types[i % types.length];
 
     if (qtype === 'mc-name') {
@@ -2324,6 +2384,41 @@ function generateQuiz(letters) {
           prompt: 'Spell this in Bengali:',
         });
       }
+    } else if (qtype === 'listening-mc') {
+      // Play the letter; pick correct romanized form from options
+      const correct = item.romanized.split('/')[0].trim();
+      const distPool = ALL_LETTERS.filter(l => l.letter !== item.letter)
+        .map(l => l.romanized.split('/')[0].trim()).filter(v => v !== correct);
+      const distractors = shuffle([...new Set(distPool)]).slice(0, 3);
+      quizQuestions.push({
+        type: 'listening-mc',
+        letter: item.letter,
+        letterType: item.type,
+        audio: item.letter,
+        prompt: 'Which romanization matches what you hear?',
+        correct,
+        options: shuffle([correct, ...distractors]),
+        fullAnswer: item.name,
+        letterObj: item,
+      });
+    } else if (qtype === 'listening-fib') {
+      // Play the letter; type its romanized form
+      const acceptable = item.romanized.split('/').map(s => s.trim().toLowerCase());
+      acceptable.forEach(a => {
+        acceptable.push(a.replace(/[ṭḍṇṣṛñ]/g, c =>
+          ({ṭ:'t',ḍ:'d',ṇ:'n',ṣ:'sh',ṛ:'r',ñ:'ny'}[c]||c)));
+      });
+      quizQuestions.push({
+        type: 'listening-fib',
+        letter: item.letter,
+        letterType: item.type,
+        audio: item.letter,
+        prompt: 'Type the romanized form of what you hear:',
+        acceptable: [...new Set(acceptable)],
+        answer: item.romanized,
+        hint: 'Hint: ' + item.name,
+        letterObj: item,
+      });
     }
   });
 }
@@ -2368,7 +2463,14 @@ function renderQuestion() {
 
   // Render question area
   const qa = document.getElementById('quiz-question-area');
-  if (q.type === 'spell') {
+  if (q.type === 'listening-mc' || q.type === 'listening-fib') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play sound">▶</button>
+      <div style="font-size:0.8rem;color:var(--muted);margin-top:4px">Tap to replay</div>
+    `;
+    setTimeout(() => speakBengali(q.audio), 300);
+  } else if (q.type === 'spell') {
     qa.innerHTML = `
       <div class="quiz-prompt">${q.prompt}</div>
       <div class="quiz-letter-roman">${q.display}</div>
@@ -2388,7 +2490,7 @@ function renderQuestion() {
   fb.textContent = '';
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn';
 
-  if (q.type === 'mc') {
+  if (q.type === 'mc' || q.type === 'listening-mc') {
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-idx="${i}" data-answer="${escapeStr(opt)}" onclick="answerMC(this, '${escapeStr(opt)}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
@@ -2583,7 +2685,7 @@ function dontKnowQuiz() {
   if (quizAnswered) return;
   quizAnswered = true;
   const q = quizQuestions[quizIndex];
-  if (q.type === 'mc') {
+  if (q.type === 'mc' || q.type === 'listening-mc') {
     document.querySelectorAll('#quiz-answer-area .mc-btn').forEach(b => {
       b.classList.add('disabled');
       if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
@@ -3196,7 +3298,7 @@ function startVocabQuiz() {
   updateStreak();
 }
 
-function generateVocabQuiz(words) {
+function generateVocabQuiz(words, forceMode) {
   vqQuestions = [];
   // Weight by urgency: overdue ratio = time-since-last-seen / review-interval
   const ls = progress.lastSeen || {};
@@ -3211,8 +3313,17 @@ function generateVocabQuiz(words) {
   const count = Math.min(10, sorted.length);
   const selected = sorted.slice(0, count);
 
+  const listenMode = forceMode || getListeningMode();
+
   selected.forEach((w, i) => {
-    const qTypes = ['mc-en', 'mc-bn', 'fib-en', 'fib-bn'];
+    let qTypes;
+    if (listenMode === 'listening') {
+      qTypes = ['listening-mc', 'listening-fib'];
+    } else if (listenMode === 'mixed') {
+      qTypes = ['mc-en', 'mc-bn', 'fib-en', 'fib-bn', 'listening-mc', 'listening-fib'];
+    } else {
+      qTypes = ['mc-en', 'mc-bn', 'fib-en', 'fib-bn'];
+    }
     const qtype = qTypes[i % qTypes.length];
 
     if (qtype === 'mc-en') {
@@ -3252,7 +3363,7 @@ function generateVocabQuiz(words) {
         acceptable: [...new Set(acceptable)],
         answer: w[2], hint: 'Romanized: ' + w[1], word: w,
       });
-    } else {
+    } else if (qtype === 'fib-bn') {
       // Show English, type romanized Bengali
       const acceptable = [w[1].toLowerCase()];
       vqQuestions.push({
@@ -3260,6 +3371,28 @@ function generateVocabQuiz(words) {
         prompt: 'Type the romanized Bengali:',
         acceptable, answer: w[1],
         hint: 'Category: ' + (VOCAB_CATEGORIES[w[3]]?.title || w[3]), word: w,
+      });
+    } else if (qtype === 'listening-mc') {
+      // Play word; pick English meaning
+      const correct = w[2];
+      const pool = shuffleArr(VOCAB_DATA.filter(x => x[0] !== w[0]).map(x => x[2])
+        .filter(v => v !== correct));
+      const picks = pool.slice(0, 3);
+      vqQuestions.push({
+        type: 'listening-mc', audio: w[0],
+        bengali: w[0], roman: w[1],
+        prompt: 'What does this word mean?',
+        correct, options: shuffleArr([correct, ...picks]), word: w,
+      });
+    } else {
+      // listening-fib: play word; type romanized form
+      const acceptable = [w[1].toLowerCase()];
+      vqQuestions.push({
+        type: 'listening-fib', audio: w[0],
+        bengali: w[0], roman: w[1],
+        prompt: 'Type the romanized form of what you hear:',
+        acceptable, answer: w[1],
+        hint: 'Hint: ' + w[2], word: w,
       });
     }
   });
@@ -3284,7 +3417,14 @@ function renderVocabQuestion() {
   document.getElementById('vq-score').textContent = vqCorrect + ' / ' + vqIndex;
 
   const qa = document.getElementById('vq-question-area');
-  if (q.type === 'mc' || q.type === 'fib') {
+  if (q.type === 'listening-mc' || q.type === 'listening-fib') {
+    qa.innerHTML = `
+      <div class="quiz-prompt">${q.prompt}</div>
+      <button class="listening-play-btn" onclick="speakBengali('${escapeStr(q.audio)}')" aria-label="Play sound">▶</button>
+      <div style="font-size:0.8rem;color:var(--muted);margin-top:4px">Tap to replay</div>
+    `;
+    setTimeout(() => speakBengali(q.audio), 300);
+  } else if (q.type === 'mc' || q.type === 'fib') {
     qa.innerHTML = `
       <div class="quiz-prompt">${q.prompt}</div>
       <div class="vq-bengali">${q.bengali}</div>
@@ -3303,7 +3443,7 @@ function renderVocabQuestion() {
   fb.className = 'quiz-feedback';
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn';
 
-  if (q.type === 'mc' || q.type === 'mc-reverse') {
+  if (q.type === 'mc' || q.type === 'mc-reverse' || q.type === 'listening-mc') {
     aa.innerHTML = '<div class="mc-options">' +
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" onclick="answerVocabMC(this, '${opt.replace(/'/g,"\\'")}')">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
@@ -3392,7 +3532,7 @@ function dontKnowVocab() {
   if (vqAnswered) return;
   vqAnswered = true;
   const q = vqQuestions[vqIndex];
-  if (q.type === 'mc' || q.type === 'mc-reverse') {
+  if (q.type === 'mc' || q.type === 'mc-reverse' || q.type === 'listening-mc') {
     document.querySelectorAll('#vq-answer-area .mc-btn').forEach(b => {
       b.classList.add('disabled');
       if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
@@ -4641,6 +4781,7 @@ function enterApp() {
 function openSettingsPanel() {
   updateProfileMenuHeader();
   _updateFibModeChips();
+  _updateListenModeChips();
   document.getElementById('settings-overlay').classList.add('open');
   document.addEventListener('keydown', _settingsEsc);
 }
@@ -4663,6 +4804,39 @@ function _updateFibModeChips() {
     const el = document.getElementById('fibmode-' + m);
     if (el) el.classList.toggle('active', m === mode);
   });
+}
+
+// ── Listening Mode ─────────────────────────────────────────────────
+function getListeningMode() { return localStorage.getItem('bengali_listening_mode') || 'text'; }
+function setListeningMode(mode) {
+  localStorage.setItem('bengali_listening_mode', mode);
+  _updateListenModeChips();
+}
+function _updateListenModeChips() {
+  const mode = getListeningMode();
+  ['text','mixed','listening'].forEach(m => {
+    const el = document.getElementById('listenmode-' + m);
+    if (el) el.classList.toggle('active', m === mode);
+  });
+}
+
+function startLetterListening() {
+  const seen = ALL_LETTERS.filter(l => getMastery(l.letter) > 0);
+  const letters = seen.length >= 4 ? seen : ALL_LETTERS.slice(0, 11);
+  const mod = { id: 'listening-letters', title: '🎧 Letter Sounds', letters, isMixed: false };
+  currentModule = mod; quizModuleRef = mod;
+  generateQuiz(letters, 'listening');
+  quizIndex = 0; quizCorrect = 0; quizMissed = [];
+  document.getElementById('quiz-title').textContent = '🎧 Letter Sounds';
+  showScreen('quiz'); renderQuestion();
+}
+function startVocabListening() {
+  const seen = VOCAB_DATA.filter(w => getVocabMastery(w[0]) > 0);
+  const words = seen.length >= 4 ? seen : VOCAB_DATA.slice(0, 20);
+  generateVocabQuiz(words, 'listening');
+  vqIndex = 0; vqCorrect = 0; vqMissed = [];
+  document.getElementById('vq-title').textContent = '🎧 Vocabulary';
+  showScreen('vocab-quiz'); renderVocabQuestion();
 }
 
 // ── Bengali Soft Keyboard ───────────────────────────────────────────
