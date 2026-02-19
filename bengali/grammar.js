@@ -530,7 +530,7 @@ Learning to recognize common conjuncts is essential for reading Bengali fluently
       { bengali: 'ক্ষ — রক্ষা', roman: 'kkho — rokkha', english: 'protection' },
       { bengali: 'স্ত — মস্ত', roman: 'sto — mosto', english: 'great / huge' },
       { bengali: 'ন্দ — আনন্দ', roman: 'ndo — anondo', english: 'joy / happiness' },
-      { bengali: 'ঙ্গ — বাংলা', roman: 'ngo — bangla', english: 'Bengali' },
+      { bengali: 'ঙ্গ — বাঙালি', roman: 'ngo — bangali', english: 'Bengali person / people' },
     ],
     quiz: [
       { type: 'translate-mc', prompt: 'What does যুক্তবর্ণ mean?', bengali: 'যুক্তবর্ণ', roman: 'juktoborno', correct: 'Conjunct consonants', options: ['Conjunct consonants', 'Vowel marks', 'Plural markers', 'Verb endings'] },
