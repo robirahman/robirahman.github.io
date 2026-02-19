@@ -666,38 +666,55 @@ nav h1 span { color: var(--accent); }
   padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 0.9rem;
 }
 
-/* Nav user button */
-.nav-user-btn {
+/* Nav settings button */
+.nav-settings-btn {
   background: rgba(255,255,255,0.08); border: none; color: var(--text);
-  padding: 6px 14px; border-radius: 20px; cursor: pointer;
-  font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
-  display: flex; align-items: center; gap: 6px; position: relative;
+  border-radius: 50%; width: 2rem; height: 2rem; font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s ease; flex-shrink: 0;
 }
-.nav-user-btn:hover { background: rgba(255,255,255,0.15); }
-.nav-user-btn .user-icon { font-size: 1rem; }
-.profile-menu {
-  display: none; position: absolute; top: 100%; right: 0; margin-top: 8px;
+.nav-settings-btn:hover { background: rgba(255,255,255,0.18); }
+/* Settings overlay */
+.settings-overlay {
+  display: none; position: fixed; inset: 0; z-index: 450;
+  background: rgba(0,0,0,0.72);
+  align-items: flex-start; justify-content: flex-end;
+  padding: 60px 16px 16px;
+}
+.settings-overlay.open { display: flex; }
+.settings-panel {
   background: var(--card); border-radius: 12px; overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5); min-width: 220px; z-index: 300;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5); width: 260px;
   border: 1px solid rgba(255,255,255,0.08);
 }
-.profile-menu.open { display: block; }
-.profile-menu button {
-  display: block; width: 100%; text-align: left;
-  background: none; border: none; color: var(--text);
-  padding: 12px 18px; font-size: 0.9rem; cursor: pointer;
-  transition: background 0.15s;
-}
-.profile-menu button:hover { background: rgba(255,255,255,0.06); }
-.profile-menu button.danger { color: var(--wrong); }
-.profile-menu-header {
+.settings-panel-hdr {
+  display: flex; align-items: flex-start; justify-content: space-between;
   padding: 14px 16px 12px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 .pmh-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
 .pmh-stats { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-dim); }
-.profile-menu-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
-.profile-menu button .pm-icon { margin-right: 8px; }
+.settings-close-btn {
+  background: rgba(255,255,255,0.08); border: none; color: var(--text-dim);
+  border-radius: 50%; width: 1.75rem; height: 1.75rem; font-size: 0.8rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.settings-close-btn:hover { background: rgba(255,255,255,0.16); }
+.settings-panel button {
+  display: block; width: 100%; text-align: left;
+  background: none; border: none; color: var(--text);
+  padding: 12px 18px; font-size: 0.9rem; cursor: pointer;
+  transition: background 0.15s;
+}
+.settings-panel button:hover { background: rgba(255,255,255,0.06); }
+.settings-panel button.danger { color: var(--wrong); }
+.settings-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+.settings-panel button .pm-icon { margin-right: 8px; }
+@media (max-width: 600px) {
+  .settings-overlay { justify-content: center; padding: 80px 16px 16px; }
+  .settings-panel { width: 100%; max-width: 320px; }
+}
 
 /* Progress overlay — mirrors search-overlay */
 .progress-overlay {
@@ -978,7 +995,7 @@ nav h1 span { color: var(--accent); }
   background: linear-gradient(145deg, #fef3e2, #f5e6cc);
   border-color: rgba(0,0,0,0.08);
 }
-[data-theme="light"] .profile-menu {
+[data-theme="light"] .settings-panel {
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 [data-theme="light"] .search-panel,
@@ -1043,7 +1060,7 @@ nav h1 span { color: var(--accent); }
 
 /* ─── ACHIEVEMENT TOAST ─── */
 .achievement-toast {
-  position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-120px);
+  position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-200px);
   background: var(--card); border: 1px solid var(--accent);
   border-radius: 12px; padding: 12px 20px; z-index: 600;
   display: flex; align-items: center; gap: 12px;
@@ -1191,27 +1208,7 @@ nav h1 span { color: var(--accent); }
       <span class="icon">⭐</span><span id="xp-count">0</span> XP
     </div>
     <div class="streak-bar"><div class="streak-fill" id="streak-bar-fill" style="width:0%"></div></div>
-    <button class="nav-user-btn" id="nav-user-btn" onclick="toggleProfileMenu(event)">
-      <span class="user-icon">👤</span>
-      <span id="nav-user-name"></span>
-      <div class="profile-menu" id="profile-menu">
-        <div class="profile-menu-header">
-          <div class="pmh-name" id="pmh-name"></div>
-          <div class="pmh-stats" id="pmh-stats">
-            <span>⭐ 0 XP</span><span>🔥 0</span><span>🏅 0</span>
-          </div>
-        </div>
-        <button onclick="openProgressPanel()"><span class="pm-icon">📊</span>Adjust Progress</button>
-        <button onclick="openStatsPanel()"><span class="pm-icon">📈</span>Statistics</button>
-        <button onclick="closeProfileMenu();startPlacementTest()"><span class="pm-icon">🎯</span>Retake Placement Test</button>
-        <div class="profile-menu-divider"></div>
-        <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
-        <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
-        <button onclick="importProgress()"><span class="pm-icon">⬆</span>Import Progress</button>
-        <div class="profile-menu-divider"></div>
-        <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
-      </div>
-    </button>
+    <button class="nav-settings-btn" id="nav-settings-btn" onclick="openSettingsPanel()" aria-label="Settings">⚙️</button>
     <button class="nav-theme-btn" id="nav-theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
     <button class="nav-search-btn" onclick="openSearch()" aria-label="Search">🔍</button>
   </div>
@@ -1223,6 +1220,30 @@ nav h1 span { color: var(--accent); }
   <button class="tab-btn" onclick="switchTab('grammar')">Grammar</button>
   <button class="pt-retake-btn" id="pt-retake-btn" style="display:none" onclick="startPlacementTest()">Retake Placement</button>
   <button class="review-due-btn" id="review-due-btn" style="display:none" onclick="startReviewSession()">🔔 Review Due (<span id="review-due-count">0</span>)</button>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettingsPanel()">
+  <div class="settings-panel" id="settings-panel">
+    <div class="settings-panel-hdr">
+      <div>
+        <div class="pmh-name" id="pmh-name"></div>
+        <div class="pmh-stats" id="pmh-stats">
+          <span>⭐ 0 XP</span><span>🔥 0</span><span>🏅 0</span>
+        </div>
+      </div>
+      <button class="settings-close-btn" onclick="closeSettingsPanel()">✕</button>
+    </div>
+    <button onclick="openProgressPanel()"><span class="pm-icon">📊</span>Adjust Progress</button>
+    <button onclick="openStatsPanel()"><span class="pm-icon">📈</span>Statistics</button>
+    <button onclick="closeSettingsPanel();startPlacementTest()"><span class="pm-icon">🎯</span>Retake Placement Test</button>
+    <div class="settings-divider"></div>
+    <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
+    <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
+    <button onclick="importProgress()"><span class="pm-icon">⬆</span>Import Progress</button>
+    <div class="settings-divider"></div>
+    <button class="danger" onclick="deleteCurrentProfile()"><span class="pm-icon">🗑</span>Delete Profile</button>
+  </div>
 </div>
 
 <!-- PLACEMENT TEST: INTRO -->
@@ -4005,7 +4026,7 @@ function renderPlacementResultsUI() {
     return `<div class="placement-module-result">
       <h4>${s.icon} ${s.label}</h4>
       <div class="pm-ring">
-        <svg viewBox="0 0 100 100">
+        <svg viewBox="0 0 100 100" width="100" height="100">
           <circle class="bg-ring" cx="50" cy="50" r="40"/>
           <circle class="fg-ring" cx="50" cy="50" r="40"
             stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
@@ -4159,39 +4180,34 @@ function enterApp() {
   document.getElementById('profile-screen').classList.remove('active');
   document.getElementById('main-nav').style.display = '';
   document.getElementById('tab-bar').style.display = '';
-  document.getElementById('nav-user-name').textContent = currentUser;
   migrateProgress();
   updateNav();
   updatePlacementRetakeButton();
   switchTab('alphabet');
 }
 
-function toggleProfileMenu(e) {
-  e.stopPropagation();
-  const menu = document.getElementById('profile-menu');
-  const open = menu.classList.toggle('open');
-  if (open) {
-    const close = (ev) => {
-      if (!menu.contains(ev.target)) {
-        menu.classList.remove('open');
-        document.removeEventListener('click', close);
-      }
-    };
-    setTimeout(() => document.addEventListener('click', close), 0);
-  }
+function openSettingsPanel() {
+  updateProfileMenuHeader();
+  document.getElementById('settings-overlay').classList.add('open');
+  document.addEventListener('keydown', _settingsEsc);
 }
+function closeSettingsPanel() {
+  document.getElementById('settings-overlay').classList.remove('open');
+  document.removeEventListener('keydown', _settingsEsc);
+}
+function _settingsEsc(e) { if (e.key === 'Escape') closeSettingsPanel(); }
 
 function switchProfile() {
   // Flush pending save, then show profile picker
   if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
   currentUser = null;
   progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
-  closeProfileMenu();
+  closeSettingsPanel();
   showProfileScreen(true);
 }
 
 function deleteCurrentProfile() {
-  closeProfileMenu();
+  closeSettingsPanel();
   if (!confirm('Delete profile "' + currentUser + '"? All progress will be lost.')) return;
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
   _deleteProgressLS(currentUser);
@@ -4204,7 +4220,7 @@ function deleteCurrentProfile() {
 //  EXPORT / IMPORT
 // ════════════════════════════════════════
 function exportProgress() {
-  closeProfileMenu();
+  closeSettingsPanel();
   if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
   const data = {
     exportedBy: currentUser,
@@ -4225,7 +4241,7 @@ function exportProgress() {
 }
 
 function importProgress() {
-  closeProfileMenu();
+  closeSettingsPanel();
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json,application/json';
@@ -4267,10 +4283,6 @@ document.getElementById('profile-name-input').addEventListener('keydown', (e) =>
 // ════════════════════════════════════════
 //  PROFILE MENU HELPERS
 // ════════════════════════════════════════
-function closeProfileMenu() {
-  document.getElementById('profile-menu').classList.remove('open');
-}
-
 function updateProfileMenuHeader() {
   const el = document.getElementById('pmh-name');
   const st = document.getElementById('pmh-stats');
@@ -4286,7 +4298,7 @@ let _progOpenGroups   = new Set();
 
 function openProgressPanel() {
   renderProgressPanel();
-  closeProfileMenu();
+  closeSettingsPanel();
   document.getElementById('progress-overlay').classList.add('open');
   document.addEventListener('keydown', _progressEsc);
 }
@@ -4545,7 +4557,7 @@ function showAchievementToast(ach) {
 //  STATISTICS PANEL
 // ════════════════════════════════════════
 function openStatsPanel() {
-  closeProfileMenu();
+  closeSettingsPanel();
   renderStatsPanel();
   document.getElementById('stats-overlay').classList.add('open');
   document.addEventListener('keydown', _statsEsc);
