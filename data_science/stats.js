@@ -667,4 +667,374 @@ Range: [−1, 1]. r = 1: perfect positive linear; r = −1: perfect negative lin
       },
     ],
   },
+
+  {
+    id: 11,
+    title: 'Bootstrapping',
+    description: 'Resampling with replacement to estimate sampling distributions and confidence intervals',
+    icon: '🥾',
+    concepts: ['bootstrap sample', 'resampling', 'percentile CI', 'BCa interval', 'sampling distribution', 'standard error', 'non-parametric'],
+    explanation: `Bootstrapping estimates the sampling distribution of a statistic by resampling the observed data with replacement.
+
+**Core Idea**: Draw B bootstrap samples (typically B = 1,000–10,000), each of size n (same as the original data), with replacement. Compute the statistic of interest on each sample. The distribution of these B estimates approximates the sampling distribution.
+
+**When to Use Bootstrapping**:
+- The statistic has no simple closed-form standard error (e.g., correlation, median, custom metrics)
+- Distributional assumptions (normality) are questionable
+- Small-to-moderate sample sizes with approximately regular distributions
+
+**Confidence Intervals**:
+- **Percentile CI**: Take the 2.5th and 97.5th percentiles of the bootstrap distribution as a 95% CI. Simple but can be biased.
+- **BCa (Bias-Corrected and Accelerated)**: Adjusts for bias and skewness of the bootstrap distribution. More accurate, especially for skewed estimators.
+- **t-interval bootstrap**: Studentizes the bootstrap distribution for better coverage.
+
+**When Bootstrapping Fails**:
+- **Small n** (< ~20): Bootstrap distribution poorly approximates the true sampling distribution
+- **Heavy-tailed distributions**: Extreme values dominate; coverage can be poor
+- **Discrete statistics** (e.g., max of a sample): Bootstrap has too few unique values
+- **Dependent data** (time series): Need block bootstrap to preserve autocorrelation`,
+    examples: [
+      { label: 'Bootstrap SE', formula: '$\\widehat{\\text{SE}} = \\sqrt{\\frac{1}{B-1}\\sum_{b=1}^{B}(\\hat{\\theta}^{*b} - \\bar{\\theta}^*)^2}$', explanation: 'Standard deviation of B bootstrap estimates. Approximates the standard error of the estimator.' },
+      { label: 'Percentile CI', formula: '$\\text{CI}_{95\\%} = [\\hat{\\theta}^*_{(0.025B)},\\ \\hat{\\theta}^*_{(0.975B)}]$', explanation: 'Use empirical quantiles of sorted bootstrap estimates. Easy to compute; BCa is more accurate when skew is present.' },
+    ],
+    quizzes: [
+      {
+        type: 'mc',
+        question: 'What does each bootstrap sample consist of?',
+        options: [
+          'n observations drawn with replacement from the original data',
+          'n observations drawn without replacement from the original data',
+          'A new dataset collected from the same population',
+          'The original data split into two halves',
+        ],
+        answer: 0,
+        explanation: 'Each bootstrap sample is drawn with replacement, so some observations appear multiple times and some not at all.',
+      },
+      {
+        type: 'mc',
+        question: 'The BCa (Bias-Corrected and Accelerated) bootstrap CI is preferred over the simple percentile CI because:',
+        options: [
+          'It adjusts for bias and skewness in the bootstrap distribution',
+          'It requires fewer bootstrap samples',
+          'It always produces narrower intervals',
+          'It works better with large sample sizes',
+        ],
+        answer: 0,
+        explanation: 'BCa corrects for bias (the bootstrap center differs from the original estimate) and skewness (asymmetric bootstrap distribution), giving better coverage.',
+      },
+      {
+        type: 'tf',
+        question: 'Bootstrapping is unreliable when the sample size is very small (e.g., n < 20).',
+        answer: true,
+        explanation: 'With very small n, the bootstrap distribution poorly approximates the true sampling distribution because there are too few distinct resampled values to capture the population variability.',
+      },
+      {
+        type: 'mc',
+        question: 'You want a confidence interval for the sample median of a non-normal distribution. Which approach is most appropriate?',
+        options: [
+          'Bootstrap percentile or BCa interval',
+          'z-interval assuming normality',
+          't-interval using the sample SD',
+          'Chi-squared interval',
+        ],
+        answer: 0,
+        explanation: 'The bootstrap makes no distributional assumptions and handles the median naturally, unlike parametric intervals that assume normality.',
+      },
+    ],
+  },
+
+  {
+    id: 12,
+    title: 'ANOVA',
+    description: 'Comparing means across multiple groups using the F-statistic',
+    icon: '📐',
+    concepts: ['F-statistic', 'between-group variance', 'within-group variance', 'one-way ANOVA', 'two-way ANOVA', 'assumptions', 'Tukey HSD', 'post-hoc tests'],
+    explanation: `ANOVA (Analysis of Variance) tests whether the means of three or more groups are equal by decomposing total variance.
+
+**Core Idea**: If group means differ more than would be expected by within-group noise, we have evidence against equal means. ANOVA partitions total variance (SS_total) into:
+- **SS_between** (between groups): variance due to group differences
+- **SS_within** (within groups / residual): variance due to random noise within each group
+
+**F-Statistic**: Ratio of between-group mean square to within-group mean square. Large F → group differences are large relative to noise → reject H₀ (equal means).
+
+**One-Way ANOVA**: One factor with k ≥ 3 levels. Tests H₀: μ₁ = μ₂ = … = μₖ.
+
+**Two-Way ANOVA**: Two factors plus their interaction. Can test main effects of each factor and whether the effect of one factor depends on the level of the other (interaction effect).
+
+**Assumptions**:
+1. **Independence**: Observations are independent
+2. **Normality**: Residuals are approximately normally distributed (robust with large n by CLT)
+3. **Homoscedasticity**: Equal variances across groups (Levene's or Bartlett's test)
+
+**Post-Hoc Tests** (after significant ANOVA): Identify which specific pairs of groups differ.
+- **Tukey HSD**: Controls family-wise error rate; compares all pairs; recommended for balanced designs
+- **Bonferroni**: More conservative; adjusts α by number of comparisons
+- **Dunnett's**: Compare treatment groups to a single control group`,
+    examples: [
+      { label: 'F-Statistic', formula: '$F = \\dfrac{MS_{\\text{between}}}{MS_{\\text{within}}} = \\dfrac{SS_{\\text{between}}/(k-1)}{SS_{\\text{within}}/(N-k)}$', explanation: 'k = number of groups, N = total observations. Compare to F-distribution with (k−1, N−k) degrees of freedom.' },
+      { label: 'SS Decomposition', formula: '$SS_{\\text{total}} = SS_{\\text{between}} + SS_{\\text{within}}$', explanation: 'Total variance partitions into explained (between-group) and unexplained (within-group) components.' },
+    ],
+    quizzes: [
+      {
+        type: 'mc',
+        question: 'ANOVA tests H₀: all group means are equal. If F is large, what does this indicate?',
+        options: [
+          'Between-group variance is large relative to within-group variance — evidence against equal means',
+          'All groups have the same variance',
+          'The sample sizes are unequal',
+          'The residuals are non-normal',
+        ],
+        answer: 0,
+        explanation: 'A large F-statistic means the spread between group means is large compared to the noise within groups, providing evidence that at least one group mean differs.',
+      },
+      {
+        type: 'mc',
+        question: 'After a significant one-way ANOVA, you want to know which specific pairs of groups differ while controlling the family-wise error rate. Which test is most appropriate?',
+        options: [
+          'Tukey HSD',
+          'Run multiple t-tests without correction',
+          'Chi-squared test',
+          'Another ANOVA with two groups',
+        ],
+        answer: 0,
+        explanation: 'Tukey HSD (Honestly Significant Difference) is designed for all pairwise post-hoc comparisons after ANOVA and controls family-wise error rate.',
+      },
+      {
+        type: 'mc',
+        question: 'Which assumption of ANOVA requires equal variances across groups?',
+        options: ['Homoscedasticity', 'Independence', 'Normality', 'Linearity'],
+        answer: 0,
+        explanation: 'Homoscedasticity (equal variances) is required. Levene\'s test checks this. Welch\'s ANOVA relaxes this assumption.',
+      },
+      {
+        type: 'tf',
+        question: 'Two-way ANOVA can detect whether the effect of one factor depends on the level of another factor (interaction effect).',
+        answer: true,
+        explanation: 'Two-way ANOVA tests main effects of each factor and their interaction. A significant interaction means the factors are not independent in their effects.',
+      },
+    ],
+  },
+
+  {
+    id: 13,
+    title: 'Nonparametric Tests',
+    description: 'Distribution-free alternatives to t-tests and ANOVA for non-normal data',
+    icon: '🎚️',
+    concepts: ['Mann-Whitney U', 'Wilcoxon signed-rank', 'Kruskal-Wallis', 'KS test', 'permutation test', 'rank-based', 'distribution-free'],
+    explanation: `Nonparametric tests make no assumptions about the underlying distribution. They work on ranks or permutations rather than raw values.
+
+**When to Use Nonparametric Tests**:
+- Data are ordinal (ranks, Likert scales)
+- Small sample sizes where normality can't be assumed
+- Outliers strongly distort means
+- Skewed distributions that don't normalize with transformation
+
+**Key Tests**:
+
+**Mann-Whitney U** (Wilcoxon rank-sum): Two independent groups. Tests whether one group tends to have larger values than the other (rank-based). The nonparametric analog of the two-sample t-test. H₀: the two distributions are the same.
+
+**Wilcoxon Signed-Rank**: Two related/paired samples. Ranks the absolute differences and checks if positive and negative ranks are balanced. Analog of the paired t-test. More powerful than sign test.
+
+**Kruskal-Wallis**: k independent groups. Nonparametric analog of one-way ANOVA. Compares rank distributions. Follow with pairwise Dunn tests (with correction) for post-hoc analysis.
+
+**Kolmogorov-Smirnov (KS) Test**: Tests whether two samples come from the same distribution (or one sample against a reference distribution). Compares empirical CDFs. Sensitive to both location and shape differences.
+
+**Permutation Test**: Shuffles group labels B times; computes test statistic under the null of no group difference. Exact and flexible — works for any test statistic. Most powerful when the parametric assumption is wrong.
+
+**Trade-offs**: Nonparametric tests are less powerful than parametric tests when parametric assumptions hold, but more robust when they don't.`,
+    examples: [
+      { label: 'Mann-Whitney U', formula: '$U = n_1 n_2 + \\dfrac{n_1(n_1+1)}{2} - R_1$', explanation: 'R₁ = sum of ranks in group 1. Compare U to critical values. Large-sample: standardize U to z.' },
+      { label: 'KS Statistic', formula: '$D = \\sup_x |F_1(x) - F_2(x)|$', explanation: 'Maximum absolute difference between empirical CDFs of the two samples. Reject if D exceeds critical value.' },
+    ],
+    quizzes: [
+      {
+        type: 'mc',
+        question: 'You have two independent groups with small n and strongly skewed data. Which test is most appropriate?',
+        options: [
+          'Mann-Whitney U test',
+          'Two-sample t-test',
+          'Paired t-test',
+          'One-way ANOVA',
+        ],
+        answer: 0,
+        explanation: 'Mann-Whitney U is a nonparametric test for two independent groups that does not assume normality. It\'s the right choice when data are skewed or sample sizes are small.',
+      },
+      {
+        type: 'mc',
+        question: 'The Kruskal-Wallis test is the nonparametric analog of:',
+        options: ['One-way ANOVA', 'Two-sample t-test', 'Chi-squared test', 'Paired t-test'],
+        answer: 0,
+        explanation: 'Kruskal-Wallis tests for differences across k ≥ 3 independent groups using ranks, just as one-way ANOVA does using means.',
+      },
+      {
+        type: 'tf',
+        question: 'Nonparametric tests are always preferable to parametric tests because they make fewer assumptions.',
+        answer: false,
+        explanation: 'When parametric assumptions hold, parametric tests are more powerful (lower Type II error) than nonparametric alternatives. Use nonparametric tests when assumptions are violated.',
+      },
+      {
+        type: 'mc',
+        question: 'The Kolmogorov-Smirnov test compares:',
+        options: [
+          'Empirical cumulative distribution functions of two samples',
+          'Sample means of two groups',
+          'Variances of two distributions',
+          'Ranks of two paired samples',
+        ],
+        answer: 0,
+        explanation: 'The KS test measures the maximum absolute difference between two empirical CDFs. It is sensitive to differences in location, spread, and shape.',
+      },
+    ],
+  },
+
+  {
+    id: 14,
+    title: 'Multiple Comparisons & FDR',
+    description: 'Controlling false discoveries when testing many hypotheses simultaneously',
+    icon: '🔢',
+    concepts: ['family-wise error rate', 'FWER', 'false discovery rate', 'FDR', 'Bonferroni', 'Benjamini-Hochberg', 'q-value', 'multiple testing'],
+    explanation: `When testing many hypotheses simultaneously, the probability of at least one false positive grows rapidly. Multiple testing corrections address this.
+
+**The Problem**: At α = 0.05, each test has a 5% false positive rate. With m = 100 independent tests under H₀, you expect ~5 false positives — not because any effect is real, but by chance.
+
+**Family-Wise Error Rate (FWER)**: Probability of at least one false positive across all tests. Grows as 1 − (1 − α)^m for independent tests.
+
+**Controlling FWER**:
+- **Bonferroni**: Reject H₀ᵢ if pᵢ < α/m. Simple, very conservative. Controls FWER tightly but loses power with large m.
+- **Holm-Bonferroni**: Step-down procedure. Sort p-values; reject H₀ at step k if p_(k) < α/(m−k+1). Less conservative than Bonferroni.
+
+**False Discovery Rate (FDR)**: Expected proportion of false positives among all rejected hypotheses. Less stringent than FWER — appropriate when some false positives are acceptable.
+
+**Benjamini-Hochberg (BH) Procedure** (FDR control):
+1. Sort p-values: p_(1) ≤ p_(2) ≤ … ≤ p_(m)
+2. Find largest k such that p_(k) ≤ (k/m) · q (desired FDR level, e.g., q = 0.05)
+3. Reject all H₀_(1) through H₀_(k)
+
+**q-value**: The minimum FDR at which a hypothesis would be rejected. Analogous to the p-value but for FDR-controlled analyses.
+
+**Practical Guidance**:
+- Use Bonferroni when even one false positive is costly (clinical trials, safety-critical decisions)
+- Use BH/FDR for genomics, A/B test dashboards, or exploratory analyses where some false positives are acceptable
+- Pre-register which hypotheses are primary vs. exploratory`,
+    examples: [
+      { label: 'Bonferroni', formula: '$\\alpha_{\\text{adjusted}} = \\alpha / m$', explanation: 'Divides α by the number of tests m. Very conservative but guarantees FWER ≤ α even for correlated tests.' },
+      { label: 'BH Threshold', formula: '$p_{(k)} \\leq \\dfrac{k}{m} \\cdot q$', explanation: 'Find the largest rank k meeting this criterion; reject all hypotheses ranked 1 through k. Controls expected FDR at level q.' },
+    ],
+    quizzes: [
+      {
+        type: 'mc',
+        question: 'You run 200 hypothesis tests. If all null hypotheses are true and α = 0.05, how many false positives do you expect without correction?',
+        options: ['~10', '~0', '~100', '~200'],
+        answer: 0,
+        explanation: '200 × 0.05 = 10 expected false positives. Without correction, you will likely report spurious findings.',
+      },
+      {
+        type: 'mc',
+        question: 'Which correction controls the False Discovery Rate (FDR) rather than the Family-Wise Error Rate (FWER)?',
+        options: [
+          'Benjamini-Hochberg',
+          'Bonferroni',
+          'Holm-Bonferroni',
+          'Šidák correction',
+        ],
+        answer: 0,
+        explanation: 'Benjamini-Hochberg controls FDR (expected proportion of false positives among rejections). Bonferroni and Holm control FWER (probability of any false positive).',
+      },
+      {
+        type: 'tf',
+        question: 'Bonferroni correction is more conservative (loses more power) than Benjamini-Hochberg when testing many hypotheses.',
+        answer: true,
+        explanation: 'Bonferroni controls a stricter criterion (FWER) and therefore requires much smaller p-values to reject, losing power especially with large m. BH is less conservative by controlling FDR instead.',
+      },
+      {
+        type: 'mc',
+        question: 'A q-value of 0.05 for a hypothesis means:',
+        options: [
+          'If you reject all hypotheses with q ≤ 0.05, at most 5% of rejections are expected to be false positives',
+          'There is a 5% chance this specific hypothesis is false',
+          'The p-value is 0.05',
+          'The test has 5% power',
+        ],
+        answer: 0,
+        explanation: 'The q-value is the minimum FDR level at which the hypothesis would be rejected. It controls the expected proportion of false discoveries in the rejected set.',
+      },
+    ],
+  },
+
+  {
+    id: 15,
+    title: 'Causal Inference',
+    description: 'Moving from correlation to causation using DAGs, RCTs, and observational methods',
+    icon: '🔀',
+    concepts: ['DAG', 'confounder', 'backdoor criterion', 'selection bias', 'RCT', 'observational study', 'potential outcomes', 'counterfactual', 'ATE', 'instrumental variable'],
+    explanation: `Causal inference answers "what would happen if we intervened?" — not just "what is correlated with what?".
+
+**Correlation ≠ Causation**: A correlation between X and Y can arise because: (1) X causes Y, (2) Y causes X, (3) a confounder Z causes both, or (4) selection/collider bias.
+
+**Potential Outcomes Framework** (Rubin Causal Model):
+- For each unit i, define Yᵢ(1): outcome if treated; Yᵢ(0): outcome if untreated
+- Individual Treatment Effect: Yᵢ(1) − Yᵢ(0)
+- **Average Treatment Effect (ATE)**: E[Y(1) − Y(0)]
+- **Fundamental Problem of Causal Inference**: We observe only one potential outcome per unit.
+
+**Directed Acyclic Graphs (DAGs)**:
+- Nodes = variables; directed edges = causal relationships
+- **Confounder**: A variable Z that causes both X (treatment) and Y (outcome). Biases naïve estimate of X→Y.
+- **Collider**: A variable C caused by both X and Y. Conditioning on a collider opens a spurious path (selection bias).
+- **Backdoor Criterion**: A set of variables S blocks all backdoor paths from X to Y if S contains no descendants of X. Conditioning on S identifies the causal effect.
+
+**RCT vs. Observational**:
+- **RCT (Randomized Controlled Trial)**: Randomization breaks X's dependence on confounders → gold standard for causal identification. Not always feasible (ethical, practical).
+- **Observational Methods**: Propensity score matching/weighting, instrumental variables (IV), difference-in-differences (DiD), regression discontinuity (RDD), synthetic control.
+
+**Selection Bias**: Occurs when the study sample is not representative, or conditioning on a collider introduces spurious association. Common in medical studies (healthy worker effect) and web data (survivorship bias).`,
+    examples: [
+      { label: 'ATE', formula: '$\\text{ATE} = \\mathbb{E}[Y(1) - Y(0)]$', explanation: 'Expected difference in outcomes between treated and untreated potential worlds. Estimable under ignorability (no unmeasured confounders).' },
+      { label: 'Ignorability', formula: '$\\{Y(0), Y(1)\\} \\perp T \\mid X$', explanation: 'Conditional on observed covariates X, treatment assignment T is independent of potential outcomes. Justifies adjustment via regression, matching, or IPW.' },
+    ],
+    quizzes: [
+      {
+        type: 'mc',
+        question: 'A confounder Z in a causal diagram is a variable that:',
+        options: [
+          'Causes both the treatment X and the outcome Y',
+          'Is caused by both X and Y',
+          'Mediates the effect of X on Y',
+          'Is unrelated to Y',
+        ],
+        answer: 0,
+        explanation: 'A confounder causes both the treatment (exposure) and the outcome, creating a spurious association between them if not controlled for.',
+      },
+      {
+        type: 'mc',
+        question: 'Why does randomization in an RCT enable causal inference?',
+        options: [
+          'It makes treatment assignment independent of all confounders, observed and unobserved',
+          'It increases the sample size',
+          'It eliminates measurement error',
+          'It ensures blinding of participants',
+        ],
+        answer: 0,
+        explanation: 'Randomization severs all backdoor paths from treatment to outcome by making treatment assignment independent of pre-treatment characteristics.',
+      },
+      {
+        type: 'tf',
+        question: 'Conditioning on a collider in a regression can introduce a spurious association between two variables that are not causally related.',
+        answer: true,
+        explanation: 'Collider bias (Berkson\'s paradox): if C is caused by both X and Y, conditioning on C opens a non-causal path between X and Y, creating a spurious correlation.',
+      },
+      {
+        type: 'mc',
+        question: 'The "fundamental problem of causal inference" refers to:',
+        options: [
+          'We cannot observe both potential outcomes (treated and untreated) for the same unit simultaneously',
+          'Causal effects cannot be estimated from data',
+          'RCTs are impossible to run in practice',
+          'DAGs cannot represent all causal structures',
+        ],
+        answer: 0,
+        explanation: 'Each unit is either treated or untreated; we observe only one potential outcome. Causal inference methods address this by comparing units or making assumptions about the missing counterfactuals.',
+      },
+    ],
+  },
 ];

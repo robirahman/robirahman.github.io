@@ -122,6 +122,31 @@ model = xgb.XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.05)
 model.fit(X_train, y_train, eval_set=[(X_val, y_val)], early_stopping_rounds=20)`,
     tags: ['ensemble', 'boosting', 'XGBoost', 'LightGBM', 'state-of-the-art'],
   },
+  {
+    id: 'regularization',
+    term: 'Regularization (L1/L2/ElasticNet)',
+    category: 'supervised',
+    shortDef: 'Adds a penalty on model complexity to the loss function, reducing overfitting by shrinking coefficients.',
+    fullDef: 'Regularization modifies the training objective to penalize large coefficients. **L2 (Ridge)**: adds λΣβᵢ² — shrinks all coefficients toward zero but rarely to exactly zero; good when many features contribute. **L1 (Lasso)**: adds λΣ|βᵢ| — produces sparse solutions (some coefficients exactly zero) enabling feature selection. **ElasticNet**: combines L1 and L2 penalties (α·L1 + (1-α)·L2), balancing sparsity and grouping correlated features. The regularization strength λ (or C = 1/λ in sklearn) is tuned via cross-validation.',
+    whenToUse: 'High-dimensional data where overfitting is likely; Lasso for automatic feature selection; Ridge when you expect most features to contribute; ElasticNet when features are correlated.',
+    tradeoffs: 'Requires hyperparameter tuning (λ); L1 solutions are non-unique with correlated features; Ridge does not perform feature selection; both require feature scaling for fair penalization.',
+    codeExample: `from sklearn.linear_model import Ridge, Lasso, ElasticNet
+from sklearn.model_selection import cross_val_score
+
+# Ridge (L2)
+ridge = Ridge(alpha=1.0)
+
+# Lasso (L1) — performs feature selection
+lasso = Lasso(alpha=0.01)
+lasso.fit(X_train, y_train)
+n_nonzero = (lasso.coef_ != 0).sum()
+print(f'Features selected: {n_nonzero}')
+
+# ElasticNet (L1 + L2)
+enet = ElasticNet(alpha=0.1, l1_ratio=0.5)
+cv_score = cross_val_score(enet, X, y, cv=5).mean()`,
+    tags: ['regularization', 'L1', 'L2', 'Lasso', 'Ridge', 'feature-selection', 'overfitting'],
+  },
 
   // ── UNSUPERVISED LEARNING ─────────────────────────────────────────────────
   {
@@ -321,6 +346,105 @@ print(f'{scores.mean():.3f} ± {scores.std():.3f}')`,
     codeExample: `from sklearn.metrics import log_loss
 ll = log_loss(y_true, y_prob)  # y_prob: predicted probabilities`,
     tags: ['classification', 'metric', 'probability', 'cross-entropy'],
+  },
+  {
+    id: 'bias-variance',
+    term: 'Bias-Variance Tradeoff',
+    category: 'evaluation',
+    shortDef: 'Decomposition of prediction error into bias (underfitting), variance (overfitting), and irreducible noise.',
+    fullDef: 'The expected test MSE of a model decomposes as: E[(y − ŷ)²] = Bias²(ŷ) + Var(ŷ) + σ². **Bias**: error from wrong assumptions — high bias → underfitting (too simple model). **Variance**: sensitivity to training data fluctuations — high variance → overfitting (model memorizes noise). **Noise (σ²)**: irreducible error from the data itself. The tradeoff: increasing model complexity reduces bias but increases variance. Optimal complexity minimizes total error. Simple models (linear regression) have high bias, low variance; complex models (deep trees, deep nets) have low bias, high variance. Ensemble methods (bagging, boosting) reduce variance and bias respectively.',
+    whenToUse: 'Diagnosing underfitting vs. overfitting; choosing model complexity; understanding learning curves (train vs. validation error gap).',
+    tradeoffs: 'You cannot simultaneously minimize both bias and variance with a single model; cross-validation estimates the tradeoff empirically; regularization shifts the optimal point.',
+    codeExample: `import numpy as np
+from sklearn.model_selection import learning_curve
+from sklearn.pipeline import Pipeline
+
+# Learning curves reveal bias-variance tradeoff:
+# Large train-val gap → high variance (overfitting)
+# Both high → high bias (underfitting)
+train_sizes, train_scores, val_scores = learning_curve(
+    model, X, y, cv=5, scoring='neg_mse',
+    train_sizes=np.linspace(0.1, 1.0, 10)
+)
+train_mean = -train_scores.mean(axis=1)
+val_mean = -val_scores.mean(axis=1)`,
+    tags: ['overfitting', 'underfitting', 'bias', 'variance', 'model-complexity', 'learning-curve'],
+  },
+  {
+    id: 'hyperparameter-tuning',
+    term: 'Hyperparameter Tuning',
+    category: 'evaluation',
+    shortDef: 'Systematic search for model hyperparameters that minimize cross-validated error.',
+    fullDef: 'Hyperparameters are set before training (unlike parameters learned during training). Tuning strategies: **Grid Search**: exhaustive search over a Cartesian product of values — thorough but exponentially expensive. **Random Search**: samples hyperparameter combinations randomly — often finds good solutions faster than grid search (Bergstra & Bengio, 2012). **Bayesian Optimization** (Optuna, Hyperopt): builds a probabilistic model of the objective to select promising configurations — most efficient for expensive evaluations. Always tune within cross-validation to avoid overfitting the validation set (nested CV for unbiased evaluation). Key concern: don\'t touch the test set during tuning.',
+    whenToUse: 'Any model with meaningful hyperparameters (tree depth, C, λ, learning rate); after establishing a baseline; as model training cost allows.',
+    tradeoffs: 'Grid search is expensive; random search may miss the optimum; Bayesian optimization adds implementation complexity; risk of overfitting if tuning on the same validation fold repeatedly.',
+    codeExample: `import optuna
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+def objective(trial):
+    params = {
+        'n_estimators': trial.suggest_int('n_estimators', 50, 500),
+        'max_depth': trial.suggest_int('max_depth', 3, 20),
+        'min_samples_leaf': trial.suggest_int('min_samples_leaf', 1, 20),
+    }
+    model = RandomForestClassifier(**params, random_state=42)
+    return cross_val_score(model, X, y, cv=5, scoring='roc_auc').mean()
+
+study = optuna.create_study(direction='maximize')
+study.optimize(objective, n_trials=100)
+print(study.best_params)`,
+    tags: ['hyperparameter', 'grid-search', 'random-search', 'Bayesian-optimization', 'tuning'],
+  },
+  {
+    id: 'calibration',
+    term: 'Model Calibration',
+    category: 'evaluation',
+    shortDef: 'A model is calibrated if predicted probabilities match observed frequencies — e.g., 70% confident predictions are correct 70% of the time.',
+    fullDef: 'A well-calibrated classifier outputs P(y=1|x=p) ≈ p for all p. **Reliability diagram (calibration plot)**: bins predictions by confidence; plots mean predicted probability vs. observed frequency. Perfectly calibrated → points on the diagonal. **Brier Score**: mean squared error between probabilities and true labels (0=perfect, 1=worst). Many models are miscalibrated: tree ensembles (RF, GBM) tend to be overconfident; logistic regression is often well-calibrated; SVMs and naive Bayes are typically poorly calibrated. **Calibration methods**: Platt scaling (sigmoid fit to outputs), isotonic regression (non-parametric monotonic fit).',
+    whenToUse: 'Decision-making under uncertainty (medical diagnosis, credit scoring, weather forecasting); when using model probabilities for downstream decisions; after applying threshold adjustments.',
+    tradeoffs: 'Calibration and discrimination (AUC) are independent — a model can rank well but be poorly calibrated; calibration on small test sets is noisy; recalibration may slightly reduce discrimination.',
+    codeExample: `from sklearn.calibration import CalibratedClassifierCV, calibration_curve
+import matplotlib.pyplot as plt
+
+# Calibrate a model
+cal_model = CalibratedClassifierCV(base_model, cv=5, method='isotonic')
+cal_model.fit(X_train, y_train)
+proba = cal_model.predict_proba(X_test)[:, 1]
+
+# Plot reliability diagram
+fraction_pos, mean_pred = calibration_curve(y_test, proba, n_bins=10)
+plt.plot(mean_pred, fraction_pos, 's-', label='Model')
+plt.plot([0,1], [0,1], 'k--', label='Perfect')
+plt.xlabel('Mean predicted probability')
+plt.ylabel('Fraction of positives')`,
+    tags: ['calibration', 'probability', 'reliability', 'Platt-scaling', 'Brier-score'],
+  },
+  {
+    id: 'class-imbalance',
+    term: 'Class Imbalance',
+    category: 'evaluation',
+    shortDef: 'When one class is much rarer than others, naive accuracy is misleading; specialized strategies improve minority-class detection.',
+    fullDef: 'Class imbalance (e.g., 99% negative, 1% positive) makes a trivial "always predict negative" model achieve 99% accuracy. **Evaluation**: Use precision, recall, F1, PR-AUC, or balanced accuracy — not raw accuracy. **Resampling strategies**: **SMOTE** (Synthetic Minority Oversampling): generates synthetic minority samples by interpolating between existing ones. **Random oversampling**: duplicate minority samples. **Random undersampling**: remove majority samples (information loss). **Algorithm-level**: class_weight="balanced" in sklearn adjusts the loss function to penalize minority class errors more. **Threshold adjustment**: lower the decision threshold (e.g., from 0.5 to 0.2) to increase recall at the cost of precision.',
+    whenToUse: 'Fraud detection, medical screening, rare event prediction — any classification problem with significant class skew (> 10:1 ratio).',
+    tradeoffs: 'SMOTE can generate unrealistic samples; undersampling loses information; class weights don\'t help with test-time threshold; no single strategy dominates — evaluate on appropriate metric.',
+    codeExample: `from imblearn.over_sampling import SMOTE
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+
+# Resample training data only (never the test set)
+sm = SMOTE(random_state=42)
+X_res, y_res = sm.fit_resample(X_train, y_train)
+
+# Or use class_weight parameter
+model = LogisticRegression(class_weight='balanced')
+model.fit(X_train, y_train)
+
+# Adjust threshold for recall priority
+proba = model.predict_proba(X_test)[:, 1]
+preds = (proba > 0.3).astype(int)  # lower threshold
+print(classification_report(y_test, preds))`,
+    tags: ['imbalanced', 'SMOTE', 'oversampling', 'undersampling', 'class-weight', 'fraud'],
   },
 
   // ── DEEP LEARNING ─────────────────────────────────────────────────────────

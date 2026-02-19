@@ -3,10 +3,13 @@
 ### What's working well
 
 * **Scope is well-chosen**: concepts + ML + stats is a practical triad for DS learners.
-* **The ML cards are strong** in structure: `shortDef`, `fullDef`, `whenToUse`, `tradeoffs`, plus optional `codeExample` is exactly the kind of "mental model + decision-making" framing people need.
-* **Stats lessons** are coherent and progressively structured (descriptives → probability → Bayes → distributions → CLT → testing → CIs → correlation → regression → A/B).
+* **The ML cards are strong** in structure: `shortDef`, `fullDef`, `whenToUse`, `tradeoffs`, `codeExample` — "mental model + decision-making" framing people need.
+* **Stats lessons** (15 total) are coherent and progressively structured: descriptives → probability → Bayes → distributions → CLT → testing → CIs → correlation → regression → A/B → bootstrapping → ANOVA → nonparametric → multiple comparisons → causal inference.
 * **ML card search** (text + category filter) makes the algorithm catalogue navigable as it grows. ✅ Done 2026-02
 * **Python syntax highlighting** via Prism.js makes code examples much more readable. ✅ Done 2026-02
+* **KaTeX math rendering** in stats lesson formula panels — typeset LaTeX in `$...$` delimiters. ✅ Done 2026-02
+* **Content validation script** (`node data_science/validate.js`) enforces schema at build-time. ✅ Done 2026-02
+* **PWA / offline support** via service worker + manifest — app loads from cache when offline. ✅ Done 2026-02
 
 ### Biggest opportunity
 
@@ -28,21 +31,10 @@ Right now it reads like a **great content deck** wrapped in a lightweight UI. Th
 * **Model selection**: baselines, error analysis loops, when to stop iterating
 * **Pipelines** (conceptual): fit/transform discipline, reproducible preprocessing
 
-### Core ML topics not yet in the ML deck (or only implied)
+### Core ML topics not yet covered
 
-* **Bias–variance tradeoff**
-* **Regularization deep dive** (L1/L2, elastic net, early stopping, dropout as regularization)
-* **Hyperparameter tuning** (grid/random/Bayesian, nested CV) — nested CV is mentioned briefly; a dedicated card/lesson would help
-* **Calibration** (reliability curves, Platt scaling, isotonic regression) — referenced in log loss / NB; make it explicit
-* **Class imbalance** beyond metrics: resampling, class weights, thresholding, PR curves
-
-### Statistics topics that would complement existing lessons
-
-* **Bootstrapping** (bootstrap CI is mentioned; expand into "bootstrap intuition + when it fails")
-* **ANOVA** (mentioned in passing; a full lesson would help)
-* **Nonparametric tests** (Mann–Whitney, KS, permutation tests)
-* **Multiple comparisons / FDR** deeper (Bonferroni & BH are mentioned; add a lesson with worked examples)
-* **Causal inference basics** (DAGs, confounding, selection bias) — especially relevant given the A/B testing lesson
+* **Regularization extension**: early stopping, dropout as regularization (current card covers L1/L2/ElasticNet; add deep learning angle)
+* **Ensemble methods deep dive**: stacking/blending beyond bagging/boosting
 
 ### "Modern DS" missing module ideas
 
@@ -72,15 +64,10 @@ Right now it reads like a **great content deck** wrapped in a lightweight UI. Th
   * short free response with "compare against key phrases"
 * Add **explanations for wrong options** ("why the distractor is wrong"). Explanations currently explain the correct answer well but rarely address why the distractors are wrong.
 
-### Content UX improvements
-
-* **Math rendering**: Unicode subscripts/symbols (β₀, σ², etc.) are functional but not ideal.
-  Consider KaTeX/MathJax so formulas are consistent, copyable, and accessible.
-
 ### Platform niceties
 
-* **Offline/PWA support** (service worker + caching) — very aligned with "daily practice."
 * Optional **export/import progress** so users can move devices without losing scheduling.
+* **App icon** (192×192 PNG) for the PWA manifest — currently no icon is served.
 
 ---
 
@@ -88,7 +75,7 @@ Right now it reads like a **great content deck** wrapped in a lightweight UI. Th
 
 ### 1) File organization: index.html is doing too much
 
-The `data_science/` folder is essentially `{ index.html, ml.js, stats.js }` with app logic, UI, styles, and concept content all concentrated in one large HTML file.
+The `data_science/` folder is essentially `{ index.html, ml.js, stats.js, validate.js, sw.js, manifest.json }` with app logic, UI, styles, and concept content all concentrated in one large HTML file.
 
 **Recommendation**
 
@@ -97,26 +84,19 @@ The `data_science/` folder is essentially `{ index.html, ml.js, stats.js }` with
   * `ui.js` (rendering / components)
   * `storage.js` (localStorage schema + migrations)
   * `concepts.js` (or JSON) for the core DS modules deck
-* Keep `ml.js` / `stats.js` as content modules, but consider a shared schema.
+* Keep `ml.js` / `stats.js` as content modules with shared schema enforced by `validate.js`.
 
-### 2) Add a content schema + validation
+### 2) Content schema is validated but not typed
 
-Both `ml.js` and `stats.js` have consistent shapes, but nothing enforces them at build-time.
-
-**Recommendation**
-
-* Define a simple schema (even JSDoc typedefs) for:
-  * ML cards (`id`, `term`, `category`, `shortDef`, `fullDef`, `whenToUse`, `tradeoffs`, `tags`, optional `codeExample`)
-  * Stats lessons (`id`, `title`, `concepts`, `explanation`, `examples`, `quizzes`)
-* Add a tiny test script to validate:
-  * unique IDs
-  * each MCQ `answer` index is within `options`
-  * no empty strings where UI expects text
-  * no duplicated terms, etc.
+`validate.js` enforces structure at run-time. For better DX, add JSDoc typedefs for ML cards and stats lessons so editors give autocomplete.
 
 ### 3) Populate stats lesson icons consistently
 
-Stats lessons have an `icon` field but most are empty while CLT has one. Either remove the field or populate consistently.
+All 15 stats lessons now have icon fields. Verify they are all visually distinct and not reused across lessons.
+
+### 4) KaTeX coverage
+
+Only `examples[].formula` fields use LaTeX. If explanation body text ever needs inline math, switch those strings to `$...$` notation — `renderMathInElement` already runs on the full lesson container.
 
 ---
 
@@ -124,12 +104,14 @@ Stats lessons have an `icon` field but most are empty while CLT has one. Either 
 
 ### Next up
 
-* Content validation script + basic schema.
 * Progress dashboard + "why this is due" transparency.
-* Add 1–2 new stats/ML lessons: **bias–variance**, **regularization**, **calibration**, **bootstrapping**.
+* Data cleaning & leakage lesson (stats or concepts module).
+* App icon PNG for PWA manifest.
+* Add explanations for wrong answer distractors in quizzes.
 
 ### Stretch goals
 
-* PWA offline mode + cross-device progress export/import.
-* More interactive question types + error-analysis style quizzes.
-* KaTeX for math rendering.
+* More interactive question types (numeric entry, ordering).
+* MLOps / SQL essentials module.
+* Cross-device progress export/import.
+* Break `index.html` into separate `app.js` / `ui.js` / `storage.js` files.
