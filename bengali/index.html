@@ -866,13 +866,13 @@ nav h1 span { color: var(--accent); }
 }
 .pmh-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
 .pmh-stats { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-dim); }
-.settings-close-btn {
-  background: rgba(255,255,255,0.08); border: none; color: var(--text-dim);
+.settings-panel .settings-close-btn {
+  background: transparent; border: none; color: var(--text-dim);
   border-radius: 50%; width: 1.75rem; height: 1.75rem; font-size: 0.8rem;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  flex-shrink: 0; text-align: center;
 }
-.settings-close-btn:hover { background: rgba(255,255,255,0.16); }
+.settings-panel .settings-close-btn:hover { background: rgba(255,255,255,0.16); }
 .settings-panel button {
   display: block; width: 100%; text-align: left;
   background: none; border: none; color: var(--text);
@@ -1699,7 +1699,8 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 </div>
 
 <!-- PLACEMENT TEST: INTRO -->
-<div class="screen" id="placement-intro">
+<div class="screen" id="placement-intro" style="position:relative;">
+  <button onclick="switchTab(currentTab)" aria-label="Dismiss" style="position:absolute;top:0;right:0;background:transparent;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">✕</button>
   <div style="text-align:center;padding:40px 0 20px;">
     <div style="font-size:3rem;margin-bottom:16px;">🎯</div>
     <h2 style="font-size:1.6rem;margin-bottom:8px;">Placement Test</h2>
