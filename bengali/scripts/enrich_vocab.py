@@ -171,14 +171,17 @@ def call_batches_api(client: anthropic.Anthropic, batches: list[list[tuple[int, 
         print(f"[DRY RUN] Would send {len(batches)} batch request(s) covering {total} words.")
         return []
 
+    from anthropic.types.messages.batch_create_params import Request as BatchRequest
+    from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
+
     # Build batch requests
     requests = []
     for batch_idx, batch in enumerate(batches):
-        requests.append(anthropic.types.message_create_params.Request(
+        requests.append(BatchRequest(
             custom_id=f"batch-{batch_idx}",
-            params=anthropic.types.MessageCreateParamsNonStreaming(
-                model="claude-sonnet-4-6",
-                max_tokens=4096,
+            params=MessageCreateParamsNonStreaming(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=16384,
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": build_user_message(batch)}],
             )
@@ -204,8 +207,13 @@ def call_batches_api(client: anthropic.Anthropic, batches: list[list[tuple[int, 
     for result in client.messages.batches.results(batch_job.id):
         if result.result.type == "succeeded":
             content = result.result.message.content[0].text
+            # Strip markdown code fences if present (e.g. ```json\n...\n```)
+            stripped = content.strip()
+            if stripped.startswith("```"):
+                stripped = re.sub(r'^```[^\n]*\n', '', stripped)
+                stripped = re.sub(r'\n```$', '', stripped.rstrip())
             try:
-                parsed = json.loads(content)
+                parsed = json.loads(stripped)
                 results_by_id[result.custom_id] = parsed
             except json.JSONDecodeError:
                 print(f"WARNING: Could not parse JSON for {result.custom_id}", file=sys.stderr)
@@ -246,8 +254,8 @@ def main():
                         help='Path to previous enriched_new_words.json (words to skip)')
     parser.add_argument('--output', type=Path,
                         help='Output JSON path (default: same dir as --csv / enriched_new_words.json)')
-    parser.add_argument('--batch-size', type=int, default=100,
-                        help='Words per Claude batch request (default: 100)')
+    parser.add_argument('--batch-size', type=int, default=50,
+                        help='Words per Claude batch request (default: 50)')
     parser.add_argument('--dry-run', action='store_true',
                         help='Print plan without calling the API')
     args = parser.parse_args()
@@ -333,11 +341,11 @@ def main():
             invalid_count += 1
             continue
 
-        roman = result.get('roman', '').strip()
-        english = result.get('english', '').strip()
-        category = result.get('category', '').strip()
-        pos = result.get('pos', '').strip()
-        example = result.get('example', '').strip()
+        roman = (result.get('roman') or '').strip()
+        english = (result.get('english') or '').strip()
+        category = (result.get('category') or '').strip()
+        pos = (result.get('pos') or '').strip()
+        example = (result.get('example') or '').strip()
 
         if not roman or not english:
             null_count += 1
