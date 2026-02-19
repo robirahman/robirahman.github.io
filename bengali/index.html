@@ -676,6 +676,27 @@ nav h1 span { color: var(--accent); }
 .grammar-content .grammar-explanation {
   line-height: 1.7; font-size: 1rem; white-space: pre-line; margin-bottom: 24px;
 }
+/* ── Reading Passage Styles ──────────────────────────── */
+.reading-level {
+  display: inline-block; font-size: 0.8rem; font-weight: 600; padding: 3px 10px;
+  border-radius: 20px; background: rgba(76,175,110,0.15); color: #4caf6e;
+  margin-bottom: 14px;
+}
+.reading-bengali {
+  font-family: 'Noto Serif Bengali', 'Kalpurush', serif;
+  font-size: 1.15rem; line-height: 2; color: var(--text); margin-bottom: 12px;
+}
+.reading-toggle {
+  width: 100%; background: var(--card); border: none; border-radius: 8px;
+  color: var(--text-dim); padding: 8px 14px; font-size: 0.85rem; cursor: pointer;
+  text-align: left; margin-bottom: 6px; transition: background 0.15s;
+}
+.reading-toggle:hover { background: var(--card-hover); }
+.reading-sub {
+  background: var(--card); border-radius: 8px; padding: 12px 14px;
+  margin-bottom: 10px; font-size: 0.9rem; line-height: 1.8; display: none;
+}
+.reading-sub.open { display: block; }
 /* ── Conjugation Reference Table ─────────────────────── */
 .conj-table-section { margin: 0 0 20px; }
 .conj-table-toggle {
@@ -5949,6 +5970,15 @@ function toggleConjTable() {
   const open = !wrap.hidden;
   wrap.hidden = open;
   btn.setAttribute('aria-expanded', String(!open));
+}
+
+function toggleReadingSection(btn, targetId) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  btn.textContent = open
+    ? btn.textContent.replace('▼', '▲').replace('Show', 'Hide')
+    : btn.textContent.replace('▲', '▼').replace('Hide', 'Show');
 }
 
 function openSettingsPanel() {
