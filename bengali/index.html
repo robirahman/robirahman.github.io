@@ -363,6 +363,19 @@ nav h1 span { color: var(--accent); }
   transition: background 0.2s;
 }
 .missed-sound-btn:hover { background: rgba(255,255,255,0.15); }
+.correct-reveal {
+  margin-top: 12px; padding: 10px 16px;
+  background: rgba(62,201,122,0.06); border: 1px solid var(--accent-dim);
+  border-radius: 8px; font-size: 1.05rem; color: var(--text); text-align: center;
+}
+.correct-reveal::before {
+  content: 'Answer: '; display: block;
+  font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;
+}
+.vocab-card-example {
+  font-size: 0.8rem; color: var(--text-dim); margin-top: 8px;
+  font-style: italic; text-align: center; padding: 0 8px; line-height: 1.4;
+}
 
 /* ─── RESULTS SCREEN ─── */
 #results { text-align: center; padding-top: 60px; }
@@ -1367,6 +1380,7 @@ nav h1 span { color: var(--accent); }
         <div class="vocab-card-pos" id="vc-pos">noun</div>
         <div class="vocab-card-english" id="vc-english">word</div>
         <div class="vocab-card-cat" id="vc-cat">Education</div>
+        <div class="vocab-card-example" id="vc-example"></div>
         <button class="card-sound-btn" id="vc-sound-btn" onclick="event.stopPropagation(); speakCurrentVocab();" aria-label="Play pronunciation">🔊</button>
       </div>
     </div>
@@ -1408,7 +1422,9 @@ nav h1 span { color: var(--accent); }
   <div class="results-sub" id="vr-sub">You scored 8/10</div>
   <div class="results-actions">
     <button class="btn-primary" onclick="retryVocabQuiz()">Try Again</button>
+    <button class="nav-btn" id="vr-retry-missed" onclick="retryMissedVocab()" style="display:none">Retry Missed</button>
     <button class="nav-btn" onclick="showScreen('vocab-home')">Home</button>
+    <button class="btn-primary" id="vr-continue-review" onclick="_runNextReviewItem()" style="display:none">Continue →</button>
   </div>
   <div id="vr-missed"></div>
 </div>
@@ -1473,7 +1489,9 @@ nav h1 span { color: var(--accent); }
   <div class="results-sub" id="results-sub">You scored 8/10</div>
   <div class="results-actions">
     <button class="btn-primary" onclick="retryQuiz()">Try Again</button>
+    <button class="nav-btn" id="results-retry-missed" onclick="retryMissedQuiz()" style="display:none">Retry Missed</button>
     <button class="nav-btn" onclick="showScreen('home')">Home</button>
+    <button class="btn-primary" id="results-continue-review" onclick="_runNextReviewItem()" style="display:none">Continue →</button>
   </div>
   <div id="results-missed"></div>
 </div>
@@ -1536,7 +1554,9 @@ nav h1 span { color: var(--accent); }
   <div class="results-sub" id="gr-sub">You scored 8/10</div>
   <div class="results-actions">
     <button class="btn-primary" onclick="retryGrammarQuiz()">Try Again</button>
+    <button class="nav-btn" id="gr-retry-missed" onclick="retryMissedGrammar()" style="display:none">Retry Missed</button>
     <button class="nav-btn" onclick="showScreen('grammar-home')">Home</button>
+    <button class="btn-primary" id="gr-continue-review" onclick="_runNextReviewItem()" style="display:none">Continue →</button>
   </div>
   <div id="gr-missed"></div>
 </div>
@@ -2385,6 +2405,7 @@ function answerSpell() {
     showFeedback(true, q.correct);
   } else {
     showFeedback(false, q.correct);
+    _showInlineAnswer('quiz-answer-area', q.correct);
     _recordMiss(quizMissed, q);
   }
   q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
@@ -2409,6 +2430,7 @@ function answerFIB() {
   } else {
     input.classList.add('wrong');
     showFeedback(false, q.answer);
+    _showInlineAnswer('quiz-answer-area', q.answer);
     _recordMiss(quizMissed, q);
   }
   if (q.letters) {
@@ -2428,9 +2450,18 @@ function showFeedback(correct, answer) {
 }
 
 function _recordMiss(arr, q) {
-  if (q.letter) arr.push({ bengali: q.letter, answer: q.fullAnswer || q.answer || q.correct });
-  else if (q.bengali) arr.push({ bengali: q.bengali, answer: q.answer || q.correct });
-  else arr.push({ bengali: null, answer: Array.isArray(q.correct) ? q.correct.join(' ') : (q.answer || q.correct) });
+  const bengali = q.letter || q.bengali || null;
+  const ans = q.fullAnswer || q.answer || (Array.isArray(q.correct) ? q.correct.join(' ') : q.correct);
+  arr.push({ bengali, answer: ans, _q: q });
+}
+
+function _showInlineAnswer(areaId, answer) {
+  const aa = document.getElementById(areaId);
+  if (!aa || !answer) return;
+  const div = document.createElement('div');
+  div.className = 'correct-reveal';
+  div.textContent = answer;
+  aa.appendChild(div);
 }
 
 function dontKnowQuiz() {
@@ -2447,10 +2478,12 @@ function dontKnowQuiz() {
     document.querySelectorAll('#spell-tile-bank .word-tile').forEach(t => t.style.pointerEvents = 'none');
     document.querySelectorAll('#spell-answer-area .word-tile').forEach(t => t.style.pointerEvents = 'none');
     showFeedback(false, q.correct);
+    _showInlineAnswer('quiz-answer-area', q.correct);
   } else {
     const input = document.getElementById('fib-input');
     if (input) { input.disabled = true; input.classList.add('wrong'); }
     showFeedback(false, q.answer);
+    _showInlineAnswer('quiz-answer-area', q.answer);
   }
   _recordMiss(quizMissed, q);
   if (q.letters) {
@@ -2486,15 +2519,23 @@ function showResults() {
 
   const titles = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
   document.getElementById('results-title').textContent = titles;
-  document.getElementById('results-sub').textContent =
-    `You scored ${quizCorrect}/${total} — earned ${quizCorrect * 10 + (total - quizCorrect) * 0} XP`;
+  const qid = quizModuleRef ? quizModuleRef.id : 'quiz';
+  const hist = progress.quizHistory || (progress.quizHistory = {});
+  const prev = hist[qid] || { best: -1 };
+  if (pct > prev.best) { hist[qid] = { best: pct }; saveProgress(); }
+  const subParts = [`You scored ${quizCorrect}/${total}`];
+  if (pct > prev.best && prev.best >= 0) subParts.push('🌟 New best!');
+  else if (prev.best >= 0 && prev.best > pct) subParts.push(`Best: ${prev.best}%`);
+  if (progress.streak > 1) subParts.push(`🔥 ${progress.streak} day streak`);
+  document.getElementById('results-sub').textContent = subParts.join(' · ');
 
-  // bonus XP for completion
   addXP(5);
   detachQuizKeyHandler();
   updateNav();
-  checkAchievements(); // catches 'first-quiz' and 'century' etc.
-  _renderMissedSection(quizMissed, 'results-missed');
+  checkAchievements();
+  _renderMissedSection(quizMissed, 'results-missed', 'results-retry-missed');
+  const contBtn = document.getElementById('results-continue-review');
+  if (contBtn) contBtn.style.display = _reviewQueue.length > 0 ? 'inline-block' : 'none';
 }
 
 function retryQuiz() {
@@ -2505,6 +2546,28 @@ function retryQuiz() {
     currentModule = quizModuleRef;
     startQuiz();
   }
+}
+
+function retryMissedQuiz() {
+  if (!quizMissed || quizMissed.length === 0) return;
+  const seen = new Set();
+  const letterObjs = [];
+  quizMissed.forEach(m => {
+    const obj = m._q && m._q.letterObj;
+    if (obj && !seen.has(obj.letter)) {
+      seen.add(obj.letter);
+      letterObjs.push(obj);
+    }
+  });
+  if (letterObjs.length === 0) return;
+  const mod = { id: 'retry-missed', title: 'Retry Missed', letters: letterObjs, isMixed: false };
+  currentModule = mod;
+  quizModuleRef = mod;
+  generateQuiz(letterObjs);
+  quizIndex = 0; quizCorrect = 0; quizMissed = [];
+  document.getElementById('quiz-title').textContent = 'Retry Missed';
+  showScreen('quiz');
+  renderQuestion();
 }
 
 // ════════════════════════════════════════
@@ -2972,6 +3035,8 @@ function showVocabCardAt() {
   document.getElementById('vc-english').textContent = w[2];
   const cat = VOCAB_CATEGORIES[w[3]];
   document.getElementById('vc-cat').textContent = cat ? cat.title : w[3];
+  const exEl = document.getElementById('vc-example');
+  if (exEl) exEl.textContent = w[5] || '';
   document.getElementById('vl-counter').textContent = (vlIndex + 1) + ' / ' + vlWords.length;
   document.getElementById('vl-prev').style.visibility = vlIndex === 0 ? 'hidden' : 'visible';
 
@@ -3176,7 +3241,7 @@ function answerVocabFIB() {
   const correct = q.acceptable.some(a => a === val);
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
-  else { _recordMiss(vqMissed, q); }
+  else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); }
   addVocabMastery(q.word[0], correct);
   _trackLastSeen('v:' + q.word[0]);
   checkAchievements();
@@ -3202,6 +3267,7 @@ function dontKnowVocab() {
   } else {
     const input = document.getElementById('vq-fib-input');
     if (input) { input.disabled = true; input.classList.add('wrong'); }
+    _showInlineAnswer('vq-answer-area', q.answer || q.correct);
   }
   _recordMiss(vqMissed, q);
   addVocabMastery(q.word[0], false);
@@ -3227,12 +3293,22 @@ function showVocabResults() {
   document.getElementById('vr-pct').textContent = pct + '%';
   const titles = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
   document.getElementById('vr-title').textContent = titles;
-  document.getElementById('vr-sub').textContent = `You scored ${vqCorrect}/${total}`;
+  const vqid = vqCatRef || 'vocab';
+  const vhist = progress.quizHistory || (progress.quizHistory = {});
+  const vprev = vhist[vqid] || { best: -1 };
+  if (pct > vprev.best) { vhist[vqid] = { best: pct }; saveProgress(); }
+  const vSubParts = [`You scored ${vqCorrect}/${total}`];
+  if (pct > vprev.best && vprev.best >= 0) vSubParts.push('🌟 New best!');
+  else if (vprev.best >= 0 && vprev.best > pct) vSubParts.push(`Best: ${vprev.best}%`);
+  if (progress.streak > 1) vSubParts.push(`🔥 ${progress.streak} day streak`);
+  document.getElementById('vr-sub').textContent = vSubParts.join(' · ');
   addXP(5);
   detachQuizKeyHandler();
   updateNav();
   checkAchievements();
-  _renderMissedSection(vqMissed, 'vr-missed');
+  _renderMissedSection(vqMissed, 'vr-missed', 'vr-retry-missed');
+  const vContBtn = document.getElementById('vr-continue-review');
+  if (vContBtn) vContBtn.style.display = _reviewQueue.length > 0 ? 'inline-block' : 'none';
 }
 
 function retryVocabQuiz() {
@@ -3243,6 +3319,25 @@ function retryVocabQuiz() {
     vlWords = VOCAB_DATA.filter(w => w[3] === vlCatId);
     startVocabQuiz();
   }
+}
+
+function retryMissedVocab() {
+  if (!vqMissed || vqMissed.length === 0) return;
+  const seen = new Set();
+  const words = [];
+  vqMissed.forEach(m => {
+    const w = m._q && m._q.word;
+    if (w && !seen.has(w[0])) {
+      seen.add(w[0]);
+      words.push(w);
+    }
+  });
+  if (words.length === 0) return;
+  generateVocabQuiz(words);
+  vqIndex = 0; vqCorrect = 0; vqMissed = [];
+  document.getElementById('vq-title').textContent = 'Retry Missed';
+  showScreen('vocab-quiz');
+  renderVocabQuestion();
 }
 
 // ════════════════════════════════════════
@@ -3505,7 +3600,7 @@ function answerGrammarFIB() {
                   q.acceptable.some(a => a === input.value.trim());
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { gqCorrect++; addXP(15); }
-  else { _recordMiss(gqMissed, q); }
+  else { _showInlineAnswer('gq-answer-area', q.answer); _recordMiss(gqMissed, q); }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
@@ -3561,7 +3656,10 @@ function checkWordOrder() {
   document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
   document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
   if (correct) { gqCorrect++; addXP(15); }
-  else { _recordMiss(gqMissed, q); }
+  else {
+    _showInlineAnswer('gq-answer-area', q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
+    _recordMiss(gqMissed, q);
+  }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
@@ -3589,10 +3687,13 @@ function dontKnowGrammar() {
     const input = document.getElementById('gq-fib-input');
     if (input) { input.disabled = true; input.classList.add('wrong'); }
     showGrammarFeedback(false, q.answer);
+    _showInlineAnswer('gq-answer-area', q.answer);
   } else if (q.type === 'word-order') {
     document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
     document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
-    showGrammarFeedback(false, q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
+    const woAnswer = q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : '');
+    showGrammarFeedback(false, woAnswer);
+    _showInlineAnswer('gq-answer-area', woAnswer);
   }
   _recordMiss(gqMissed, q);
   const lessonId = q._lessonId || currentGrammarLesson.id;
@@ -3620,14 +3721,24 @@ function showGrammarResults() {
     document.getElementById('gr-ring').style.strokeDashoffset = offset;
   }, 100);
   document.getElementById('gr-pct').textContent = pct + '%';
-  const titles = pct === 100 ? 'Perfect!' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  const titles = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
   document.getElementById('gr-title').textContent = titles;
-  document.getElementById('gr-sub').textContent = `You scored ${gqCorrect}/${total}`;
+  const gqid = gqIsMixed ? 'grammar-mixed' : (currentGrammarLesson ? currentGrammarLesson.id : 'grammar');
+  const ghist = progress.quizHistory || (progress.quizHistory = {});
+  const gprev = ghist[gqid] || { best: -1 };
+  if (pct > gprev.best) { ghist[gqid] = { best: pct }; saveProgress(); }
+  const gSubParts = [`You scored ${gqCorrect}/${total}`];
+  if (pct > gprev.best && gprev.best >= 0) gSubParts.push('🌟 New best!');
+  else if (gprev.best >= 0 && gprev.best > pct) gSubParts.push(`Best: ${gprev.best}%`);
+  if (progress.streak > 1) gSubParts.push(`🔥 ${progress.streak} day streak`);
+  document.getElementById('gr-sub').textContent = gSubParts.join(' · ');
   addXP(5);
   detachQuizKeyHandler();
   updateNav();
   checkAchievements();
-  _renderMissedSection(gqMissed, 'gr-missed');
+  _renderMissedSection(gqMissed, 'gr-missed', 'gr-retry-missed');
+  const gContBtn = document.getElementById('gr-continue-review');
+  if (gContBtn) gContBtn.style.display = _reviewQueue.length > 0 ? 'inline-block' : 'none';
 }
 
 function retryGrammarQuiz() {
@@ -3636,6 +3747,26 @@ function retryGrammarQuiz() {
   } else if (currentGrammarLesson) {
     startGrammarQuiz();
   }
+}
+
+function retryMissedGrammar() {
+  if (!gqMissed || gqMissed.length === 0) return;
+  const seen = new Set();
+  const questions = [];
+  gqMissed.forEach(m => {
+    if (!m._q) return;
+    const key = `${m._q._lessonId}:${m._q._qIdx}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      questions.push(m._q);
+    }
+  });
+  if (questions.length === 0) return;
+  gqQuestions = questions;
+  gqIndex = 0; gqCorrect = 0; gqMissed = [];
+  document.getElementById('gq-title').textContent = 'Retry Missed';
+  showScreen('grammar-quiz');
+  renderGrammarQuestion();
 }
 
 // ════════════════════════════════════════
@@ -4906,30 +5037,40 @@ function updateReviewDueBadge() {
   }
 }
 
+let _reviewQueue = [];
+
 function startReviewSession() {
   const due = getDueItems();
-  // Start with the type that has the most due items
-  if (due.letters.length >= due.vocab.length && due.letters.length >= due.grammar.length && due.letters.length > 0) {
-    // Alphabet review
-    const mod = { id: 'review', title: 'Review Session', letters: due.letters.slice(0, 10), isMixed: true };
+  _reviewQueue = [];
+  if (due.letters.length > 0) _reviewQueue.push({ type: 'letters', data: due.letters.slice(0, 10) });
+  if (due.vocab.length > 0) _reviewQueue.push({ type: 'vocab', data: due.vocab.slice(0, 10) });
+  due.grammar.forEach(lesson => _reviewQueue.push({ type: 'grammar', lesson }));
+  _runNextReviewItem();
+}
+
+function _runNextReviewItem() {
+  if (_reviewQueue.length === 0) {
+    showScreen('home');
+    return;
+  }
+  const item = _reviewQueue.shift();
+  if (item.type === 'letters') {
+    const mod = { id: 'review', title: 'Review Session', letters: item.data, isMixed: true };
     currentModule = mod;
     quizModuleRef = mod;
-    generateQuiz(mod.letters);
-    quizIndex = 0; quizCorrect = 0;
+    generateQuiz(item.data);
+    quizIndex = 0; quizCorrect = 0; quizMissed = [];
     document.getElementById('quiz-title').textContent = '🔔 Review Session';
     showScreen('quiz');
     renderQuestion();
-  } else if (due.vocab.length >= due.grammar.length && due.vocab.length > 0) {
-    // Vocab review
-    const words = due.vocab.slice(0, 10);
-    generateVocabQuiz(words);
-    vqIndex = 0; vqCorrect = 0;
+  } else if (item.type === 'vocab') {
+    generateVocabQuiz(item.data);
+    vqIndex = 0; vqCorrect = 0; vqMissed = [];
     document.getElementById('vq-title').textContent = '🔔 Review Session';
     showScreen('vocab-quiz');
     renderVocabQuestion();
-  } else if (due.grammar.length > 0) {
-    // Grammar review — open first due lesson
-    openGrammarLesson(due.grammar[0].id);
+  } else if (item.type === 'grammar') {
+    openGrammarLesson(item.lesson.id);
   }
 }
 
@@ -4942,10 +5083,16 @@ function _trackLastSeen(key) {
 // ════════════════════════════════════════
 //  MISSED QUESTIONS RENDER
 // ════════════════════════════════════════
-function _renderMissedSection(missedArr, containerId) {
+function _renderMissedSection(missedArr, containerId, retryBtnId) {
+  const retryBtn = document.getElementById(retryBtnId);
   const el = document.getElementById(containerId);
   if (!el) return;
-  if (!missedArr || missedArr.length === 0) { el.innerHTML = ''; return; }
+  if (!missedArr || missedArr.length === 0) {
+    el.innerHTML = '';
+    if (retryBtn) retryBtn.style.display = 'none';
+    return;
+  }
+  if (retryBtn) retryBtn.style.display = 'inline-block';
   el.innerHTML = '<div class="missed-section"><div class="missed-title">Review these</div>' +
     missedArr.map(m => `
       <div class="missed-item">
