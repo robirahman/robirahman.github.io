@@ -101,7 +101,7 @@ preds = model.predict(X_test)`,
     category: 'supervised',
     shortDef: 'Ensemble of decision trees trained on bootstrap samples with random feature subsets (bagging).',
     fullDef: 'Random Forest builds B decision trees, each on a bootstrap sample of the data, and at each split considers only a random subset of m features (m ≈ √p for classification). Predictions aggregate by majority vote or mean. Bootstrap aggregation (bagging) reduces variance. Out-of-bag (OOB) samples provide a free validation estimate.',
-    whenToUse: 'Strong baseline for tabular data; feature importance estimation; robust to outliers and missing values; competitions.',
+    whenToUse: 'Strong baseline for tabular data; feature importance estimation; robust to outliers; missing values often require imputation depending on the library; competitions.',
     tradeoffs: 'Less interpretable than single trees; slower than single tree; memory-intensive for large forests.',
     codeExample: `from sklearn.ensemble import RandomForestClassifier
 model = RandomForestClassifier(n_estimators=200, max_features='sqrt', oob_score=True)

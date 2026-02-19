@@ -43,7 +43,7 @@ const STATS_LESSONS = [
         question: 'A right-skewed distribution has:',
         options: ['Mean > Median > Mode', 'Mean < Median < Mode', 'Mean = Median = Mode', 'Median > Mean > Mode'],
         answer: 0,
-        explanation: 'In right-skewed data, the long tail pulls the mean rightward past the median.',
+        explanation: 'In right-skewed data, the long tail pulls the mean rightward past the median. (This ordering holds for unimodal distributions; in practice, mode can be unstable or undefined.)',
       },
       {
         type: 'mc',
@@ -185,9 +185,9 @@ This surprises many people — low base rate dominates!
       },
       {
         type: 'tf',
-        question: 'A frequentist probability of 0.05 for an event means it has occurred in 5% of past trials.',
+        question: 'In frequentist probability, a probability of 0.05 means the event would occur about 5% of the time in the long run under identical repeated conditions.',
         answer: true,
-        explanation: 'Frequentist probability is defined as the limiting relative frequency in repeated experiments.',
+        explanation: 'Frequentist probability is defined as the long-run limiting relative frequency in repeated experiments — not necessarily the observed frequency in a finite sample, which can deviate.',
       },
     ],
   },
@@ -468,7 +468,7 @@ where z* is the critical value from the normal distribution (1.96 for 95% CI, 2.
 **Pearson Correlation Coefficient (r)**: measures linear association.
 r = Cov(X,Y) / (σₓ · σᵧ) = Σ[(xᵢ−x̄)(yᵢ−ȳ)] / [(n−1)sₓsᵧ]
 
-Range: [−1, 1]. r = 1: perfect positive linear; r = −1: perfect negative linear; r = 0: no linear relationship. Assumes both variables are approximately normally distributed. Sensitive to outliers.
+Range: [−1, 1]. r = 1: perfect positive linear; r = −1: perfect negative linear; r = 0: no linear relationship. Normality is mainly an assumption for inference about r (p-values and confidence intervals); Pearson measures linear association regardless. Sensitive to outliers and nonlinearity.
 
 **Spearman Rank Correlation (ρ)**: Pearson correlation applied to the ranks of values. Non-parametric — robust to outliers and monotone non-linear relationships. Use when data is ordinal or not normally distributed.
 
@@ -544,7 +544,7 @@ Range: [−1, 1]. r = 1: perfect positive linear; r = −1: perfect negative lin
 
 **Coefficient Interpretation**: β₁ = expected change in Y for a 1-unit increase in X₁, **holding all other variables constant**. This "ceteris paribus" condition is critical for causal interpretation.
 
-**R² (Coefficient of Determination)**: Proportion of variance in Y explained by the model. R² = 1 − SS_res/SS_tot. Range [0, 1]; higher = better fit. **Adjusted R²** penalizes adding useless predictors.
+**R² (Coefficient of Determination)**: Proportion of variance in Y explained by the model. R² = 1 − SS_res/SS_tot. Range [0, 1] for in-sample OLS; higher = better fit. Note: out-of-sample, R² can be negative if predictions are worse than simply predicting the mean. **Adjusted R²** penalizes adding useless predictors.
 
 **Gauss-Markov Assumptions** (for OLS to be BLUE — Best Linear Unbiased Estimator):
 1. Linear in parameters
