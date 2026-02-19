@@ -2421,7 +2421,8 @@ function answerFIB() {
   if (!val) return;
   quizAnswered = true;
   const q = quizQuestions[quizIndex];
-  const correct = q.acceptable.some(a => a === val);
+  const normVal = _normRoman(val);
+  const correct = q.acceptable.some(a => a === val || _normRoman(a) === normVal);
   if (correct) {
     input.classList.add('correct');
     quizCorrect++;
@@ -2453,6 +2454,23 @@ function _recordMiss(arr, q) {
   const bengali = q.letter || q.bengali || null;
   const ans = q.fullAnswer || q.answer || (Array.isArray(q.correct) ? q.correct.join(' ') : q.correct);
   arr.push({ bengali, answer: ans, _q: q });
+}
+
+// Normalize Bengali romanization diacritics so US keyboard users can omit them.
+// Applied to BOTH sides of the comparison, so only the correct plain-ASCII
+// equivalent of the expected answer is accepted — not arbitrary wrong letters.
+function _normRoman(s) {
+  return s.toLowerCase()
+    .replace(/[āĀ]/g, 'a')
+    .replace(/[īĪ]/g, 'i')
+    .replace(/[ūŪ]/g, 'u')
+    .replace(/[ṭṬ]/g, 't')
+    .replace(/[ḍḌ]/g, 'd')
+    .replace(/[ṇṆ]/g, 'n')
+    .replace(/[ṣṢ]/g, 's')   // ṣh → sh
+    .replace(/[ṛṚ]/g, 'r')
+    .replace(/ñ/g, 'ny')
+    .replace(/ô/g, 'o');
 }
 
 function _showInlineAnswer(areaId, answer) {
@@ -3238,7 +3256,8 @@ function answerVocabFIB() {
   if (!val) return;
   vqAnswered = true;
   const q = vqQuestions[vqIndex];
-  const correct = q.acceptable.some(a => a === val);
+  const normVal = _normRoman(val);
+  const correct = q.acceptable.some(a => a === val || _normRoman(a) === normVal);
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
   else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); }
@@ -3595,8 +3614,9 @@ function answerGrammarFIB() {
   if (!val) return;
   gqAnswered = true;
   const q = gqQuestions[gqIndex];
-  // Also check with the Bengali script (not lowercased)
-  const correct = q.acceptable.some(a => a.toLowerCase() === val) ||
+  const normVal = _normRoman(val);
+  // Also check Bengali script (not lowercased) and diacritic-free romanization
+  const correct = q.acceptable.some(a => a.toLowerCase() === val || _normRoman(a) === normVal) ||
                   q.acceptable.some(a => a === input.value.trim());
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { gqCorrect++; addXP(15); }
@@ -4138,7 +4158,8 @@ function answerPlacementFIB() {
   if (!val) return;
   ptAnswered = true;
   const q = ptQuestions[ptIndex];
-  const correct = q.acceptable.some(a => a.toLowerCase() === val) ||
+  const normVal = _normRoman(val);
+  const correct = q.acceptable.some(a => a.toLowerCase() === val || _normRoman(a) === normVal) ||
                   q.acceptable.some(a => a === input.value.trim());
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) ptCorrect++;
