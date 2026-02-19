@@ -96,6 +96,17 @@ nav h1 span { color: var(--accent); }
 .module-card .progress-label {
   font-size: 0.75rem; color: var(--text-dim); margin-top: 6px;
 }
+.module-card-actions {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+.mc-action-btn {
+  flex: 1; padding: 7px 0; font-size: 0.8rem; border-radius: 8px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text); cursor: pointer; transition: background 0.15s;
+}
+.mc-action-btn:hover { background: rgba(255,255,255,0.14); }
+.mc-action-quiz { background: rgba(62,201,122,0.12); border-color: rgba(62,201,122,0.3); color: var(--accent); }
+.mc-action-quiz:hover { background: rgba(62,201,122,0.22); }
 
 /* ─── LEARN SCREEN ─── */
 #learn { text-align: center; }
@@ -627,6 +638,26 @@ nav h1 span { color: var(--accent); }
 .grammar-lesson-actions {
   text-align: center; margin-top: 28px;
 }
+.gl-card-area { perspective: 1000px; margin: 0 auto 8px; max-width: 480px; }
+.gl-flashcard {
+  width: 100%; min-height: 140px; cursor: pointer;
+  transform-style: preserve-3d; transition: transform 0.45s ease;
+  position: relative;
+}
+.gl-flashcard.flipped { transform: rotateY(180deg); }
+.gl-card-face {
+  position: absolute; top: 0; left: 0; right: 0; min-height: 140px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: var(--card); border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius); padding: 20px; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+}
+.gl-card-back { transform: rotateY(180deg); }
+.gl-card-front .ge-bengali { font-size: 1.9rem; font-family: 'Noto Sans Bengali', sans-serif; }
+.gl-card-back .ge-roman { font-size: 1rem; color: var(--text-dim); margin-bottom: 6px; }
+.gl-card-back .ge-english { font-size: 1rem; font-weight: 600; }
+.gl-card-hint { font-size: 0.75rem; color: var(--text-dim); text-align:center; margin-top:6px; min-height:1.2em; }
 
 /* Word-order quiz */
 .word-order-area { max-width: 500px; margin: 0 auto; }
@@ -2976,6 +3007,10 @@ function renderVocabHome() {
       <p>${words.length} words</p>
       <div class="module-progress"><div class="module-progress-fill" style="width:${pct}%;background:${cat.color}"></div></div>
       <div class="progress-label">${mastered}/${words.length} mastered</div>
+      <div class="module-card-actions">
+        <button class="mc-action-btn" onclick="event.stopPropagation();startVocabLearn('${catId}')">📖 Review</button>
+        <button class="mc-action-btn mc-action-quiz" onclick="event.stopPropagation();_startVocabCatQuiz('${catId}')">▶ Quiz</button>
+      </div>
     `;
     card.onclick = () => startVocabLearn(catId);
     grid.appendChild(card);
@@ -3241,6 +3276,20 @@ function startVocabLearn(catId) {
   qbtn.onclick = () => startVocabQuiz();
   showVocabCardAt();
   showScreen('vocab-learn');
+}
+
+function _startVocabCatQuiz(catId) {
+  vmixIsActive = false;
+  vlCatId = catId;
+  vqCatRef = catId;
+  const words = VOCAB_DATA.filter(w => w[3] === catId);
+  generateVocabQuiz(words);
+  vqIndex = 0; vqCorrect = 0; vqMissed = [];
+  const cat = VOCAB_CATEGORIES[catId];
+  document.getElementById('vq-title').textContent = (cat ? cat.title : catId) + ' Quiz';
+  showScreen('vocab-quiz');
+  renderVocabQuestion();
+  updateStreak();
 }
 
 function showVocabCardAt() {
@@ -3712,24 +3761,70 @@ function openGrammarLesson(lessonId) {
   currentGrammarLesson = lesson;
 
   document.getElementById('gl-title').textContent = lesson.number + '. ' + lesson.title;
+  _glCardIdx = 0;
   const content = document.getElementById('gl-content');
   content.innerHTML = `
     <h2>${lesson.title}</h2>
     <div class="grammar-desc">${lesson.shortDesc}</div>
     <div class="grammar-explanation">${lesson.explanation}</div>
-    <h3 style="margin-bottom:12px;">Examples</h3>
-    ${lesson.examples.map(ex => `
-      <div class="grammar-example">
-        <div class="ge-bengali">${ex.bengali}</div>
-        <div class="ge-roman">${ex.roman}</div>
-        <div class="ge-english">${ex.english}</div>
+    <h3 style="margin-bottom:12px;">Example Cards</h3>
+    <div class="gl-card-area">
+      <div class="gl-flashcard" id="gl-card" onclick="flipGlCard()">
+        <div class="gl-card-face gl-card-front" id="gl-card-front"></div>
+        <div class="gl-card-face gl-card-back" id="gl-card-back"></div>
       </div>
-    `).join('')}
+      <div class="gl-card-hint" id="gl-card-hint">Tap card to reveal</div>
+      <div class="learn-nav" style="margin-top:12px">
+        <button class="nav-btn" id="gl-prev-btn" onclick="prevGlCard()">← Prev</button>
+        <span id="gl-card-counter" style="font-size:0.85rem;color:var(--text-dim)"></span>
+        <button class="nav-btn" id="gl-next-btn" onclick="nextGlCard()">Next →</button>
+      </div>
+    </div>
     <div class="grammar-lesson-actions">
       <button class="btn-primary" onclick="startGrammarQuiz()">Start Quiz →</button>
     </div>
   `;
+  renderGlCard();
   showScreen('grammar-lesson');
+}
+
+// ── Grammar lesson example cards ───────────────────────────────────
+let _glCardIdx = 0;
+
+function renderGlCard() {
+  if (!currentGrammarLesson) return;
+  const examples = currentGrammarLesson.examples;
+  const ex = examples[_glCardIdx];
+  const card = document.getElementById('gl-card');
+  if (!card) return;
+  card.classList.remove('flipped');
+  document.getElementById('gl-card-front').innerHTML =
+    `<div class="ge-bengali">${ex.bengali}</div>`;
+  document.getElementById('gl-card-back').innerHTML =
+    `<div class="ge-roman">${ex.roman}</div><div class="ge-english">${ex.english}</div>`;
+  document.getElementById('gl-card-counter').textContent =
+    ((_glCardIdx + 1) + ' / ' + examples.length);
+  document.getElementById('gl-card-hint').textContent = 'Tap card to reveal';
+  document.getElementById('gl-prev-btn').style.visibility = _glCardIdx === 0 ? 'hidden' : 'visible';
+  document.getElementById('gl-next-btn').style.visibility =
+    _glCardIdx >= examples.length - 1 ? 'hidden' : 'visible';
+}
+
+function flipGlCard() {
+  const card = document.getElementById('gl-card');
+  if (!card) return;
+  card.classList.toggle('flipped');
+  const hint = document.getElementById('gl-card-hint');
+  if (hint) hint.textContent = card.classList.contains('flipped') ? '' : 'Tap card to reveal';
+}
+
+function prevGlCard() {
+  if (_glCardIdx > 0) { _glCardIdx--; renderGlCard(); }
+}
+
+function nextGlCard() {
+  if (!currentGrammarLesson) return;
+  if (_glCardIdx < currentGrammarLesson.examples.length - 1) { _glCardIdx++; renderGlCard(); }
 }
 
 // ════════════════════════════════════════
