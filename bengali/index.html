@@ -760,9 +760,67 @@ nav h1 span { color: var(--accent); }
 .settings-panel button.danger { color: var(--wrong); }
 .settings-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
 .settings-panel button .pm-icon { margin-right: 8px; }
+.settings-section-label {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text-dim); padding: 10px 18px 4px;
+}
+.settings-mode-group { display: flex; gap: 6px; padding: 0 18px 10px; }
+.mode-chip {
+  display: inline-flex !important; width: auto !important;
+  padding: 6px 12px !important; border-radius: 20px !important;
+  font-size: 0.8rem !important; border: 1px solid rgba(255,255,255,0.15) !important;
+  color: var(--text-dim) !important; background: none !important;
+  cursor: pointer; transition: all 0.15s;
+}
+.mode-chip.active {
+  background: rgba(62,201,122,0.15) !important;
+  border-color: var(--accent) !important; color: var(--accent) !important;
+}
+[data-theme="light"] .mode-chip { border-color: rgba(0,0,0,0.18) !important; }
+[data-theme="light"] .mode-chip.active { background: rgba(62,201,122,0.12) !important; }
+/* Bengali soft keyboard */
+.bng-kbd {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 800;
+  background: var(--card); border-top: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+  transform: translateY(100%); transition: transform 0.25s ease;
+  padding: 0 6px 10px;
+}
+.bng-kbd.open { transform: translateY(0); }
+.bng-kbd-handle {
+  text-align: center; padding: 8px 0 4px; cursor: pointer;
+  font-size: 0.75rem; color: var(--text-dim); user-select: none;
+}
+.bng-kbd-handle::before { content: '▲ '; }
+.bng-kbd.open .bng-kbd-handle::before { content: '▼ '; }
+.bng-kbd-row { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 4px; }
+.bng-key {
+  min-width: 2.4rem; height: 2.4rem; padding: 0 6px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px; color: var(--text);
+  font-family: 'Noto Sans Bengali', sans-serif; font-size: 1.1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s; touch-action: manipulation;
+}
+.bng-key:active, .bng-key:hover { background: rgba(255,255,255,0.16); }
+.bng-key.bng-key-wide { min-width: 4rem; font-size: 0.85rem; font-family: inherit; }
+[data-theme="light"] .bng-kbd { background: #f2f2f2; border-top-color: rgba(0,0,0,0.12); }
+[data-theme="light"] .bng-key { background: #fff; border-color: rgba(0,0,0,0.18); color: #111; }
+[data-theme="light"] .bng-key:hover { background: #e8e8e8; }
+.bng-kbd-toggle {
+  display: block; margin: 8px auto 0; padding: 5px 16px;
+  background: none; border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px; color: var(--text-dim); font-size: 0.8rem;
+  cursor: pointer; font-family: 'Noto Sans Bengali', sans-serif;
+  transition: background 0.15s;
+}
+.bng-kbd-toggle:hover { background: rgba(255,255,255,0.07); }
+[data-theme="light"] .bng-kbd-toggle { border-color: rgba(0,0,0,0.2); }
 @media (max-width: 600px) {
   .settings-overlay { justify-content: center; padding: 80px 16px 16px; }
   .settings-panel { width: 100%; max-width: 320px; }
+  .bng-key { min-width: 2rem; height: 2.2rem; font-size: 1rem; }
+  .settings-mode-group { flex-wrap: wrap; }
 }
 
 /* Progress overlay — mirrors search-overlay */
@@ -1298,6 +1356,13 @@ nav h1 span { color: var(--accent); }
     <button onclick="openProgressPanel()"><span class="pm-icon">📊</span>Adjust Progress</button>
     <button onclick="openStatsPanel()"><span class="pm-icon">📈</span>Statistics</button>
     <button onclick="closeSettingsPanel();startPlacementTest()"><span class="pm-icon">🎯</span>Retake Placement Test</button>
+    <div class="settings-divider"></div>
+    <div class="settings-section-label">FIB Answer Mode</div>
+    <div class="settings-mode-group">
+      <button class="mode-chip" id="fibmode-latin" onclick="setFibMode('latin')">Romanized</button>
+      <button class="mode-chip" id="fibmode-mixed" onclick="setFibMode('mixed')">Latin or বাংলা</button>
+      <button class="mode-chip" id="fibmode-bengali" onclick="setFibMode('bengali')">বাংলা only</button>
+    </div>
     <div class="settings-divider"></div>
     <button onclick="switchProfile()"><span class="pm-icon">🔄</span>Switch Profile</button>
     <button onclick="exportProgress()"><span class="pm-icon">⬇</span>Export Progress</button>
@@ -2344,11 +2409,13 @@ function renderQuestion() {
     const hintHtml = q.hint
       ? `<button class="hint-btn" onclick="showHint(this)">💡 Hint</button><div class="fib-hint" style="display:none">${q.hint}</div>`
       : '';
+    const kbdHtml = getFibMode() !== 'latin'
+      ? `<button class="bng-kbd-toggle" onclick="showBengaliKbd('fib-input')">বাং ▲</button>` : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="fib-input" placeholder="Type your answer…"
         onkeydown="if(event.key==='Enter')answerFIB()" autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" onclick="answerFIB()">Check</button>
-      ${hintHtml}
+      ${hintHtml}${kbdHtml}
     </div>
     <button class="idk-btn" onclick="dontKnowQuiz()">I don't know</button>`;
     setTimeout(() => document.getElementById('fib-input')?.focus(), 100);
@@ -3247,11 +3314,13 @@ function renderVocabQuestion() {
     const vqHintHtml = q.hint
       ? `<button class="hint-btn" onclick="showHint(this)">💡 Hint</button><div class="fib-hint" style="display:none">${q.hint}</div>`
       : '';
+    const vqKbdHtml = getFibMode() !== 'latin'
+      ? `<button class="bng-kbd-toggle" onclick="showBengaliKbd('vq-fib-input')">বাং ▲</button>` : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="vq-fib-input" placeholder="Type your answer…"
         onkeydown="if(event.key==='Enter')answerVocabFIB()" autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" onclick="answerVocabFIB()">Check</button>
-      ${vqHintHtml}
+      ${vqHintHtml}${vqKbdHtml}
     </div>
     <button class="idk-btn" onclick="dontKnowVocab()">I don't know</button>`;
     setTimeout(() => document.getElementById('vq-fib-input')?.focus(), 100);
@@ -3285,12 +3354,24 @@ function answerVocabFIB() {
   if (vqAnswered) return;
   const input = document.getElementById('vq-fib-input');
   if (!input) return;
-  const val = input.value.trim().toLowerCase();
+  const rawInput = input.value.trim();
+  const val = rawInput.toLowerCase();
   if (!val) return;
   vqAnswered = true;
   const q = vqQuestions[vqIndex];
   const normVal = _normRoman(val);
-  const correct = q.acceptable.some(a => a === val || _normRoman(a) === normVal);
+  const fibMode = getFibMode();
+  let correct;
+  if (fibMode === 'bengali') {
+    correct = (q.word && rawInput === q.word[0]) ||
+              q.acceptable.some(a => _isBengali(a) && a === rawInput);
+  } else {
+    correct = q.acceptable.some(a => a === val || _normRoman(a) === normVal);
+    if (fibMode === 'mixed') {
+      correct = correct || (q.word && rawInput === q.word[0]) ||
+                q.acceptable.some(a => _isBengali(a) && a === rawInput);
+    }
+  }
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
   else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); }
@@ -3580,10 +3661,13 @@ function renderGrammarQuestion() {
       ${q.roman ? '<div class="vq-hint">' + q.roman + '</div>' : ''}
       ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
     `;
+    const gqKbdHtml = getFibMode() !== 'latin'
+      ? `<button class="bng-kbd-toggle" onclick="showBengaliKbd('gq-fib-input')">বাং ▲</button>` : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="gq-fib-input" placeholder="Type your answer…"
         onkeydown="if(event.key==='Enter')answerGrammarFIB()" autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" onclick="answerGrammarFIB()">Check</button>
+      ${gqKbdHtml}
     </div>
     <button class="idk-btn" onclick="dontKnowGrammar()">I don't know</button>`;
     setTimeout(() => document.getElementById('gq-fib-input')?.focus(), 100);
@@ -3643,14 +3727,18 @@ function answerGrammarFIB() {
   if (gqAnswered) return;
   const input = document.getElementById('gq-fib-input');
   if (!input) return;
-  const val = input.value.trim().toLowerCase();
+  const rawInput = input.value.trim();
+  const val = rawInput.toLowerCase();
   if (!val) return;
   gqAnswered = true;
   const q = gqQuestions[gqIndex];
   const normVal = _normRoman(val);
-  // Also check Bengali script (not lowercased) and diacritic-free romanization
-  const correct = q.acceptable.some(a => a.toLowerCase() === val || _normRoman(a) === normVal) ||
-                  q.acceptable.some(a => a === input.value.trim());
+  const fibMode = getFibMode();
+  // Bengali-only mode: only accept Bengali script matches
+  const correct = fibMode === 'bengali'
+    ? q.acceptable.some(a => _isBengali(a) && a === rawInput)
+    : (q.acceptable.some(a => a.toLowerCase() === val || _normRoman(a) === normVal) ||
+       q.acceptable.some(a => a === rawInput));
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { gqCorrect++; addXP(15); }
   else { _showInlineAnswer('gq-answer-area', q.answer); _recordMiss(gqMissed, q); }
@@ -4552,6 +4640,7 @@ function enterApp() {
 
 function openSettingsPanel() {
   updateProfileMenuHeader();
+  _updateFibModeChips();
   document.getElementById('settings-overlay').classList.add('open');
   document.addEventListener('keydown', _settingsEsc);
 }
@@ -4560,6 +4649,50 @@ function closeSettingsPanel() {
   document.removeEventListener('keydown', _settingsEsc);
 }
 function _settingsEsc(e) { if (e.key === 'Escape') closeSettingsPanel(); }
+
+// ── FIB Input Mode ──────────────────────────────────────────────────
+function getFibMode() { return localStorage.getItem('bengali_fib_mode') || 'latin'; }
+function setFibMode(mode) {
+  localStorage.setItem('bengali_fib_mode', mode);
+  _updateFibModeChips();
+  if (mode === 'latin') { document.getElementById('bng-kbd').classList.remove('open'); }
+}
+function _updateFibModeChips() {
+  const mode = getFibMode();
+  ['latin','mixed','bengali'].forEach(m => {
+    const el = document.getElementById('fibmode-' + m);
+    if (el) el.classList.toggle('active', m === mode);
+  });
+}
+
+// ── Bengali Soft Keyboard ───────────────────────────────────────────
+let _activeFibInputId = null;
+function _isBengali(s) { return /[\u0980-\u09FF]/.test(s); }
+
+function toggleBengaliKbd() {
+  document.getElementById('bng-kbd').classList.toggle('open');
+}
+function showBengaliKbd(inputId) {
+  _activeFibInputId = inputId;
+  if (getFibMode() !== 'latin') document.getElementById('bng-kbd').classList.add('open');
+}
+function hideBengaliKbd() {
+  document.getElementById('bng-kbd').classList.remove('open');
+}
+function appendBengaliChar(char) {
+  const input = document.getElementById(_activeFibInputId);
+  if (!input) return;
+  if (char === '⌫') {
+    input.value = input.value.slice(0, -1);
+  } else if (char === '⎵') {
+    input.value += ' ';
+  } else if (char === '✕') {
+    input.value = '';
+  } else {
+    input.value += char;
+  }
+  input.focus();
+}
 
 function switchProfile() {
   // Flush pending save, then show profile picker
@@ -5489,6 +5622,34 @@ function openVocabBrowseSearch(query) {
     <div class="progress-body" id="progress-body">
       <!-- rendered by renderProgressPanel() -->
     </div>
+  </div>
+</div>
+
+<!-- BENGALI SOFT KEYBOARD -->
+<div id="bng-kbd" class="bng-kbd" aria-label="Bengali keyboard">
+  <div class="bng-kbd-handle" onclick="toggleBengaliKbd()">বাংলা keyboard</div>
+  <div class="bng-kbd-row">
+    <button class="bng-key" onclick="appendBengaliChar('অ')">অ</button><button class="bng-key" onclick="appendBengaliChar('আ')">আ</button><button class="bng-key" onclick="appendBengaliChar('ই')">ই</button><button class="bng-key" onclick="appendBengaliChar('ঈ')">ঈ</button><button class="bng-key" onclick="appendBengaliChar('উ')">উ</button><button class="bng-key" onclick="appendBengaliChar('ঊ')">ঊ</button><button class="bng-key" onclick="appendBengaliChar('ঋ')">ঋ</button><button class="bng-key" onclick="appendBengaliChar('এ')">এ</button><button class="bng-key" onclick="appendBengaliChar('ঐ')">ঐ</button><button class="bng-key" onclick="appendBengaliChar('ও')">ও</button><button class="bng-key" onclick="appendBengaliChar('ঔ')">ঔ</button>
+  </div>
+  <div class="bng-kbd-row">
+    <button class="bng-key" onclick="appendBengaliChar('া')" title="aa-kar">া</button><button class="bng-key" onclick="appendBengaliChar('ি')" title="i-kar">ি</button><button class="bng-key" onclick="appendBengaliChar('ী')" title="ii-kar">ী</button><button class="bng-key" onclick="appendBengaliChar('ু')" title="u-kar">ু</button><button class="bng-key" onclick="appendBengaliChar('ূ')" title="uu-kar">ূ</button><button class="bng-key" onclick="appendBengaliChar('ৃ')" title="ri-kar">ৃ</button><button class="bng-key" onclick="appendBengaliChar('ে')" title="e-kar">ে</button><button class="bng-key" onclick="appendBengaliChar('ৈ')" title="oi-kar">ৈ</button><button class="bng-key" onclick="appendBengaliChar('ো')" title="o-kar">ো</button><button class="bng-key" onclick="appendBengaliChar('ৌ')" title="ou-kar">ৌ</button><button class="bng-key" onclick="appendBengaliChar('্')" title="hasanta">্</button>
+  </div>
+  <div class="bng-kbd-row">
+    <button class="bng-key" onclick="appendBengaliChar('ক')">ক</button><button class="bng-key" onclick="appendBengaliChar('খ')">খ</button><button class="bng-key" onclick="appendBengaliChar('গ')">গ</button><button class="bng-key" onclick="appendBengaliChar('ঘ')">ঘ</button><button class="bng-key" onclick="appendBengaliChar('ঙ')">ঙ</button><button class="bng-key" onclick="appendBengaliChar('চ')">চ</button><button class="bng-key" onclick="appendBengaliChar('ছ')">ছ</button><button class="bng-key" onclick="appendBengaliChar('জ')">জ</button><button class="bng-key" onclick="appendBengaliChar('ঝ')">ঝ</button><button class="bng-key" onclick="appendBengaliChar('ঞ')">ঞ</button>
+  </div>
+  <div class="bng-kbd-row">
+    <button class="bng-key" onclick="appendBengaliChar('ট')">ট</button><button class="bng-key" onclick="appendBengaliChar('ঠ')">ঠ</button><button class="bng-key" onclick="appendBengaliChar('ড')">ড</button><button class="bng-key" onclick="appendBengaliChar('ঢ')">ঢ</button><button class="bng-key" onclick="appendBengaliChar('ণ')">ণ</button><button class="bng-key" onclick="appendBengaliChar('ত')">ত</button><button class="bng-key" onclick="appendBengaliChar('থ')">থ</button><button class="bng-key" onclick="appendBengaliChar('দ')">দ</button><button class="bng-key" onclick="appendBengaliChar('ধ')">ধ</button><button class="bng-key" onclick="appendBengaliChar('ন')">ন</button>
+  </div>
+  <div class="bng-kbd-row">
+    <button class="bng-key" onclick="appendBengaliChar('প')">প</button><button class="bng-key" onclick="appendBengaliChar('ফ')">ফ</button><button class="bng-key" onclick="appendBengaliChar('ব')">ব</button><button class="bng-key" onclick="appendBengaliChar('ভ')">ভ</button><button class="bng-key" onclick="appendBengaliChar('ম')">ম</button><button class="bng-key" onclick="appendBengaliChar('য')">য</button><button class="bng-key" onclick="appendBengaliChar('র')">র</button><button class="bng-key" onclick="appendBengaliChar('ল')">ল</button><button class="bng-key" onclick="appendBengaliChar('শ')">শ</button><button class="bng-key" onclick="appendBengaliChar('ষ')">ষ</button>
+  </div>
+  <div class="bng-kbd-row">
+    <button class="bng-key" onclick="appendBengaliChar('স')">স</button><button class="bng-key" onclick="appendBengaliChar('হ')">হ</button><button class="bng-key" onclick="appendBengaliChar('ড়')">ড়</button><button class="bng-key" onclick="appendBengaliChar('ঢ়')">ঢ়</button><button class="bng-key" onclick="appendBengaliChar('য়')">য়</button><button class="bng-key" onclick="appendBengaliChar('ৎ')">ৎ</button><button class="bng-key" onclick="appendBengaliChar('ং')">ং</button><button class="bng-key" onclick="appendBengaliChar('ঃ')">ঃ</button><button class="bng-key" onclick="appendBengaliChar('ঁ')">ঁ</button><button class="bng-key" onclick="appendBengaliChar('।')">।</button>
+  </div>
+  <div class="bng-kbd-row">
+    <button class="bng-key bng-key-wide" onclick="appendBengaliChar('⎵')">Space</button>
+    <button class="bng-key bng-key-wide" onclick="appendBengaliChar('⌫')">⌫</button>
+    <button class="bng-key bng-key-wide" onclick="appendBengaliChar('✕')">Clear</button>
   </div>
 </div>
 
