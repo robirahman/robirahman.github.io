@@ -1558,7 +1558,7 @@ nav h1 span { color: var(--accent); }
 <div class="screen" id="vocab-home">
   <div class="hero">
     <h2>শব্দভাণ্ডার</h2>
-    <p>Learn the 1000 most common Bengali words</p>
+    <p>Learn the 5000 most common Bengali words</p>
   </div>
   <div class="module-grid" id="vocab-module-grid"></div>
 </div>
@@ -3021,6 +3021,10 @@ function addVocabMastery(bengali, correct) {
 //  VOCAB HOME
 // ════════════════════════════════════════
 function renderVocabHome() {
+  // Eagerly load all packs so counts are accurate; re-render once they arrive.
+  if (!VOCAB_PACK_LOADED[1] || !VOCAB_PACK_LOADED[2] || !VOCAB_PACK_LOADED[3]) {
+    Promise.all([1, 2, 3].map(n => loadVocabPack(n))).then(() => renderVocabHome());
+  }
   const grid = document.getElementById('vocab-module-grid');
   grid.innerHTML = '';
   // Remove stale PT card first, then re-add if needed
