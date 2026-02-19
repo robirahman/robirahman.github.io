@@ -1,1 +1,53 @@
-const CACHE_VERSION="bengali-v2",PRECACHE_URLS=["./","./index.html","./vocab.js","./grammar.js","./guide.html","./vocab-pack-1.json","./vocab-pack-2.json","./vocab-pack-3.json","./manifest.json"];self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE_VERSION).then(e=>e.addAll(PRECACHE_URLS))),self.skipWaiting()}),self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(e=>Promise.all(e.filter(e=>e!==CACHE_VERSION).map(e=>caches.delete(e))))),self.clients.claim()}),self.addEventListener("fetch",e=>{const t=new URL(e.request.url);"GET"===e.request.method&&t.origin===self.location.origin&&"fonts.googleapis.com"!==t.hostname&&"fonts.gstatic.com"!==t.hostname&&e.respondWith(caches.match(e.request).then(t=>t||fetch(e.request).then(t=>{if(!t||200!==t.status||"opaque"===t.type)return t;const s=t.clone();return caches.open(CACHE_VERSION).then(t=>t.put(e.request,s)),t})))});
+// Bengali App — Service Worker
+// Cache-first strategy for offline support.
+// Bump CACHE_VERSION to force cache refresh after major updates.
+const CACHE_VERSION = "bengali-v2";
+const PRECACHE_URLS = [
+  "./",
+  "./index.html",
+  "./vocab.js",
+  "./grammar.js",
+  "./guide.html",
+  "./vocab-pack-1.json",
+  "./vocab-pack-2.json",
+  "./vocab-pack-3.json",
+  "./manifest.json",
+];
+
+// Install: pre-cache core assets
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE_VERSION).then((cache) => cache.addAll(PRECACHE_URLS)));
+  // Activate immediately without waiting for existing tabs to close
+  self.skipWaiting();
+});
+
+// Activate: delete old cache versions
+self.addEventListener("activate", (event) => {
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)))));
+  // Take control of all open tabs immediately
+  self.clients.claim();
+});
+
+// Fetch: cache-first for same-origin requests; network-only for third-party
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+
+  // Only intercept same-origin GET requests
+  if (event.request.method !== "GET" || url.origin !== self.location.origin) return;
+
+  // Google Fonts — network-first (not cached; fails gracefully offline)
+  if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com") return;
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      // Not in cache — fetch from network and cache the response
+      return fetch(event.request).then((response) => {
+        if (!response || response.status !== 200 || response.type === "opaque") return response;
+        const clone = response.clone();
+        caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, clone));
+        return response;
+      });
+    })
+  );
+});
