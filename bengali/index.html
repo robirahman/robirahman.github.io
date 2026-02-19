@@ -2960,7 +2960,7 @@ function renderVocabHome() {
   mixCard.className = 'module-card';
   const vmUnlocked = getVocabMixedUnlockedCount();
   const vmTotal = VMIX_CURRICULUM.length;
-  const vmMastered = VMIX_CURRICULUM.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const vmMastered = VMIX_CURRICULUM.filter(w => getVocabMastery(w.lemma) >= 3).length;
   const vmPct = Math.round((vmMastered / vmTotal) * 100);
   const vmWave = Math.ceil(vmUnlocked / VMIX_WAVE_SIZE);
   const vmTotalWaves = Math.ceil(vmTotal / VMIX_WAVE_SIZE);
@@ -2978,7 +2978,7 @@ function renderVocabHome() {
   const allCard = document.createElement('div');
   allCard.className = 'module-card';
   const totalWords = VOCAB_DATA.length;
-  const masteredWords = VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const masteredWords = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length;
   const allPct = Math.round((masteredWords / totalWords) * 100);
   allCard.innerHTML = `
     <div class="module-icon">📖</div>
@@ -2994,9 +2994,9 @@ function renderVocabHome() {
   const cats = Object.keys(VOCAB_CATEGORIES);
   cats.forEach(catId => {
     const cat = VOCAB_CATEGORIES[catId];
-    const words = VOCAB_DATA.filter(w => w[3] === catId);
+    const words = VOCAB_DATA.filter(w => w.category === catId);
     if (words.length === 0) return;
-    const mastered = words.filter(w => getVocabMastery(w[0]) >= 3).length;
+    const mastered = words.filter(w => getVocabMastery(w.lemma) >= 3).length;
     const pct = Math.round((mastered / words.length) * 100);
 
     const card = document.createElement('div');
@@ -3045,7 +3045,7 @@ const VMIX_CURRICULUM = (() => {
   const queues = {};
   catOrder.forEach(c => { queues[c] = []; });
   VOCAB_DATA.forEach(w => {
-    const c = w[3];
+    const c = w.category;
     if (queues[c]) queues[c].push(w);
     else {
       // category not in our list — append to abstract
@@ -3062,7 +3062,7 @@ const VMIX_CURRICULUM = (() => {
     for (const c of catOrder) {
       if (queues[c].length > 0) {
         const w = queues[c].shift();
-        const key = w[0] + '|' + w[2]; // dedup by bengali+english
+        const key = w.lemma + '|' + w.english; // dedup by bengali+english
         if (!seen.has(key)) {
           seen.add(key);
           result.push(w);
@@ -3079,7 +3079,7 @@ function getVocabMixedUnlockedCount() {
   while (unlocked < VMIX_CURRICULUM.length) {
     const waveStart = unlocked - VMIX_WAVE_SIZE;
     const wave = VMIX_CURRICULUM.slice(waveStart, unlocked);
-    const familiar = wave.filter(w => getVocabMastery(w[0]) >= VMIX_UNLOCK_THR).length;
+    const familiar = wave.filter(w => getVocabMastery(w.lemma) >= VMIX_UNLOCK_THR).length;
     if (familiar >= Math.ceil(wave.length * 0.5)) {
       unlocked = Math.min(unlocked + VMIX_WAVE_SIZE, VMIX_CURRICULUM.length);
     } else {
@@ -3094,7 +3094,7 @@ function buildMixedVocabSession() {
   const pool = VMIX_CURRICULUM.slice(0, unlocked);
 
   // Words the user hasn't seen yet
-  const unseen = pool.filter(w => getVocabMastery(w[0]) === 0);
+  const unseen = pool.filter(w => getVocabMastery(w.lemma) === 0);
   const teach = unseen.slice(0, VMIX_INTRO);
 
   // Prioritise low-mastery words for the quiz
@@ -3171,7 +3171,7 @@ function renderCatChips() {
   container.innerHTML = `<div class="cat-chip ${vbFilter === null ? 'active' : ''}" onclick="setVocabFilter(null)">All</div>` +
     cats.map(catId => {
       const cat = VOCAB_CATEGORIES[catId];
-      const count = VOCAB_DATA.filter(w => w[3] === catId).length;
+      const count = VOCAB_DATA.filter(w => w.category === catId).length;
       if (count === 0) return '';
       return `<div class="cat-chip ${vbFilter === catId ? 'active' : ''}" onclick="setVocabFilter('${catId}')">${cat.icon} ${cat.title} (${count})</div>`;
     }).join('');
@@ -3192,9 +3192,9 @@ function filterVocabList() {
 function getFilteredVocab() {
   const search = (document.getElementById('vb-search')?.value || '').toLowerCase().trim();
   return VOCAB_DATA.filter(w => {
-    if (vbFilter && w[3] !== vbFilter) return false;
+    if (vbFilter && w.category !== vbFilter) return false;
     if (search) {
-      return w[0].includes(search) || w[1].toLowerCase().includes(search) || w[2].toLowerCase().includes(search);
+      return w.lemma.includes(search) || w.roman.toLowerCase().includes(search) || w.english.toLowerCase().includes(search);
     }
     return true;
   });
@@ -3207,11 +3207,11 @@ function renderVocabList() {
 
   const container = document.getElementById('vocab-list');
   container.innerHTML = page.map(w => {
-    const m = getVocabMastery(w[0]);
-    return `<div class="vocab-row" onclick="showVocabDetail('${w[0].replace(/'/g,"\\'")}')">
-      <div class="vr-bengali">${w[0]}</div>
-      <div class="vr-roman">${w[1]}</div>
-      <div class="vr-english">${w[2]}</div>
+    const m = getVocabMastery(w.lemma);
+    return `<div class="vocab-row" onclick="showVocabDetail('${w.lemma.replace(/'/g,"\\'")}')">
+      <div class="vr-bengali">${w.lemma}</div>
+      <div class="vr-roman">${w.roman}</div>
+      <div class="vr-english">${w.english}</div>
       <div class="vr-mastery mastery-${m}"></div>
     </div>`;
   }).join('');
@@ -3232,14 +3232,14 @@ function renderVocabList() {
 }
 
 function showVocabDetail(bengali) {
-  const w = VOCAB_DATA.find(w => w[0] === bengali);
+  const w = VOCAB_DATA.find(w => w.lemma === bengali);
   if (!w) return;
-  const cat = VOCAB_CATEGORIES[w[3]];
-  document.getElementById('wm-bengali').textContent = w[0];
-  document.getElementById('wm-roman').textContent = w[1];
-  document.getElementById('wm-pos').textContent = w[4];
-  document.getElementById('wm-english').textContent = w[2];
-  document.getElementById('wm-cat').textContent = cat ? cat.title : w[3];
+  const cat = VOCAB_CATEGORIES[w.category];
+  document.getElementById('wm-bengali').textContent = w.lemma;
+  document.getElementById('wm-roman').textContent = w.roman;
+  document.getElementById('wm-pos').textContent = w.pos;
+  document.getElementById('wm-english').textContent = w.english;
+  document.getElementById('wm-cat').textContent = cat ? cat.title : w.category;
   document.getElementById('word-modal-card').classList.remove('flipped');
   document.getElementById('word-modal').classList.add('open');
   document.addEventListener('keydown', _wordModalEsc);
@@ -3267,7 +3267,7 @@ function startVocabLearn(catId) {
   vmixIsActive = false;
   vlCatId = catId;
   const cat = VOCAB_CATEGORIES[catId];
-  vlWords = VOCAB_DATA.filter(w => w[3] === catId);
+  vlWords = VOCAB_DATA.filter(w => w.category === catId);
   vlIndex = 0;
   document.getElementById('vl-title').textContent = cat.title;
   // Reset quiz button to default (may have been overridden by mixed mode)
@@ -3282,7 +3282,7 @@ function _startVocabCatQuiz(catId) {
   vmixIsActive = false;
   vlCatId = catId;
   vqCatRef = catId;
-  const words = VOCAB_DATA.filter(w => w[3] === catId);
+  const words = VOCAB_DATA.filter(w => w.category === catId);
   generateVocabQuiz(words);
   vqIndex = 0; vqCorrect = 0; vqMissed = [];
   const cat = VOCAB_CATEGORIES[catId];
@@ -3295,20 +3295,20 @@ function _startVocabCatQuiz(catId) {
 function showVocabCardAt() {
   const w = vlWords[vlIndex];
   document.getElementById('vocab-flashcard').classList.remove('flipped');
-  document.getElementById('vc-bengali').textContent = w[0];
-  document.getElementById('vc-roman').textContent = w[1];
-  document.getElementById('vc-pos').textContent = w[4];
-  document.getElementById('vc-english').textContent = w[2];
-  const cat = VOCAB_CATEGORIES[w[3]];
-  document.getElementById('vc-cat').textContent = cat ? cat.title : w[3];
+  document.getElementById('vc-bengali').textContent = w.lemma;
+  document.getElementById('vc-roman').textContent = w.roman;
+  document.getElementById('vc-pos').textContent = w.pos;
+  document.getElementById('vc-english').textContent = w.english;
+  const cat = VOCAB_CATEGORIES[w.category];
+  document.getElementById('vc-cat').textContent = cat ? cat.title : w.category;
   const exEl = document.getElementById('vc-example');
-  if (exEl) exEl.textContent = w[5] || '';
+  if (exEl) exEl.textContent = w.example || '';
   document.getElementById('vl-counter').textContent = (vlIndex + 1) + ' / ' + vlWords.length;
   document.getElementById('vl-prev').style.visibility = vlIndex === 0 ? 'hidden' : 'visible';
 
   // Mark as seen
-  if (getVocabMastery(w[0]) === 0) {
-    progress.mastery['v:' + w[0]] = 1;
+  if (getVocabMastery(w.lemma) === 0) {
+    progress.mastery['v:' + w.lemma] = 1;
     saveProgress();
   }
 }
@@ -3335,7 +3335,7 @@ let vqMissed = [];
 
 function startVocabQuiz() {
   vqCatRef = vlCatId;
-  const words = vlWords && vlWords.length > 0 ? vlWords : VOCAB_DATA.filter(w => w[3] === vlCatId);
+  const words = vlWords && vlWords.length > 0 ? vlWords : VOCAB_DATA.filter(w => w.category === vlCatId);
   generateVocabQuiz(words);
   vqIndex = 0;
   vqCorrect = 0;
@@ -3353,9 +3353,9 @@ function generateVocabQuiz(words, forceMode) {
   const ls = progress.lastSeen || {};
   const now = Date.now();
   const urgency = w => {
-    const m = getVocabMastery(w[0]);
+    const m = getVocabMastery(w.lemma);
     if (m === 0) return 500;
-    const seenAgo = ls['v:' + w[0]] ? now - new Date(ls['v:' + w[0]]).getTime() : Infinity;
+    const seenAgo = ls['v:' + w.lemma] ? now - new Date(ls['v:' + w.lemma]).getTime() : Infinity;
     return seenAgo / REVIEW_INTERVALS_MS[m];
   };
   const sorted = [...words].sort((a, b) => urgency(b) - urgency(a));
@@ -3377,71 +3377,71 @@ function generateVocabQuiz(words, forceMode) {
 
     if (qtype === 'mc-en') {
       // Show Bengali, pick English meaning
-      const correct = w[2];
-      const distractors = words.filter(x => x[0] !== w[0]).map(x => x[2]);
-      const allPool = VOCAB_DATA.filter(x => x[0] !== w[0]).map(x => x[2]);
+      const correct = w.english;
+      const distractors = words.filter(x => x.lemma !== w.lemma).map(x => x.english);
+      const allPool = VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.english);
       const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
       const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
       vqQuestions.push({
-        type: 'mc', bengali: w[0], roman: w[1],
+        type: 'mc', bengali: w.lemma, roman: w.roman,
         prompt: 'What does this word mean?',
         correct, options: shuffleArr([correct, ...picks]), word: w,
       });
     } else if (qtype === 'mc-bn') {
       // Show English, pick Bengali
-      const correct = w[0];
-      const distractors = words.filter(x => x[0] !== w[0]).map(x => x[0]);
-      const allPool = VOCAB_DATA.filter(x => x[0] !== w[0]).map(x => x[0]);
+      const correct = w.lemma;
+      const distractors = words.filter(x => x.lemma !== w.lemma).map(x => x.lemma);
+      const allPool = VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.lemma);
       const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
       const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
       vqQuestions.push({
-        type: 'mc-reverse', english: w[2],
-        prompt: 'Which Bengali word means "' + w[2] + '"?',
+        type: 'mc-reverse', english: w.english,
+        prompt: 'Which Bengali word means "' + w.english + '"?',
         correct, options: shuffleArr([correct, ...picks]), word: w,
       });
     } else if (qtype === 'fib-en') {
       // Show Bengali, type English
-      const acceptable = w[2].toLowerCase().split('/').map(s => s.trim());
+      const acceptable = w.english.toLowerCase().split('/').map(s => s.trim());
       // Also accept individual words for multi-word translations
-      w[2].toLowerCase().split('/').forEach(s => {
+      w.english.toLowerCase().split('/').forEach(s => {
         s.trim().split(' ').forEach(word => { if (word.length > 2) acceptable.push(word); });
       });
       vqQuestions.push({
-        type: 'fib', bengali: w[0], roman: w[1],
+        type: 'fib', bengali: w.lemma, roman: w.roman,
         prompt: 'Type the English meaning:',
         acceptable: [...new Set(acceptable)],
-        answer: w[2], hint: 'Romanized: ' + w[1], word: w,
+        answer: w.english, hint: 'Romanized: ' + w.roman, word: w,
       });
     } else if (qtype === 'fib-bn') {
       // Show English, type romanized Bengali
-      const acceptable = [w[1].toLowerCase()];
+      const acceptable = [w.roman.toLowerCase()];
       vqQuestions.push({
-        type: 'fib-reverse', english: w[2],
+        type: 'fib-reverse', english: w.english,
         prompt: 'Type the romanized Bengali:',
-        acceptable, answer: w[1],
-        hint: 'Category: ' + (VOCAB_CATEGORIES[w[3]]?.title || w[3]), word: w,
+        acceptable, answer: w.roman,
+        hint: 'Category: ' + (VOCAB_CATEGORIES[w.category]?.title || w.category), word: w,
       });
     } else if (qtype === 'listening-mc') {
       // Play word; pick English meaning
-      const correct = w[2];
-      const pool = shuffleArr(VOCAB_DATA.filter(x => x[0] !== w[0]).map(x => x[2])
+      const correct = w.english;
+      const pool = shuffleArr(VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.english)
         .filter(v => v !== correct));
       const picks = pool.slice(0, 3);
       vqQuestions.push({
-        type: 'listening-mc', audio: w[0],
-        bengali: w[0], roman: w[1],
+        type: 'listening-mc', audio: w.lemma,
+        bengali: w.lemma, roman: w.roman,
         prompt: 'What does this word mean?',
         correct, options: shuffleArr([correct, ...picks]), word: w,
       });
     } else {
       // listening-fib: play word; type romanized form
-      const acceptable = [w[1].toLowerCase()];
+      const acceptable = [w.roman.toLowerCase()];
       vqQuestions.push({
-        type: 'listening-fib', audio: w[0],
-        bengali: w[0], roman: w[1],
+        type: 'listening-fib', audio: w.lemma,
+        bengali: w.lemma, roman: w.roman,
         prompt: 'Type the romanized form of what you hear:',
-        acceptable, answer: w[1],
-        hint: 'Hint: ' + w[2], word: w,
+        acceptable, answer: w.roman,
+        hint: 'Hint: ' + w.english, word: w,
       });
     }
   });
@@ -3638,7 +3638,7 @@ function retryVocabQuiz() {
     startMixedVocabPractice();
   } else if (vqCatRef) {
     vlCatId = vqCatRef;
-    vlWords = VOCAB_DATA.filter(w => w[3] === vlCatId);
+    vlWords = VOCAB_DATA.filter(w => w.category === vlCatId);
     startVocabQuiz();
   }
 }
@@ -3649,8 +3649,8 @@ function retryMissedVocab() {
   const words = [];
   vqMissed.forEach(m => {
     const w = m._q && m._q.word;
-    if (w && !seen.has(w[0])) {
-      seen.add(w[0]);
+    if (w && !seen.has(w.lemma)) {
+      seen.add(w.lemma);
       words.push(w);
     }
   });
@@ -4276,12 +4276,12 @@ function buildPlacementQuestions() {
 
     // Question 1: MC — Bengali to English
     const w1 = waveWords[Math.floor(Math.random() * waveWords.length)];
-    const correctEn = w1[2];
-    const vocabDistractors = VOCAB_DATA.filter(x => x[0] !== w1[0]).map(x => x[2]);
+    const correctEn = w1.english;
+    const vocabDistractors = VOCAB_DATA.filter(x => x.lemma !== w1.lemma).map(x => x.english);
     const picks1 = shuffleArr([...new Set(vocabDistractors)].filter(x => x !== correctEn)).slice(0, 3);
     questions.push({
       stage: 'vocabulary', wave: waveIdx, type: 'mc',
-      bengali: w1[0], roman: w1[1],
+      bengali: w1.lemma, roman: w1.roman,
       prompt: 'What does this word mean?',
       correct: correctEn,
       options: shuffleArr([correctEn, ...picks1]),
@@ -4290,16 +4290,16 @@ function buildPlacementQuestions() {
 
     // Question 2: FIB — type English meaning
     const w2 = waveWords[(Math.floor(Math.random() * (waveWords.length - 1)) + 1) % waveWords.length];
-    const fibAcceptable = w2[2].toLowerCase().split('/').map(s => s.trim());
-    w2[2].toLowerCase().split('/').forEach(s => {
+    const fibAcceptable = w2.english.toLowerCase().split('/').map(s => s.trim());
+    w2.english.toLowerCase().split('/').forEach(s => {
       s.trim().split(' ').forEach(word => { if (word.length > 2) fibAcceptable.push(word); });
     });
     questions.push({
       stage: 'vocabulary', wave: waveIdx, type: 'fib',
-      bengali: w2[0], roman: w2[1],
+      bengali: w2.lemma, roman: w2.roman,
       prompt: 'Type the English meaning:',
       acceptable: [...new Set(fibAcceptable)],
-      answer: w2[2], hint: 'Romanized: ' + w2[1],
+      answer: w2.english, hint: 'Romanized: ' + w2.roman,
       word: w2,
     });
   });
@@ -4668,7 +4668,7 @@ function computePlacementMastery() {
       const waveIdx = Math.floor(i / VMIX_WAVE_SIZE);
       const waveResult = ptStageResults.vocabulary.waves[waveIdx];
       const level = (waveResult && waveResult.correct === 2) ? 3 : 2;
-      ptPendingMastery['v:' + w[0]] = Math.max(level, getVocabMastery(w[0]));
+      ptPendingMastery['v:' + w.lemma] = Math.max(level, getVocabMastery(w.lemma));
     }
   }
 
@@ -4926,7 +4926,7 @@ function startLetterListening() {
   showScreen('quiz'); renderQuestion();
 }
 function startVocabListening() {
-  const seen = VOCAB_DATA.filter(w => getVocabMastery(w[0]) > 0);
+  const seen = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) > 0);
   const words = seen.length >= 4 ? seen : VOCAB_DATA.slice(0, 20);
   generateVocabQuiz(words, 'listening');
   vqIndex = 0; vqCorrect = 0; vqMissed = [];
@@ -5158,9 +5158,9 @@ function _buildAlphabetSection() {
 }
 
 function _buildVocabSection() {
-  const cats = [...new Set(VOCAB_DATA.map(w => w[3]))];
+  const cats = [...new Set(VOCAB_DATA.map(w => w.category))];
   const totalVocab = VOCAB_DATA.length;
-  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length;
   const isOpen = _progOpenSections.has('vocab');
   const arrowCls = isOpen ? 'open' : '';
 
@@ -5174,8 +5174,8 @@ function _buildVocabSection() {
 
   if (isOpen) {
     cats.forEach(cat => {
-      const words = VOCAB_DATA.filter(w => w[3] === cat);
-      const masteredCount = words.filter(w => getVocabMastery(w[0]) >= 3).length;
+      const words = VOCAB_DATA.filter(w => w.category === cat);
+      const masteredCount = words.filter(w => getVocabMastery(w.lemma) >= 3).length;
       const total = words.length;
       const pct = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
       const grpId = 'vocab:' + cat;
@@ -5193,10 +5193,10 @@ function _buildVocabSection() {
       if (grpOpen) {
         html += `<div class="prog-chips">`;
         words.forEach(w => {
-          const lvl = getVocabMastery(w[0]);
-          const safeB = w[0].replace(/'/g, "\\'");
-          const eng = (w[2] || '').replace(/"/g, '&quot;');
-          html += `<div class="prog-chip" data-level="${lvl}" onclick="cycleVocabChipMastery('${safeB}')" title="${eng}">${w[0]}</div>`;
+          const lvl = getVocabMastery(w.lemma);
+          const safeB = w.lemma.replace(/'/g, "\\'");
+          const eng = (w.english || '').replace(/"/g, '&quot;');
+          html += `<div class="prog-chip" data-level="${lvl}" onclick="cycleVocabChipMastery('${safeB}')" title="${eng}">${w.lemma}</div>`;
         });
         html += `</div>`;
       }
@@ -5287,8 +5287,8 @@ const ACHIEVEMENTS = [
   { id: 'vowel-master',     icon: '🔤', label: 'Vowel Master',       test: () => VOWELS.every(v => getMastery(v.letter) >= 3) },
   { id: 'alphabet-complete',icon: '📚', label: 'Full Alphabet',      test: () => ALL_LETTERS.every(l => getMastery(l.letter) >= 3) },
   { id: 'century',          icon: '⭐', label: 'Century',            test: () => progress.xp >= 100 },
-  { id: 'word-collector',   icon: '📖', label: 'Word Collector',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length >= 50 },
-  { id: 'vocab-champion',   icon: '🏆', label: 'Vocab Champion',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length >= 500 },
+  { id: 'word-collector',   icon: '📖', label: 'Word Collector',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length >= 50 },
+  { id: 'vocab-champion',   icon: '🏆', label: 'Vocab Champion',     test: () => VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length >= 500 },
   { id: 'grammar-start',    icon: '📝', label: 'Grammar Beginner',   test: () => GRAMMAR_LESSONS.some(l => getLessonProgress(l).pct === 100) },
   { id: 'grammar-graduate', icon: '🎓', label: 'Grammar Graduate',   test: () => GRAMMAR_LESSONS.every(l => getLessonProgress(l).pct === 100) },
   { id: 'streak-3',         icon: '🔥', label: 'On a Roll',          test: () => progress.streak >= 3 },
@@ -5338,7 +5338,7 @@ function renderStatsPanel() {
   const totalLetters = ALL_LETTERS.length;
   const masteredLetters = ALL_LETTERS.filter(l => getMastery(l.letter) >= 3).length;
   const totalVocab = VOCAB_DATA.length;
-  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w[0]) >= 3).length;
+  const masteredVocab = VOCAB_DATA.filter(w => getVocabMastery(w.lemma) >= 3).length;
   const totalLessons = GRAMMAR_LESSONS.length;
   const masteredLessons = GRAMMAR_LESSONS.filter(l => getLessonProgress(l).pct === 100).length;
 
@@ -5366,12 +5366,12 @@ function renderStatsPanel() {
   <div class="mastery-bar-row"><span class="mastery-bar-lbl">📝 Grammar</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${grammarPct}%"></div></div><span class="mastery-bar-pct">${grammarPct}%</span></div>`;
 
   // Strongest/weakest vocab category
-  const cats = [...new Set(VOCAB_DATA.map(w => w[3]))];
+  const cats = [...new Set(VOCAB_DATA.map(w => w.category))];
   let bestCat = null, worstCat = null, bestPct = -1, worstPct = 101;
   cats.forEach(cat => {
-    const words = VOCAB_DATA.filter(w => w[3] === cat);
+    const words = VOCAB_DATA.filter(w => w.category === cat);
     if (words.length < 3) return;
-    const pct = Math.round((words.filter(w => getVocabMastery(w[0]) >= 3).length / words.length) * 100);
+    const pct = Math.round((words.filter(w => getVocabMastery(w.lemma) >= 3).length / words.length) * 100);
     if (pct > bestPct) { bestPct = pct; bestCat = cat; }
     if (pct < worstPct) { worstPct = pct; worstCat = cat; }
   });
@@ -5396,9 +5396,9 @@ function renderStatsPanel() {
   html += `<div class="stats-section-title" style="margin-top:20px">Vocabulary by Category</div>
   <div class="stats-cat-list">`;
   Object.entries(VOCAB_CATEGORIES).forEach(([key, cat]) => {
-    const words = VOCAB_DATA.filter(w => w[3] === key);
+    const words = VOCAB_DATA.filter(w => w.category === key);
     if (!words.length) return;
-    const mastered = words.filter(w => getVocabMastery(w[0]) >= 2).length;
+    const mastered = words.filter(w => getVocabMastery(w.lemma) >= 2).length;
     const pct = Math.round((mastered / words.length) * 100);
     html += `<div class="stats-cat-row">
       <span class="stats-cat-icon">${cat.icon}</span>
@@ -5507,8 +5507,8 @@ function getDueItems() {
   });
   // Vocab
   VOCAB_DATA.forEach(w => {
-    const key = 'v:' + w[0];
-    const mastery = getVocabMastery(w[0]);
+    const key = 'v:' + w.lemma;
+    const mastery = getVocabMastery(w.lemma);
     if (mastery === 0) return;
     const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
     if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.vocab.push(w);
@@ -5758,9 +5758,9 @@ function runSearch(q) {
 
   // 2. Vocabulary — match Bengali, romanized, or English
   const vocabHits = VOCAB_DATA.filter(w =>
-    w[0].includes(q) ||
-    w[1].toLowerCase().includes(ql) ||
-    w[2].toLowerCase().includes(ql)
+    w.lemma.includes(q) ||
+    w.roman.toLowerCase().includes(ql) ||
+    w.english.toLowerCase().includes(ql)
   );
 
   // 3. Grammar lessons — match title or shortDesc
@@ -5793,10 +5793,10 @@ function runSearch(q) {
     html += `<div class="search-group">
       <div class="search-group-title">Vocabulary</div>`;
     vocabHits.slice(0, MAX_VOCAB).forEach(w => {
-      html += `<div class="search-result-item" onclick="closeSearch();showVocabDetail(${JSON.stringify(w[0])})">
-        <span class="sri-bengali">${escHtml(w[0])}</span>
-        <span class="sri-detail">${escHtml(w[1])} · ${escHtml(w[2])}</span>
-        <span class="sri-tag">${escHtml(w[4])}</span>
+      html += `<div class="search-result-item" onclick="closeSearch();showVocabDetail(${JSON.stringify(w.lemma)})">
+        <span class="sri-bengali">${escHtml(w.lemma)}</span>
+        <span class="sri-detail">${escHtml(w.roman)} · ${escHtml(w.english)}</span>
+        <span class="sri-tag">${escHtml(w.pos)}</span>
       </div>`;
     });
     if (vocabHits.length > MAX_VOCAB) {

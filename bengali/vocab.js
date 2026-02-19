@@ -1,14 +1,9 @@
 // Bengali Vocabulary — 1000 most common words
-// Format: [bengali, romanized, english, category, partOfSpeech]
+// Source schema: [lemma, roman, english, category, pos, example]
+// Runtime schema: { lemma, roman, english, category, pos, example, freqRank }
 
-// TODO: Add example sentences as the 6th element of each word entry.
-// Format: ["bengali", "roman", "english", "category", "pos", "example sentence in Bengali (optional romanization)"]
-// Example: ["আমি","ami","I / me","pronouns","pronoun","আমি বাংলা শিখছি। (ami bangla shikhchi — I am learning Bengali.)"],
-//
-// Once added, update showVocabDetail() and the vocab flashcard back face in index.html
-// to render w[5] as an example sentence row.
 
-const VOCAB_DATA = [
+const VOCAB_DATA_RAW = [
 // ─── PRONOUNS & DEMONSTRATIVES (25) ───
 ["আমি","ami","I / me","pronouns","pronoun","আমি বাংলা শিখছি। (ami bangla shikhchhi — I am learning Bengali.)"],
 ["তুমি","tumi","you (informal)","pronouns","pronoun","তুমি কোথায় যাচ্ছ? (tumi kothay jaccho — Where are you going?)"],
@@ -1076,6 +1071,18 @@ const VOCAB_DATA = [
 ["মূলা","mula","radish","food","noun","মূলা শীতের সবজি। (mula shiter shobji — Radish is a winter vegetable.)"],
 ["লাউ","lau","bottle gourd","food","noun","লাউ দিয়ে ঘন তরকারি রান্না হলো। (lau diye ghon torkari ranna holo — A thick curry was cooked with bottle gourd.)"],
 ];
+
+
+const VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example], index) => ({
+  lemma,
+  roman,
+  english,
+  category,
+  pos,
+  example: example || '',
+  freqRank: index + 1,
+}));
+
 
 // Category metadata
 const VOCAB_CATEGORIES = {
