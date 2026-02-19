@@ -2,10 +2,12 @@
 // Data files use stale-while-revalidate so deploys are reflected on next load.
 // Other same-origin assets use cache-first for offline support.
 // Bump CACHE_VERSION to force full cache refresh after major updates.
-const CACHE_VERSION = "bengali-v4";
+const CACHE_VERSION = "bengali-v5";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
+  "./styles.css",
+  "./app.js",
   "./vocab.js",
   "./grammar.js",
   "./phrases.js",
