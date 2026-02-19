@@ -317,8 +317,18 @@ nav h1 span { color: var(--accent); }
   margin-top: 12px; width: 100%;
 }
 .fib-hint {
-  font-size: 0.8rem; color: var(--text-dim); margin-top: 8px;
+  font-size: 0.82rem; color: var(--text-dim); margin-top: 8px;
 }
+.hint-btn {
+  display: block; width: 100%; margin-top: 10px;
+  background: none; border: 1px solid rgba(200,184,71,0.3);
+  color: var(--gold); padding: 8px 20px; border-radius: 8px;
+  cursor: pointer; font-size: 0.85rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.hint-btn:hover { background: rgba(200,184,71,0.08); border-color: rgba(200,184,71,0.5); }
+[data-theme="light"] .hint-btn { border-color: rgba(160,140,0,0.3); color: #8a7800; }
+[data-theme="light"] .hint-btn:hover { background: rgba(160,140,0,0.07); }
 
 /* Quiz feedback */
 .quiz-feedback {
@@ -2320,11 +2330,14 @@ function renderQuestion() {
     </div>
     <button class="idk-btn" onclick="dontKnowQuiz()">I don't know</button>`;
   } else {
+    const hintHtml = q.hint
+      ? `<button class="hint-btn" onclick="showHint(this)">💡 Hint</button><div class="fib-hint" style="display:none">${q.hint}</div>`
+      : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="fib-input" placeholder="Type your answer…"
         onkeydown="if(event.key==='Enter')answerFIB()" autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" onclick="answerFIB()">Check</button>
-      <div class="fib-hint">${q.hint || ''}</div>
+      ${hintHtml}
     </div>
     <button class="idk-btn" onclick="dontKnowQuiz()">I don't know</button>`;
     setTimeout(() => document.getElementById('fib-input')?.focus(), 100);
@@ -2471,6 +2484,12 @@ function _normRoman(s) {
     .replace(/[ṛṚ]/g, 'r')
     .replace(/ñ/g, 'ny')
     .replace(/ô/g, 'o');
+}
+
+function showHint(btn) {
+  btn.style.display = 'none';
+  const hint = btn.nextElementSibling;
+  if (hint && hint.classList.contains('fib-hint')) hint.style.display = '';
 }
 
 function _showInlineAnswer(areaId, answer) {
@@ -3214,11 +3233,14 @@ function renderVocabQuestion() {
       '<button class="idk-btn" onclick="dontKnowVocab()">I don\'t know</button>';
     attachQuizKeyHandler('vq');
   } else {
+    const vqHintHtml = q.hint
+      ? `<button class="hint-btn" onclick="showHint(this)">💡 Hint</button><div class="fib-hint" style="display:none">${q.hint}</div>`
+      : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="vq-fib-input" placeholder="Type your answer…"
         onkeydown="if(event.key==='Enter')answerVocabFIB()" autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" onclick="answerVocabFIB()">Check</button>
-      <div class="fib-hint">${q.hint || ''}</div>
+      ${vqHintHtml}
     </div>
     <button class="idk-btn" onclick="dontKnowVocab()">I don't know</button>`;
     setTimeout(() => document.getElementById('vq-fib-input')?.focus(), 100);
@@ -4047,11 +4069,14 @@ function renderPlacementQuestionByType(q, qa, aa) {
           `<button class="mc-btn" onclick="answerPlacementMC(this, '${escapeStr(opt)}')">${opt}</button>`
         ).join('') + '</div>';
     } else {
+      const ptAlphaHint = q.hint
+        ? `<button class="hint-btn" onclick="showHint(this)">💡 Hint</button><div class="fib-hint" style="display:none">${q.hint}</div>`
+        : '';
       aa.innerHTML = `<div class="fib-area">
         <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
           onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
         <button class="btn-primary fib-submit" onclick="answerPlacementFIB()">Check</button>
-        <div class="fib-hint">${q.hint || ''}</div>
+        ${ptAlphaHint}
       </div>`;
       setTimeout(() => document.getElementById('pt-fib-input')?.focus(), 100);
     }
@@ -4072,11 +4097,14 @@ function renderPlacementQuestionByType(q, qa, aa) {
           `<button class="mc-btn" onclick="answerPlacementMC(this, '${escapeStr(opt)}')">${opt}</button>`
         ).join('') + '</div>';
     } else {
+      const ptVocabHint = q.hint
+        ? `<button class="hint-btn" onclick="showHint(this)">💡 Hint</button><div class="fib-hint" style="display:none">${q.hint}</div>`
+        : '';
       aa.innerHTML = `<div class="fib-area">
         <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
           onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
         <button class="btn-primary fib-submit" onclick="answerPlacementFIB()">Check</button>
-        <div class="fib-hint">${q.hint || ''}</div>
+        ${ptVocabHint}
       </div>`;
       setTimeout(() => document.getElementById('pt-fib-input')?.focus(), 100);
     }
