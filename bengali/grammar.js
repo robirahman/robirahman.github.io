@@ -679,4 +679,379 @@ Polite expressions: দয়া করে (doya kore — please), মাফ ক
       { type: 'word-order', prompt: 'Arrange: "Excuse me, could you tell me?"', words: ['বলবেন?', 'একটু', 'করবেন,', 'মাফ'], correct: ['মাফ', 'করবেন,', 'একটু', 'বলবেন?'], english: 'Excuse me, could you tell me?', roman: 'maph korben, ektu bolben?' },
     ]
   },
+
+  // ═══════════════════════════════════════
+  //  LESSON 21: Comparatives & Superlatives
+  // ═══════════════════════════════════════
+  {
+    id: 'comparatives',
+    number: 21,
+    title: 'Comparatives & Superlatives',
+    shortDesc: 'আরো, বেশি, সবচেয়ে, থেকে — comparing things',
+    explanation: `To compare two things in Bengali, use the pattern: A + থেকে (than) + B + আরো/বেশি (more) + adjective. The word থেকে literally means "from," so you are saying "from A, B is more [adjective]."
+
+For example: "আম কলার থেকে মিষ্টি" means "Mango is sweeter than banana" — literally "from banana, mango is sweet." The comparison marker থেকে follows the thing being compared against.
+
+For superlatives (the most), use সবচেয়ে before the adjective: "সে সবচেয়ে লম্বা" = "He/she is the tallest." সবচেয়ে means "among all" or "most of all."
+
+আরো means "more/further" (আরো বড় = bigger), while বেশি emphasizes quantity or degree (বেশি ভালো = better, আরো বেশি = even more).`,
+    examples: [
+      { bengali: 'আম কলার থেকে মিষ্টি', roman: 'am kolar theke mishti', english: 'Mango is sweeter than banana' },
+      { bengali: 'সে আমার থেকে লম্বা', roman: 'she amar theke lomba', english: 'He/she is taller than me' },
+      { bengali: 'এই বইটা ওটার থেকে আরো ভালো', roman: 'ei boita otar theke aro bhalo', english: 'This book is better than that one' },
+      { bengali: 'ঢাকা বাংলাদেশের সবচেয়ে বড় শহর', roman: 'dhaka bangladesher shobcheye boro shohor', english: 'Dhaka is the biggest city in Bangladesh' },
+      { bengali: 'সে সবচেয়ে ভালো ছাত্র', roman: 'she shobcheye bhalo chhatro', english: 'He/she is the best student' },
+      { bengali: 'গরমকাল শীতকালের থেকে বেশি গরম', roman: 'gormokal shitokaler theke beshi gorom', english: 'Summer is hotter than winter' },
+      { bengali: 'আরো একটু দাও', roman: 'aro ektu dao', english: 'Give a little more' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does this sentence mean?', bengali: 'সে আমার থেকে লম্বা', roman: 'she amar theke lomba', correct: 'He/she is taller than me', options: ['He/she is taller than me', 'I am taller than him/her', 'He/she is as tall as me', 'He/she was taller than me'] },
+      { type: 'translate-mc', prompt: 'How do you say "the biggest"?', bengali: 'সবচেয়ে বড়', roman: 'shobcheye boro', correct: 'সবচেয়ে বড়', options: ['সবচেয়ে বড়', 'আরো বড়', 'বেশি বড়', 'থেকে বড়'] },
+      { type: 'fib', prompt: 'Fill in: "Mango is sweeter than banana"', sentence: 'আম কলার ___ মিষ্টি', roman: 'am kolar ___ mishti', english: 'Mango is sweeter than banana', acceptable: ['থেকে', 'theke'], answer: 'থেকে' },
+      { type: 'word-order', prompt: 'Arrange: "She is the best student"', words: ['ছাত্র', 'সবচেয়ে', 'সে', 'ভালো'], correct: ['সে', 'সবচেয়ে', 'ভালো', 'ছাত্র'], english: 'She is the best student', roman: 'she shobcheye bhalo chhatro' },
+      { type: 'error-spot', prompt: 'Which sentence correctly says "This is better than that"?', options: ['এটা ওটার থেকে ভালো', 'এটা থেকে ওটা ভালো', 'এটা ভালো থেকে ওটা', 'থেকে এটা ওটা ভালো'], correct: 'এটা ওটার থেকে ভালো', explanation: 'Pattern: subject + comparison + থেকে + adjective' },
+      { type: 'translate-mc', prompt: '"আরো বেশি" means:', bengali: 'আরো বেশি', roman: 'aro beshi', correct: 'Even more', options: ['Even more', 'A little less', 'The most', 'Much less'] },
+      { type: 'fib', prompt: 'Complete: "___ সুন্দর শহর" (the most beautiful city)', sentence: '___ সুন্দর শহর', roman: '___ shundor shohor', english: 'The most beautiful city', acceptable: ['সবচেয়ে', 'shobcheye'], answer: 'সবচেয়ে' },
+      { type: 'translate-mc', prompt: 'What is the comparison word meaning "than"?', bengali: 'থেকে', roman: 'theke', correct: 'Than / from', options: ['Than / from', 'More', 'Most', 'Less'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 22: Topic & Focus Particles
+  // ═══════════════════════════════════════
+  {
+    id: 'particles',
+    number: 22,
+    title: 'Topic & Focus Particles',
+    shortDesc: 'তো, ই, ও — adding emphasis and contrast',
+    explanation: `Bengali uses small particles that attach to words to add nuance, emphasis, or contrast. These particles do not translate directly into English but change the feel and meaning of a sentence significantly.
+
+তো (to) signals a topic or mild assertion — often like "well," "you know," or "after all" in English. "তুমি তো জানো" = "You know (don't you)." It can also soften a request: "একটু দাওতো" = "Give some, will you."
+
+ই (i) is an emphatic particle meaning "exactly," "only," or "right." Attaching ই to a word highlights it as the specific one: "আমিই করব" = "I (myself) will do it," implying no one else. "এটাই ঠিক" = "This is exactly right."
+
+ও (o) means "also" or "even." "সেও আসবে" = "He/she will also come." "আমিও জানি না" = "I don't know either." When used with negatives it emphasizes impossibility: "কেউও আসেনি" = "Nobody came at all."`,
+    examples: [
+      { bengali: 'তুমি তো জানো', roman: 'tumi to jano', english: 'You know (don\'t you) / You do know' },
+      { bengali: 'আমিই করব', roman: 'amii korbo', english: 'I myself will do it (not anyone else)' },
+      { bengali: 'এটাই ঠিক', roman: 'etai thik', english: 'This is exactly right' },
+      { bengali: 'সেও আসবে', roman: 'sheo ashbe', english: 'He/she will also come' },
+      { bengali: 'আমিও জানি না', roman: 'amio jani na', english: 'I don\'t know either' },
+      { bengali: 'একটু দাওতো', roman: 'ektu daoto', english: 'Give a little, will you (softened request)' },
+      { bengali: 'এখনই যাব', roman: 'ekhonoi jabo', english: 'I will go right now (emphatic)' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does ই add to a word?', bengali: 'আমিই', roman: 'amii', correct: 'Emphasis: exactly this one, no one else', options: ['Emphasis: exactly this one, no one else', 'A question marker', '"Also" or "too"', 'A topic marker'] },
+      { type: 'translate-mc', prompt: 'What does "সেও আসবে" mean?', bengali: 'সেও আসবে', roman: 'sheo ashbe', correct: 'He/she will also come', options: ['He/she will also come', 'He/she will not come', 'He/she came too', 'He/she always comes'] },
+      { type: 'fib', prompt: 'Add the "also" particle to আমি', sentence: 'আমি___ জানি না', roman: 'ami___ jani na', english: 'I don\'t know either', acceptable: ['ও', 'o'], answer: 'ও' },
+      { type: 'error-spot', prompt: 'Which uses the emphatic ই correctly?', options: ['এটাই ঠিক', 'এটাও ঠিক', 'এটাতো ঠিক', 'এটা ঠিক'], correct: 'এটাই ঠিক', explanation: 'ই attaches to mark "this exact one is right."' },
+      { type: 'translate-mc', prompt: '"তুমি তো জানো" conveys:', bengali: 'তুমি তো জানো', roman: 'tumi to jano', correct: 'You know (mild assertion or reminder)', options: ['You know (mild assertion or reminder)', 'Do you know?', 'You don\'t know', 'You knew'] },
+      { type: 'word-order', prompt: 'Arrange: "I myself will do it"', words: ['আমিই', 'করব'], correct: ['আমিই', 'করব'], english: 'I myself will do it', roman: 'amii korbo' },
+      { type: 'fib', prompt: 'Complete the softened request: "একটু দাও___"', sentence: 'একটু দাও___', roman: 'ektu dao___', english: 'Give a little, will you', acceptable: ['তো', 'to'], answer: 'তো' },
+      { type: 'translate-mc', prompt: 'Which particle means "right now" when added to এখন?', bengali: 'এখনই', roman: 'ekhonoi', correct: 'ই (right/exactly now)', options: ['ই (right/exactly now)', 'ও (also now)', 'তো (well, now)', 'না (not now)'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 23: Verbal Nouns & Infinitives
+  // ═══════════════════════════════════════
+  {
+    id: 'verbal-nouns',
+    number: 23,
+    title: 'Verbal Nouns & Infinitives',
+    shortDesc: 'করা / করতে / করে — three essential verb forms',
+    explanation: `Bengali verb roots can be extended with three key suffixes that turn them into nouns or infinitive-like forms used in many constructions.
+
+The -আ suffix (করা, খাওয়া, যাওয়া) creates a verbal noun — the activity itself. "গান গাওয়া ভালো" = "Singing is good." These forms act like English gerunds (-ing words used as nouns).
+
+The -তে suffix (করতে, খেতে, যেতে) creates an infinitive used to express purpose or direction. "খেতে যাচ্ছি" = "I'm going to eat." "পড়তে ভালো লাগে" = "I like to read (reading feels good)."
+
+The -এ/-য়ে suffix (করে, খেয়ে, গিয়ে) creates a conjunctive participle — "by doing" or "having done." "খেয়ে যাও" = "Go after eating." "হেঁটে যাব" = "I'll go by walking."`,
+    examples: [
+      { bengali: 'গান গাওয়া ভালো', roman: 'gan gaowa bhalo', english: 'Singing is good (verbal noun)' },
+      { bengali: 'খেতে যাচ্ছি', roman: 'khete jacchhi', english: 'I\'m going to eat (infinitive of purpose)' },
+      { bengali: 'পড়তে ভালো লাগে', roman: 'porte bhalo lage', english: 'I like to read (reading feels good)' },
+      { bengali: 'খেয়ে যাও', roman: 'kheye jao', english: 'Go after eating (conjunctive participle)' },
+      { bengali: 'হেঁটে যাব', roman: 'hẽte jabo', english: 'I\'ll go by walking' },
+      { bengali: 'কাজ করা কঠিন', roman: 'kaj kora kothin', english: 'Working is difficult (verbal noun as subject)' },
+      { bengali: 'ঘুমাতে যাচ্ছি', roman: 'ghumate jacchhi', english: 'I\'m going to sleep' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What form is "করা"?', bengali: 'করা', roman: 'kora', correct: 'Verbal noun (the act of doing)', options: ['Verbal noun (the act of doing)', 'Infinitive of purpose', 'Conjunctive participle', 'Past tense'] },
+      { type: 'translate-mc', prompt: 'What does "খেতে যাচ্ছি" mean?', bengali: 'খেতে যাচ্ছি', roman: 'khete jacchhi', correct: 'I\'m going to eat', options: ['I\'m going to eat', 'I ate and went', 'I like eating', 'I went eating'] },
+      { type: 'fib', prompt: 'Complete: "গান ___ ভালো" (Singing is good)', sentence: 'গান ___ ভালো', roman: 'gan ___ bhalo', english: 'Singing is good', acceptable: ['গাওয়া', 'gaowa'], answer: 'গাওয়া' },
+      { type: 'translate-mc', prompt: '"খেয়ে যাও" means:', bengali: 'খেয়ে যাও', roman: 'kheye jao', correct: 'Go after eating', options: ['Go after eating', 'Come eat', 'I will eat and go', 'Go and eat (then come back)'] },
+      { type: 'error-spot', prompt: 'Which form shows purpose ("in order to do")?', options: ['করা', 'করতে', 'করে', 'করেছি'], correct: 'করতে', explanation: '-তে suffix creates the infinitive of purpose.' },
+      { type: 'word-order', prompt: 'Arrange: "Working is difficult"', words: ['কঠিন', 'করা', 'কাজ'], correct: ['কাজ', 'করা', 'কঠিন'], english: 'Working is difficult', roman: 'kaj kora kothin' },
+      { type: 'fib', prompt: 'Complete: "পড়তে ___ লাগে" (I like to read)', sentence: 'পড়তে ___ লাগে', roman: 'porte ___ lage', english: 'I like to read', acceptable: ['ভালো', 'bhalo'], answer: 'ভালো' },
+      { type: 'translate-mc', prompt: 'The conjunctive participle (-এ/-য়ে) expresses:', bengali: 'হেঁটে', roman: 'hẽte', correct: '"by doing" or "having done"', options: ['"by doing" or "having done"', '"in order to do"', '"the act of doing"', '"doing it again"'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 24: Causative Verbs
+  // ═══════════════════════════════════════
+  {
+    id: 'causatives',
+    number: 24,
+    title: 'Causative Verbs',
+    shortDesc: 'করানো, খাওয়ানো, দেখানো — making someone do something',
+    explanation: `Causative verbs in Bengali express the idea of causing or allowing someone to do something — like English "make someone do" or "have someone do." They are formed by adding -ানো (-ano) to the verb root.
+
+খাওয়া (to eat) → খাওয়ানো (to feed / cause to eat): "মা বাচ্চাকে খাওয়াল" = "Mother fed the child."
+
+দেখা (to see) → দেখানো (to show / cause to see): "সে আমাকে ছবি দেখাল" = "He/she showed me the picture."
+
+করা (to do) → করানো (to have done / cause to do): "আমি কাজ করালাম" = "I had the work done."
+
+শেখা (to learn) → শেখানো (to teach / cause to learn): "সে আমাকে বাংলা শেখাল" = "He/she taught me Bengali."
+
+The causative often takes a dative object (the person being caused): "তাকে" (to him/her) or "বাচ্চাকে" (to the child).`,
+    examples: [
+      { bengali: 'মা বাচ্চাকে খাওয়াল', roman: 'ma bachhhake khawal', english: 'Mother fed the child' },
+      { bengali: 'সে আমাকে ছবি দেখাল', roman: 'she amake chhabi dekhal', english: 'He/she showed me the picture' },
+      { bengali: 'সে আমাকে বাংলা শেখাল', roman: 'she amake bangla shekhal', english: 'He/she taught me Bengali' },
+      { bengali: 'আমি কাজ করালাম', roman: 'ami kaj korlam', english: 'I had the work done' },
+      { bengali: 'ডাক্তার তাকে ওষুধ খাওয়াল', roman: 'daktar take oshudh khawal', english: 'The doctor made him/her take medicine' },
+      { bengali: 'বাবা আমাকে গাড়ি চালাতে শেখাল', roman: 'baba amake gari chalate shekhal', english: 'Father taught me to drive a car' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does "খাওয়ানো" mean?', bengali: 'খাওয়ানো', roman: 'khaowano', correct: 'To feed / cause to eat', options: ['To feed / cause to eat', 'To eat', 'To be eaten', 'To want to eat'] },
+      { type: 'translate-mc', prompt: 'What does "সে আমাকে বাংলা শেখাল" mean?', bengali: 'সে আমাকে বাংলা শেখাল', roman: 'she amake bangla shekhal', correct: 'He/she taught me Bengali', options: ['He/she taught me Bengali', 'I taught him/her Bengali', 'He/she learned Bengali from me', 'He/she and I learned Bengali'] },
+      { type: 'fib', prompt: 'What is the causative of দেখা (to see)?', sentence: '___', roman: 'to show', english: 'Causative of দেখা', acceptable: ['দেখানো', 'dekhano'], answer: 'দেখানো' },
+      { type: 'word-order', prompt: 'Arrange: "Mother fed the child"', words: ['বাচ্চাকে', 'খাওয়াল', 'মা'], correct: ['মা', 'বাচ্চাকে', 'খাওয়াল'], english: 'Mother fed the child', roman: 'ma bachhhake khawal' },
+      { type: 'error-spot', prompt: 'Which is the causative form of শেখা (to learn)?', options: ['শেখা', 'শেখানো', 'শিখছে', 'শিখেছে'], correct: 'শেখানো', explanation: 'Adding -ানো to the root forms the causative.' },
+      { type: 'translate-mc', prompt: '"দেখানো" means:', bengali: 'দেখানো', roman: 'dekhano', correct: 'To show / cause to see', options: ['To show / cause to see', 'To look', 'To be seen', 'To watch'] },
+      { type: 'fib', prompt: 'Complete: "সে আমাকে ছবি ___" (showed me the picture)', sentence: 'সে আমাকে ছবি ___', roman: 'she amake chhabi ___', english: 'He/she showed me the picture', acceptable: ['দেখাল', 'dekhal'], answer: 'দেখাল' },
+      { type: 'translate-mc', prompt: 'Causative verbs are formed by adding:', bengali: '-ানো', roman: '-ano', correct: '-ানো to the verb root', options: ['-ানো to the verb root', '-তে to the root', '-এ to the root', '-ছি to the root'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 25: Reported Speech
+  // ═══════════════════════════════════════
+  {
+    id: 'reported-speech',
+    number: 25,
+    title: 'Reported Speech',
+    shortDesc: 'বলল যে, জিজ্ঞেস করল — saying what others said',
+    explanation: `Reported speech in Bengali uses যে (that) to introduce what was said or thought. The verb for reporting (বলল, বলেছে, জানাল) comes before যে, and the reported clause follows.
+
+Direct: সে বলল, "আমি আসব।" (He said, "I will come.")
+Reported: সে বলল যে সে আসবে। (He said that he would come.)
+
+Notice that in reported speech, pronouns often shift: the speaker's "আমি" (I) becomes "সে" (he/she) in the reported clause, just as in English.
+
+For reported questions, use জিজ্ঞেস করল (asked) + কীভাবে/কখন/কোথায় etc.: "সে জিজ্ঞেস করল কখন আসব।" = "He/she asked when I would come."
+
+Reported commands use বলল + infinitive: "মা বলল যেতে।" = "Mother said to go."`,
+    examples: [
+      { bengali: 'সে বলল যে সে আসবে', roman: 'she bollo je she ashbe', english: 'He/she said that he/she would come' },
+      { bengali: 'আমি বললাম যে আমি ক্লান্ত', roman: 'ami bollam je ami klanto', english: 'I said that I was tired' },
+      { bengali: 'সে জিজ্ঞেস করল কখন আসব', roman: 'she jiggesh korlo kokhon ashbo', english: 'He/she asked when I would come' },
+      { bengali: 'মা বলল যেতে', roman: 'ma bollo jete', english: 'Mother said to go' },
+      { bengali: 'সে জানাল যে বাজার বন্ধ', roman: 'she janal je bajar bondho', english: 'He/she let (me) know that the market is closed' },
+      { bengali: 'সে বলেছে যে খাবার আছে', roman: 'she boleche je khabar achhe', english: 'He/she has said that there is food' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does "সে বলল যে সে আসবে" mean?', bengali: 'সে বলল যে সে আসবে', roman: 'she bollo je she ashbe', correct: 'He/she said that he/she would come', options: ['He/she said that he/she would come', 'He/she is saying he/she is coming', 'He/she asked if he/she should come', 'He/she said he/she came'] },
+      { type: 'fib', prompt: 'Complete: "আমি বললাম ___ আমি ক্লান্ত" (I said that I was tired)', sentence: 'আমি বললাম ___ আমি ক্লান্ত', roman: 'ami bollam ___ ami klanto', english: 'I said that I was tired', acceptable: ['যে', 'je'], answer: 'যে' },
+      { type: 'translate-mc', prompt: 'For reported questions, you use:', bengali: 'জিজ্ঞেস করল', roman: 'jiggesh korlo', correct: 'জিজ্ঞেস করল (asked)', options: ['জিজ্ঞেস করল (asked)', 'বলল (said)', 'জানাল (informed)', 'দেখল (saw)'] },
+      { type: 'word-order', prompt: 'Arrange: "He/she said that there is food"', words: ['যে', 'বলেছে', 'আছে', 'সে', 'খাবার'], correct: ['সে', 'বলেছে', 'যে', 'খাবার', 'আছে'], english: 'He/she has said that there is food', roman: 'she boleche je khabar achhe' },
+      { type: 'error-spot', prompt: 'Which correctly reports "He said he is coming"?', options: ['সে বলল যে আসছে সে', 'সে বলল যে সে আসছে', 'যে সে বলল আসছে', 'সে যে বলল আসছে'], correct: 'সে বলল যে সে আসছে', explanation: 'Reporting verb + যে + reported clause (subject-verb order maintained).' },
+      { type: 'translate-mc', prompt: '"মা বলল যেতে" means:', bengali: 'মা বলল যেতে', roman: 'ma bollo jete', correct: 'Mother said to go', options: ['Mother said to go', 'Mother went away', 'Mother said she is going', 'Mother asked where to go'] },
+      { type: 'fib', prompt: 'Complete: "সে ___ করল কখন আসব"', sentence: 'সে ___ করল কখন আসব', roman: 'she ___ korlo kokhon ashbo', english: 'He/she asked when I would come', acceptable: ['জিজ্ঞেস', 'jiggesh'], answer: 'জিজ্ঞেস' },
+      { type: 'translate-mc', prompt: 'যে in reported speech means:', bengali: 'যে', roman: 'je', correct: 'That (introducing reported clause)', options: ['That (introducing reported clause)', 'Who / which', 'When', 'Because'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 26: Passive Constructions
+  // ═══════════════════════════════════════
+  {
+    id: 'passive',
+    number: 26,
+    title: 'Passive Constructions',
+    shortDesc: 'হওয়া-based passives — focus on the action, not the doer',
+    explanation: `Bengali forms passives primarily with হওয়া (to become/happen) combined with the past participle of the verb. The pattern is: object (subject of passive) + verb participle + হওয়া conjugated.
+
+"কাজ হয়েছে" literally means "The work has become done" = "The work has been done." The agent (doer) is optional and can be added with দ্বারা (by): "রবীন্দ্রনাথ দ্বারা এই গান লেখা হয়েছে" = "This song was written by Rabindranath."
+
+Another common passive uses the bare verbal noun + হওয়া: "দরজা খোলা হলো" = "The door was opened." For ongoing or habitual passive: "দোকান বন্ধ করা হয়" = "The shop is (regularly) closed."
+
+Passives are more common in writing and formal speech. In everyday conversation, Bengali speakers often prefer active constructions.`,
+    examples: [
+      { bengali: 'কাজ হয়েছে', roman: 'kaj hoyechhe', english: 'The work has been done' },
+      { bengali: 'দরজা খোলা হলো', roman: 'dorja khola holo', english: 'The door was opened' },
+      { bengali: 'চিঠি পাঠানো হয়েছে', roman: 'chiti pathano hoyechhe', english: 'The letter has been sent' },
+      { bengali: 'দোকান বন্ধ করা হয়', roman: 'dokan bondho kora hoy', english: 'The shop is (regularly) closed' },
+      { bengali: 'এই বইটি রবীন্দ্রনাথ লিখেছেন', roman: 'ei boiti Rabindranath likhechen', english: 'This book was written by Rabindranath (active preferred)' },
+      { bengali: 'খাবার রান্না হয়েছে', roman: 'khabar ranna hoyechhe', english: 'The food has been cooked' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does "কাজ হয়েছে" mean?', bengali: 'কাজ হয়েছে', roman: 'kaj hoyechhe', correct: 'The work has been done', options: ['The work has been done', 'The work is happening', 'I did the work', 'The work will be done'] },
+      { type: 'translate-mc', prompt: 'Passives in Bengali are formed with:', bengali: 'হওয়া', roman: 'howa', correct: 'Verbal noun/participle + হওয়া conjugated', options: ['Verbal noun/participle + হওয়া conjugated', 'করা + subject', 'থেকে + verb', 'ই + verb'] },
+      { type: 'fib', prompt: 'Complete: "চিঠি পাঠানো ___" (The letter has been sent)', sentence: 'চিঠি পাঠানো ___', roman: 'chiti pathano ___', english: 'The letter has been sent', acceptable: ['হয়েছে', 'hoyechhe'], answer: 'হয়েছে' },
+      { type: 'word-order', prompt: 'Arrange: "The door was opened"', words: ['হলো', 'দরজা', 'খোলা'], correct: ['দরজা', 'খোলা', 'হলো'], english: 'The door was opened', roman: 'dorja khola holo' },
+      { type: 'error-spot', prompt: 'Which is a correct passive construction?', options: ['খাবার হয়েছে রান্না', 'রান্না খাবার হয়েছে', 'খাবার রান্না হয়েছে', 'হয়েছে খাবার রান্না'], correct: 'খাবার রান্না হয়েছে', explanation: 'Pattern: subject + verbal noun + হয়েছে' },
+      { type: 'translate-mc', prompt: '"দোকান বন্ধ করা হয়" means:', bengali: 'দোকান বন্ধ করা হয়', roman: 'dokan bondho kora hoy', correct: 'The shop is (regularly) closed', options: ['The shop is (regularly) closed', 'The shop was closed once', 'Close the shop', 'The shop has been closed forever'] },
+      { type: 'fib', prompt: 'Complete: "দরজা খোলা ___" (The door was opened)', sentence: 'দরজা খোলা ___', roman: 'dorja khola ___', english: 'The door was opened', acceptable: ['হলো', 'holo'], answer: 'হলো' },
+      { type: 'translate-mc', prompt: 'The word হওয়া means:', bengali: 'হওয়া', roman: 'howa', correct: 'To become / to happen', options: ['To become / to happen', 'To do', 'To say', 'To go'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 27: Reduplication & Intensifiers
+  // ═══════════════════════════════════════
+  {
+    id: 'reduplication',
+    number: 27,
+    title: 'Reduplication & Intensifiers',
+    shortDesc: 'আস্তে আস্তে, বড়-বড় — repeating for effect',
+    explanation: `Reduplication — repeating a word — is a productive and common feature of Bengali. It intensifies meaning, suggests plurality, continuity, or gradual progression depending on the word type.
+
+Adverb reduplication indicates gradual or continuous action: "আস্তে আস্তে" (slowly slowly) = very slowly, gradually. "ধীরে ধীরে" = slowly and steadily. "একটু একটু করে" = bit by bit.
+
+Adjective reduplication suggests many things of that type or a strong degree: "বড়-বড় গাছ" = big trees (many big ones), "ছোট-ছোট বাচ্চা" = small children (many little ones).
+
+Verb reduplication (often with করতে করতে) suggests doing something repeatedly or while doing: "হাঁটতে হাঁটতে" = while walking. "বলতে বলতে" = while saying / saying repeatedly.
+
+Noun reduplication emphasizes variety or abundance: "দেশে-বিদেশে" (in the country and abroad), "ঘরে-বাইরে" (inside and outside).`,
+    examples: [
+      { bengali: 'আস্তে আস্তে হাঁটো', roman: 'aste aste hãto', english: 'Walk slowly (very slowly, gradually)' },
+      { bengali: 'ধীরে ধীরে বলো', roman: 'dhire dhire bolo', english: 'Speak slowly and steadily' },
+      { bengali: 'বড়-বড় গাছ', roman: 'boro-boro gachh', english: 'Big trees (many big ones)' },
+      { bengali: 'একটু একটু করে শেখো', roman: 'ektu ektu kore shekho', english: 'Learn bit by bit' },
+      { bengali: 'হাঁটতে হাঁটতে কথা বলছিল', roman: 'hãte hãte kotha bolchhilo', english: 'Was talking while walking' },
+      { bengali: 'ছোট-ছোট বাচ্চারা খেলছে', roman: 'chhoto-chhoto bachchhara khel-chhe', english: 'Little children are playing' },
+      { bengali: 'একটু একটু ভালো হচ্ছে', roman: 'ektu ektu bhalo hochhe', english: 'Getting better little by little' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does "আস্তে আস্তে" mean?', bengali: 'আস্তে আস্তে', roman: 'aste aste', correct: 'Very slowly / gradually', options: ['Very slowly / gradually', 'Very quickly', 'Again and again', 'More and more'] },
+      { type: 'translate-mc', prompt: '"বড়-বড় গাছ" means:', bengali: 'বড়-বড় গাছ', roman: 'boro-boro gachh', correct: 'Big trees (many big ones)', options: ['Big trees (many big ones)', 'The biggest tree', 'A very big tree', 'Bigger and bigger trees'] },
+      { type: 'fib', prompt: 'Complete: "___ করে শেখো" (learn bit by bit)', sentence: '___ করে শেখো', roman: '___ kore shekho', english: 'Learn bit by bit', acceptable: ['একটু একটু', 'ektu ektu'], answer: 'একটু একটু' },
+      { type: 'translate-mc', prompt: '"হাঁটতে হাঁটতে কথা বলছিল" means:', bengali: 'হাঁটতে হাঁটতে কথা বলছিল', roman: 'hãte hãte kotha bolchhilo', correct: 'Was talking while walking', options: ['Was talking while walking', 'Walked and then talked', 'Walked quickly talking', 'Was walking to talk'] },
+      { type: 'error-spot', prompt: 'Which correctly expresses "speak slowly and steadily"?', options: ['ধীরে বলো', 'ধীরে ধীরে বলো', 'বলো ধীরে ধীরে', 'ধীর বলো'], correct: 'ধীরে ধীরে বলো', explanation: 'Reduplication of adverbs intensifies the gradual quality.' },
+      { type: 'word-order', prompt: 'Arrange: "Little children are playing"', words: ['খেলছে', 'ছোট-ছোট', 'বাচ্চারা'], correct: ['ছোট-ছোট', 'বাচ্চারা', 'খেলছে'], english: 'Little children are playing', roman: 'chhoto-chhoto bachchhara khelchhe' },
+      { type: 'translate-mc', prompt: 'Verb reduplication with -তে -তে (like হাঁটতে হাঁটতে) indicates:', bengali: 'হাঁটতে হাঁটতে', roman: 'hãte hãte', correct: 'While doing / doing continuously', options: ['While doing / doing continuously', 'Having done already', 'In order to do', 'Doing it twice'] },
+      { type: 'fib', prompt: 'Complete: "___ হচ্ছে" (getting better little by little)', sentence: 'একটু একটু ___ হচ্ছে', roman: 'ektu ektu ___ hochhe', english: 'Getting better little by little', acceptable: ['ভালো', 'bhalo'], answer: 'ভালো' },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 28: Compound & Complex Sentences
+  // ═══════════════════════════════════════
+  {
+    id: 'complex-sentences',
+    number: 28,
+    title: 'Compound & Complex Sentences',
+    shortDesc: 'যদি…তাহলে, কারণ, তাই, যখন — linking ideas',
+    explanation: `Bengali uses a set of conjunctions to build complex sentences with conditions, causes, results, and time relationships.
+
+যদি…তাহলে (if…then): "যদি বৃষ্টি হয় তাহলে যাব না।" = "If it rains, then I won't go." Note that in Bengali both clauses can appear in either order, but the if-clause usually comes first.
+
+কারণ (because): placed mid-sentence after the main clause: "আমি যাইনি কারণ অসুস্থ ছিলাম।" = "I didn't go because I was sick."
+
+তাই (therefore/so): connects cause to result: "বৃষ্টি হচ্ছে, তাই যাব না।" = "It's raining, so I won't go."
+
+যখন…তখন (when…then): "যখন বৃষ্টি থামবে তখন বেরোব।" = "When the rain stops, then I'll go out."
+
+কিন্তু (but) and আর/এবং (and) work like their English counterparts.`,
+    examples: [
+      { bengali: 'যদি বৃষ্টি হয় তাহলে যাব না', roman: 'jodi brrishti hoy tahole jabo na', english: 'If it rains, then I won\'t go' },
+      { bengali: 'আমি যাইনি কারণ অসুস্থ ছিলাম', roman: 'ami jaini karon oshustho chhilam', english: 'I didn\'t go because I was sick' },
+      { bengali: 'বৃষ্টি হচ্ছে, তাই যাব না', roman: 'brrishti hochhe, tai jabo na', english: 'It\'s raining, so I won\'t go' },
+      { bengali: 'যখন বৃষ্টি থামবে তখন বেরোব', roman: 'jokhon brrishti thambe tokhon berob', english: 'When the rain stops, then I\'ll go out' },
+      { bengali: 'আমি ক্লান্ত কিন্তু কাজ করব', roman: 'ami klanto kintu kaj korbo', english: 'I am tired but I will work' },
+      { bengali: 'সে পড়াশোনা করে তাই ভালো ফলাফল পায়', roman: 'she porashona kore tai bhalo phalapal pay', english: 'He/she studies, therefore gets good results' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does "যদি...তাহলে" mean?', bengali: 'যদি...তাহলে', roman: 'jodi...tahole', correct: 'If...then', options: ['If...then', 'When...then', 'Because...therefore', 'But...so'] },
+      { type: 'translate-mc', prompt: '"আমি যাইনি কারণ অসুস্থ ছিলাম" means:', bengali: 'আমি যাইনি কারণ অসুস্থ ছিলাম', roman: 'ami jaini karon oshustho chhilam', correct: 'I didn\'t go because I was sick', options: ['I didn\'t go because I was sick', 'Because I was sick, I will not go', 'I went although I was sick', 'I was sick when I went'] },
+      { type: 'fib', prompt: 'Complete: "বৃষ্টি হচ্ছে ___ যাব না" (so I won\'t go)', sentence: 'বৃষ্টি হচ্ছে ___ যাব না', roman: 'brrishti hochhe ___ jabo na', english: 'It\'s raining so I won\'t go', acceptable: ['তাই', 'tai'], answer: 'তাই' },
+      { type: 'word-order', prompt: 'Arrange: "If it rains then I won\'t go"', words: ['তাহলে', 'হয়', 'যদি', 'যাব', 'বৃষ্টি', 'না'], correct: ['যদি', 'বৃষ্টি', 'হয়', 'তাহলে', 'যাব', 'না'], english: 'If it rains then I won\'t go', roman: 'jodi brrishti hoy tahole jabo na' },
+      { type: 'error-spot', prompt: 'Which correctly says "When rain stops, I\'ll go out"?', options: ['যখন বৃষ্টি তখন থামবে বেরোব', 'যখন বৃষ্টি থামবে তখন বেরোব', 'বেরোব যখন বৃষ্টি থামবে', 'তখন বৃষ্টি যখন থামবে বেরোব'], correct: 'যখন বৃষ্টি থামবে তখন বেরোব', explanation: 'যখন clause comes first, then তখন introduces the result.' },
+      { type: 'translate-mc', prompt: '"তাই" means:', bengali: 'তাই', roman: 'tai', correct: 'Therefore / so (result)', options: ['Therefore / so (result)', 'If / when (condition)', 'Because (cause)', 'But (contrast)'] },
+      { type: 'fib', prompt: 'Complete: "আমি ক্লান্ত ___ কাজ করব" (but I will work)', sentence: 'আমি ক্লান্ত ___ কাজ করব', roman: 'ami klanto ___ kaj korbo', english: 'I am tired but I will work', acceptable: ['কিন্তু', 'kintu'], answer: 'কিন্তু' },
+      { type: 'translate-mc', prompt: 'কারণ is placed:', bengali: 'কারণ', roman: 'karon', correct: 'After the main clause to introduce reason', options: ['After the main clause to introduce reason', 'At the start of the sentence', 'Before the subject', 'After the verb always'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 29: Honorific & Register
+  // ═══════════════════════════════════════
+  {
+    id: 'register',
+    number: 29,
+    title: 'Honorific & Register',
+    shortDesc: 'তুই/তুমি/আপনি verb conjugation across all tenses',
+    explanation: `You have learned the three levels of address (তুই, তুমি, আপনি) and the third person pair (সে, তিনি). This lesson consolidates verb conjugation across all three registers for the most common tenses.
+
+Present: তুই করিস / তুমি করো / আপনি করেন / সে করে / তিনি করেন
+Past simple: তুই করলি / তুমি করলে / আপনি করলেন / সে করল / তিনি করলেন
+Future: তুই করবি / তুমি করবে / আপনি করবেন / সে করবে / তিনি করবেন
+Present continuous: তুই করছিস / তুমি করছ / আপনি করছেন / সে করছে / তিনি করছেন
+
+A key observation: আপনি and তিনি always share the same verb form (ending in -েন), even though আপনি is second person and তিনি is third person. সে and তুমি often share forms in future and continuous tenses (করবে, করছে).
+
+Choosing the wrong register is a social error — using তুই with a stranger is rude, while using তুমি or আপনি with a close childhood friend can feel cold.`,
+    examples: [
+      { bengali: 'তুই কী করিস?', roman: 'tui ki koris?', english: 'What do you do? (very informal)' },
+      { bengali: 'তুমি কী করো?', roman: 'tumi ki koro?', english: 'What do you do? (informal)' },
+      { bengali: 'আপনি কী করেন?', roman: 'apni ki koren?', english: 'What do you do? (formal)' },
+      { bengali: 'তুই কাল আসবি?', roman: 'tui kal ashbi?', english: 'Will you come tomorrow? (very informal)' },
+      { bengali: 'আপনি কাল আসবেন?', roman: 'apni kal ashben?', english: 'Will you come tomorrow? (formal)' },
+      { bengali: 'তিনি কী বলেছেন?', roman: 'tini ki bolechen?', english: 'What has he/she said? (respectful)' },
+      { bengali: 'তুমি কী খাচ্ছ?', roman: 'tumi ki khachho?', english: 'What are you eating? (informal)' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What is the present tense of করা for আপনি?', bengali: 'আপনি ___', roman: 'apni ___', correct: 'করেন (koren)', options: ['করেন (koren)', 'করো (koro)', 'করিস (koris)', 'করে (kore)'] },
+      { type: 'translate-mc', prompt: 'What is the future form for তুই?', bengali: 'তুই করবি', roman: 'tui korbi', correct: 'করবি (korbi)', options: ['করবি (korbi)', 'করবে (korbe)', 'করবেন (korben)', 'করলি (korli)'] },
+      { type: 'fib', prompt: 'Complete: "তুমি কাল ___?" (Will you come tomorrow? informal)', sentence: 'তুমি কাল ___?', roman: 'tumi kal ___?', english: 'Will you come tomorrow? (informal)', acceptable: ['আসবে', 'ashbe'], answer: 'আসবে' },
+      { type: 'error-spot', prompt: 'Which sentence uses the correct verb for আপনি?', options: ['আপনি কী করো?', 'আপনি কী করিস?', 'আপনি কী করেন?', 'আপনি কী করে?'], correct: 'আপনি কী করেন?', explanation: 'আপনি always takes the -েন ending.' },
+      { type: 'translate-mc', prompt: '"তিনি কী বলেছেন?" uses the same ending as:', bengali: 'তিনি বলেছেন', roman: 'tini bolechen', correct: 'আপনি বলেছেন (both take -েন)', options: ['আপনি বলেছেন (both take -েন)', 'তুমি বলেছ', 'সে বলেছে', 'তুই বলেছিস'] },
+      { type: 'word-order', prompt: 'Arrange (formal): "What are you doing?"', words: ['করছেন?', 'কী', 'আপনি'], correct: ['আপনি', 'কী', 'করছেন?'], english: 'What are you doing? (formal)', roman: 'apni ki korchhen?' },
+      { type: 'fib', prompt: 'Complete for তুই past: "তুই কাল ___" (you came yesterday, v. informal)', sentence: 'তুই কাল ___', roman: 'tui kal ___', english: 'You came yesterday (v. informal)', acceptable: ['এলি', 'eli', 'আসলি', 'ashli'], answer: 'এলি' },
+      { type: 'translate-mc', prompt: 'Present continuous for তুমি (doing) is:', bengali: 'তুমি করছ', roman: 'tumi korchho', correct: 'করছ (korchho)', options: ['করছ (korchho)', 'করছে (korchhe)', 'করছিস (korchis)', 'করছেন (korchhen)'] },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  //  LESSON 30: Advanced Mixed Review
+  // ═══════════════════════════════════════
+  {
+    id: 'advanced-review',
+    number: 30,
+    title: 'Advanced Mixed Review',
+    shortDesc: 'Mixed practice from lessons 21–29',
+    explanation: `This lesson brings together concepts from all the advanced lessons (21–29). Use it to test how well you can combine comparatives, particles, verbal nouns, causatives, reported speech, passives, reduplication, complex sentences, and register shifts.
+
+A few patterns to keep in mind:
+
+Combining comparatives with complex sentences: "যদি তুমি আরো বেশি পড়ো তাহলে সবচেয়ে ভালো ফলাফল পাবে।" = "If you study more, you will get the best results."
+
+Combining causatives with register: "আপনি কি আমাকে একটু দেখাবেন?" = "Could you show me (formal)?"
+
+Passive + reported speech: "সে বলল যে কাজ হয়ে গেছে।" = "He said that the work has been done."
+
+The quiz questions below test your ability to recognize and produce these patterns in combination.`,
+    examples: [
+      { bengali: 'যদি আরো পড়ো তাহলে ভালো করবে', roman: 'jodi aro poro tahole bhalo korbe', english: 'If you study more, you will do well' },
+      { bengali: 'সে বলল যে কাজ হয়ে গেছে', roman: 'she bollo je kaj hoye geche', english: 'He/she said that the work was done' },
+      { bengali: 'আস্তে আস্তে সে ভালো হলো', roman: 'aste aste she bhalo holo', english: 'He/she got better gradually' },
+      { bengali: 'আপনি কি আমাকে দেখাবেন?', roman: 'apni ki amake dekhaben?', english: 'Will you show me? (formal)' },
+      { bengali: 'কাজটা করানো হয়েছে', roman: 'kajta korano hoyechhe', english: 'The task has been made to be done (causative passive)' },
+      { bengali: 'পড়তে পড়তে ঘুমিয়ে পড়ল', roman: 'porte porte ghumiye porlo', english: 'Fell asleep while reading' },
+    ],
+    quiz: [
+      { type: 'translate-mc', prompt: 'What does "যদি আরো পড়ো তাহলে ভালো করবে" mean?', bengali: 'যদি আরো পড়ো তাহলে ভালো করবে', roman: 'jodi aro poro tahole bhalo korbe', correct: 'If you study more, you will do well', options: ['If you study more, you will do well', 'You studied more so you did well', 'Because you study more, you do well', 'When you study more, you did well'] },
+      { type: 'translate-mc', prompt: '"সে বলল যে কাজ হয়ে গেছে" — what grammar features does it use?', bengali: 'সে বলল যে কাজ হয়ে গেছে', roman: 'she bollo je kaj hoye geche', correct: 'Reported speech (যে) + passive (হয়ে)', options: ['Reported speech (যে) + passive (হয়ে)', 'Causative + comparative', 'Reduplication + conditional', 'Register shift + verbal noun'] },
+      { type: 'fib', prompt: 'Complete (formal): "আপনি কি আমাকে ___?" (will you show me?)', sentence: 'আপনি কি আমাকে ___?', roman: 'apni ki amake ___?', english: 'Will you show me? (formal)', acceptable: ['দেখাবেন', 'dekhaben'], answer: 'দেখাবেন' },
+      { type: 'word-order', prompt: 'Arrange: "He/she got better gradually"', words: ['ভালো', 'আস্তে', 'সে', 'আস্তে', 'হলো'], correct: ['আস্তে', 'আস্তে', 'সে', 'ভালো', 'হলো'], english: 'He/she got better gradually', roman: 'aste aste she bhalo holo' },
+      { type: 'error-spot', prompt: 'Which correctly says "The task has been made to be done"?', options: ['কাজটা করানো হয়েছে', 'কাজটা হয়েছে করানো', 'করানো কাজটা হয়েছে', 'হয়েছে কাজটা করানো'], correct: 'কাজটা করানো হয়েছে', explanation: 'Causative verbal noun (করানো) + passive (হয়েছে), subject first.' },
+      { type: 'translate-mc', prompt: '"পড়তে পড়তে ঘুমিয়ে পড়ল" means:', bengali: 'পড়তে পড়তে ঘুমিয়ে পড়ল', roman: 'porte porte ghumiye porlo', correct: 'Fell asleep while reading', options: ['Fell asleep while reading', 'Read and then slept', 'Read in order to sleep', 'Slept and then read'] },
+      { type: 'fib', prompt: 'Complete: "যদি আরো পড়ো তাহলে ___ করবে" (you will do well)', sentence: 'যদি আরো পড়ো তাহলে ___ করবে', roman: 'jodi aro poro tahole ___ korbe', english: 'If you study more, you will do well', acceptable: ['ভালো', 'bhalo'], answer: 'ভালো' },
+      { type: 'translate-mc', prompt: 'Which combination is used in "আপনি কি আমাকে দেখাবেন?"', bengali: 'আপনি কি আমাকে দেখাবেন?', roman: 'apni ki amake dekhaben?', correct: 'Causative verb (দেখানো) + formal register (আপনি)', options: ['Causative verb (দেখানো) + formal register (আপনি)', 'Passive + conditional', 'Reduplication + superlative', 'Reported speech + particle'] },
+    ]
+  },
 ];
