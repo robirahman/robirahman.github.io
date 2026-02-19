@@ -2428,7 +2428,7 @@ function showFeedback(correct, answer) {
 }
 
 function _recordMiss(arr, q) {
-  if (q.letter) arr.push({ bengali: q.letter, answer: q.fullAnswer || q.correct });
+  if (q.letter) arr.push({ bengali: q.letter, answer: q.fullAnswer || q.answer || q.correct });
   else if (q.bengali) arr.push({ bengali: q.bengali, answer: q.answer || q.correct });
   else arr.push({ bengali: null, answer: Array.isArray(q.correct) ? q.correct.join(' ') : (q.answer || q.correct) });
 }
