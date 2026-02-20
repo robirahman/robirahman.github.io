@@ -5184,6 +5184,10 @@ function renderTodayScreen() {
 
   const due = getDueItems();
   const dueCount = due.letters.length + due.vocab.length + due.grammar.length + due.phrases.length;
+  const dueForecast = getDueForecastByOffset(7);
+  const dueNext7Count = dueForecast.slice(1).reduce((sum, n) => sum + n, 0);
+  const forecastLabels = ['Today', 'Tomorrow', 'Next 7 days'];
+  const forecastCounts = [dueForecast[0] || 0, dueForecast[1] || 0, dueNext7Count];
 
   // Next unseen vocab words
   const unlocked = getVocabMixedUnlockedCount();
@@ -5231,6 +5235,18 @@ function renderTodayScreen() {
       <div>
         <div class="today-section-title">Due for Review</div>
         <div class="today-section-sub">${dueCount > 0 ? dueCount + ' item' + (dueCount !== 1 ? 's' : '') + ' ready to review' : 'All caught up! Nothing due right now.'}</div>
+      </div>
+    </div>
+    <div class="today-forecast" aria-label="Due forecast">
+      <div class="today-forecast-list">
+        ${forecastLabels.map((label, idx) => `<div class="today-forecast-row"><span>${label}</span><strong>${forecastCounts[idx]}</strong></div>`).join('')}
+      </div>
+      <div class="today-forecast-calendar">
+        ${dueForecast.map((count, offset) => {
+          const day = new Date(Date.now() + offset * 86400000);
+          const dow = day.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 1);
+          return `<div class="today-forecast-day${offset === 0 ? ' is-today' : ''}"><span>${dow}</span><strong>${count}</strong></div>`;
+        }).join('')}
       </div>
     </div>
     ${dueCount > 0 ? `<button class="btn-primary today-action-btn" data-action="review-and-alphabet">Start Review →</button>` : '<div class="today-done-badge">✓ Done</div>'}
@@ -5529,19 +5545,23 @@ function _elapsedDays(key) {
 // True if the card identified by key is due for review using FSRS,
 // falling back to the old interval map when no FSRS data exists yet.
 function _fsrsIsDue(key, fallbackMastery) {
+  return _fsrsIsDueAtOffset(key, fallbackMastery, 0);
+}
+
+function _fsrsIsDueAtOffset(key, fallbackMastery, dayOffset = 0) {
+  const offsetMs = Math.max(0, dayOffset) * 86400000;
+  const nowMs = Date.now() + offsetMs;
   const card = progress.fsrs && progress.fsrs[key];
   if (!card) {
     if (!fallbackMastery || fallbackMastery === 0) return false;
     const ls = progress.lastSeen && progress.lastSeen[key]
       ? new Date(progress.lastSeen[key]).getTime() : 0;
-    return Date.now() - ls >= REVIEW_INTERVALS_MS[fallbackMastery];
+    return nowMs - ls >= REVIEW_INTERVALS_MS[fallbackMastery];
   }
-  return _elapsedDays(key) >= card.s; // both in days
+  return _elapsedDays(key) + Math.max(0, dayOffset) >= card.s; // both in days
 }
 
-function getDueItems() {
-  const due = { letters: [], vocab: [], grammar: [], phrases: [] };
-  // Script items (letters, conjuncts, matra drills, numerals, number names)
+function _getScriptReviewItems() {
   const reviewPools = [
     { items: ALL_LETTERS, category: 'letter' },
     { items: CONJUNCTS, category: 'conjunct' },
@@ -5561,22 +5581,31 @@ function getDueItems() {
       });
     });
   });
-  const dedupedScriptItems = Array.from(
+  return Array.from(
     scriptItems.reduce((map, item) => {
       if (!map.has(item.letter)) map.set(item.letter, item);
       return map;
     }, new Map()).values()
   );
+}
+
+function _getDueItemsAtOffset(dayOffset = 0) {
+  const due = { letters: [], vocab: [], grammar: [], phrases: [] };
+  const offsetMs = Math.max(0, dayOffset) * 86400000;
+  const nowMs = Date.now() + offsetMs;
+
+  // Script items (letters, conjuncts, matra drills, numerals, number names)
+  const dedupedScriptItems = _getScriptReviewItems();
   dedupedScriptItems.forEach(item => {
     const key = item.letter;
     if (getMastery(key) === 0) return; // never seen
-    if (_fsrsIsDue(key, getMastery(key))) due.letters.push(item);
+    if (_fsrsIsDueAtOffset(key, getMastery(key), dayOffset)) due.letters.push(item);
   });
   // Vocab
   VOCAB_DATA.forEach(w => {
     const key = _vocabKey(w);
     if (getVocabMastery(w) === 0) return;
-    if (_fsrsIsDue(key, getVocabMastery(w))) due.vocab.push(w);
+    if (_fsrsIsDueAtOffset(key, getVocabMastery(w), dayOffset)) due.vocab.push(w);
   });
   // Grammar — lesson is due when average FSRS stability across its questions is overdue
   GRAMMAR_LESSONS.forEach(lesson => {
@@ -5596,9 +5625,9 @@ function getDueItems() {
       const avgMastery = Math.min(4, Math.max(1, Math.round(rawSum / lesson.quiz.length)));
       const ls = progress.lastSeen && progress.lastSeen[lessonKey]
         ? new Date(progress.lastSeen[lessonKey]).getTime() : 0;
-      if (Date.now() - ls >= REVIEW_INTERVALS_MS[avgMastery]) due.grammar.push(lesson);
+      if (nowMs - ls >= REVIEW_INTERVALS_MS[avgMastery]) due.grammar.push(lesson);
     } else {
-      if (_elapsedDays(lessonKey) >= totalS / n) due.grammar.push(lesson);
+      if (_elapsedDays(lessonKey) + Math.max(0, dayOffset) >= totalS / n) due.grammar.push(lesson);
     }
   });
   // Phrases — situation is due when average FSRS stability across its phrases is overdue
@@ -5617,18 +5646,32 @@ function getDueItems() {
       const avgMastery = Math.round(seenPhrases.reduce((s, p) => s + getPhraseMastery(p.id), 0) / seenPhrases.length);
       const ls = progress.lastSeen && progress.lastSeen[sitKey]
         ? new Date(progress.lastSeen[sitKey]).getTime() : 0;
-      if (Date.now() - ls >= REVIEW_INTERVALS_MS[Math.max(1, Math.min(4, avgMastery))]) {
+      if (nowMs - ls >= REVIEW_INTERVALS_MS[Math.max(1, Math.min(4, avgMastery))]) {
         const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
         if (sit) due.phrases.push(sit);
       }
     } else {
-      if (_elapsedDays(sitKey) >= totalS / n) {
+      if (_elapsedDays(sitKey) + Math.max(0, dayOffset) >= totalS / n) {
         const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
         if (sit) due.phrases.push(sit);
       }
     }
   });
   return due;
+}
+
+function getDueItems() {
+  return _getDueItemsAtOffset(0);
+}
+
+function getDueForecastByOffset(maxOffset = 7) {
+  const cappedOffset = Math.max(0, Math.min(30, Math.floor(maxOffset)));
+  const counts = [];
+  for (let dayOffset = 0; dayOffset <= cappedOffset; dayOffset++) {
+    const due = _getDueItemsAtOffset(dayOffset);
+    counts.push(due.letters.length + due.vocab.length + due.grammar.length + due.phrases.length);
+  }
+  return counts;
 }
 
 function updateReviewDueBadge() {
