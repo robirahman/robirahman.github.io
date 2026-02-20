@@ -2691,6 +2691,12 @@ function showVocabDetail(bengali) {
     studyBtn.textContent = inQueue ? '✓ In study queue' : '+ Study this word';
     studyBtn.dataset.lemma = w.lemma;
   }
+  const conjBtn = document.getElementById('wm-conj-btn');
+  if (conjBtn) {
+    const hasConjugation = w.pos === 'verb' && !!getConjugationVerbFromLemma(w.lemma);
+    conjBtn.style.display = hasConjugation ? '' : 'none';
+    conjBtn.dataset.lemma = hasConjugation ? w.lemma : '';
+  }
   document.getElementById('word-modal-card').classList.remove('flipped');
   document.getElementById('word-modal').classList.add('open');
   document.addEventListener('keydown', _wordModalEsc);
@@ -3192,10 +3198,152 @@ function getLessonProgress(lesson) {
   return { total, mastered, seen, pct: Math.round((mastered / total) * 100) };
 }
 
+const VERB_CONJUGATION_DATA = {
+  'করা': {
+    verb: 'করা', roman: 'kora', english: 'to do / make',
+    tenses: {
+      present: { label: 'Present (habitual)', forms: { tui: ['করিস', 'koris'], tumi: ['করো', 'koro'], apni: ['করেন', 'koren'] } },
+      past: { label: 'Past (simple)', forms: { tui: ['করলি', 'korli'], tumi: ['করলে', 'korle'], apni: ['করলেন', 'korlen'] } },
+      future: { label: 'Future (simple)', forms: { tui: ['করবি', 'korbi'], tumi: ['করবে', 'korbe'], apni: ['করবেন', 'korben'] } },
+      continuous: { label: 'Present continuous', forms: { tui: ['করছিস', 'korchis'], tumi: ['করছ', 'korcho'], apni: ['করছেন', 'korchen'] } },
+      perfect: { label: 'Present perfect', forms: { tui: ['করেছিস', 'korechis'], tumi: ['করেছ', 'korecho'], apni: ['করেছেন', 'korechen'] } }
+    }
+  },
+  'হওয়া': {
+    verb: 'হওয়া', roman: 'howa', english: 'to be / become',
+    tenses: {
+      present: { label: 'Present (habitual)', forms: { tui: ['হস', 'hos'], tumi: ['হও', 'hao'], apni: ['হন', 'hon'] } },
+      past: { label: 'Past (simple)', forms: { tui: ['হলি', 'holi'], tumi: ['হলে', 'hole'], apni: ['হলেন', 'holen'] } },
+      future: { label: 'Future (simple)', forms: { tui: ['হবি', 'hobi'], tumi: ['হবে', 'hobe'], apni: ['হবেন', 'hoben'] } },
+      continuous: { label: 'Present continuous', forms: { tui: ['হচ্ছিস', 'hochchis'], tumi: ['হচ্ছ', 'hochcho'], apni: ['হচ্ছেন', 'hochchen'] } },
+      perfect: { label: 'Present perfect', forms: { tui: ['হয়েছিস', 'hoyechhis'], tumi: ['হয়েছ', 'hoyechho'], apni: ['হয়েছেন', 'hoyechhen'] } }
+    }
+  },
+  'যাওয়া': {
+    verb: 'যাওয়া', roman: 'jaoa', english: 'to go',
+    tenses: {
+      present: { label: 'Present (habitual)', forms: { tui: ['যাস', 'jas'], tumi: ['যাও', 'jao'], apni: ['যান', 'jan'] } },
+      past: { label: 'Past (simple)', forms: { tui: ['গেলি', 'geli'], tumi: ['গেলে', 'gele'], apni: ['গেলেন', 'gelen'] } },
+      future: { label: 'Future (simple)', forms: { tui: ['যাবি', 'jabi'], tumi: ['যাবে', 'jabe'], apni: ['যাবেন', 'jaben'] } },
+      continuous: { label: 'Present continuous', forms: { tui: ['যাচ্ছিস', 'jachchis'], tumi: ['যাচ্ছ', 'jachcho'], apni: ['যাচ্ছেন', 'jachchen'] } },
+      perfect: { label: 'Present perfect', forms: { tui: ['গেছিস', 'gechhis'], tumi: ['গেছ', 'gechho'], apni: ['গেছেন', 'gechhen'] } }
+    }
+  },
+  'দেখা': {
+    verb: 'দেখা', roman: 'dekha', english: 'to see',
+    tenses: {
+      present: { label: 'Present (habitual)', forms: { tui: ['দেখিস', 'dekhis'], tumi: ['দেখো', 'dekho'], apni: ['দেখেন', 'dekhen'] } },
+      past: { label: 'Past (simple)', forms: { tui: ['দেখলি', 'dekhli'], tumi: ['দেখলে', 'dekhle'], apni: ['দেখলেন', 'dekhlen'] } },
+      future: { label: 'Future (simple)', forms: { tui: ['দেখবি', 'dekhbi'], tumi: ['দেখবে', 'dekhbe'], apni: ['দেখবেন', 'dekhben'] } },
+      continuous: { label: 'Present continuous', forms: { tui: ['দেখছিস', 'dekhchis'], tumi: ['দেখছ', 'dekhcho'], apni: ['দেখছেন', 'dekhchen'] } },
+      perfect: { label: 'Present perfect', forms: { tui: ['দেখেছিস', 'dekhechis'], tumi: ['দেখেছ', 'dekhecho'], apni: ['দেখেছেন', 'dekhechen'] } }
+    }
+  },
+  'থাকা': {
+    verb: 'থাকা', roman: 'thaka', english: 'to stay / remain',
+    tenses: {
+      present: { label: 'Present (habitual)', forms: { tui: ['থাকিস', 'thakis'], tumi: ['থাকো', 'thako'], apni: ['থাকেন', 'thaken'] } },
+      past: { label: 'Past (simple)', forms: { tui: ['থাকলি', 'thakli'], tumi: ['থাকলে', 'thakle'], apni: ['থাকলেন', 'thaklen'] } },
+      future: { label: 'Future (simple)', forms: { tui: ['থাকবি', 'thakbi'], tumi: ['থাকবে', 'thakbe'], apni: ['থাকবেন', 'thakben'] } },
+      continuous: { label: 'Present continuous', forms: { tui: ['থাকছিস', 'thakchis'], tumi: ['থাকছ', 'thakcho'], apni: ['থাকছেন', 'thakchen'] } },
+      perfect: { label: 'Present perfect', forms: { tui: ['থেকেছিস', 'thekechis'], tumi: ['থেকেছ', 'thekecho'], apni: ['থেকেছেন', 'thekechen'] } }
+    }
+  },
+  'দেওয়া': {
+    verb: 'দেওয়া', roman: 'deoa', english: 'to give',
+    tenses: {
+      present: { label: 'Present (habitual)', forms: { tui: ['দিস', 'dis'], tumi: ['দাও', 'dao'], apni: ['দেন', 'den'] } },
+      past: { label: 'Past (simple)', forms: { tui: ['দিলি', 'dili'], tumi: ['দিলে', 'dile'], apni: ['দিলেন', 'dilen'] } },
+      future: { label: 'Future (simple)', forms: { tui: ['দিবি', 'dibi'], tumi: ['দিবে', 'dibe'], apni: ['দিবেন', 'diben'] } },
+      continuous: { label: 'Present continuous', forms: { tui: ['দিচ্ছিস', 'dichchis'], tumi: ['দিচ্ছ', 'dichcho'], apni: ['দিচ্ছেন', 'dichchen'] } },
+      perfect: { label: 'Present perfect', forms: { tui: ['দিয়েছিস', 'diyechis'], tumi: ['দিয়েছ', 'diyecho'], apni: ['দিয়েছেন', 'diyechen'] } }
+    }
+  }
+};
+
+const VERB_CONJUGATION_LOOKUP = {
+  'করা': 'করা', 'করে': 'করা', 'করি': 'করা', 'করেন': 'করা', 'করতে': 'করা', 'করার': 'করা', 'করছে': 'করা', 'করবে': 'করা', 'করেছে': 'করা', 'করেছেন': 'করা',
+  'হওয়া': 'হওয়া', 'হবে': 'হওয়া', 'হচ্ছে': 'হওয়া', 'হয়েছে': 'হওয়া', 'হয়ে': 'হওয়া', 'হতে': 'হওয়া', 'আছে': 'হওয়া', 'নেই': 'হওয়া', 'ছিল': 'হওয়া', 'রয়েছে': 'হওয়া',
+  'যাওয়া': 'যাওয়া', 'যায়': 'যাওয়া', 'গেছে': 'যাওয়া',
+  'দেখা': 'দেখা', 'দেখি': 'দেখা', 'দেখে': 'দেখা',
+  'থাকা': 'থাকা', 'থাকে': 'থাকা',
+  'দেওয়া': 'দেওয়া', 'দিতে': 'দেওয়া',
+};
+
+let selectedConjVerb = 'করা';
+
+function getConjugationVerbFromLemma(lemma) {
+  return VERB_CONJUGATION_LOOKUP[lemma] || null;
+}
+
+function renderConjugationTableUI() {
+  const mount = document.getElementById('conj-table-ui');
+  if (!mount) return;
+  const verbKeys = Object.keys(VERB_CONJUGATION_DATA);
+  if (!verbKeys.includes(selectedConjVerb)) selectedConjVerb = verbKeys[0];
+  const current = VERB_CONJUGATION_DATA[selectedConjVerb];
+  const tenseOrder = Object.keys(current.tenses);
+  mount.innerHTML = `
+    <div class="conj-controls">
+      <label class="conj-label" for="conj-verb-select">Verb</label>
+      <select id="conj-verb-select" class="conj-select" data-action="select-conj-verb">
+        ${verbKeys.map(v => `<option value="${escapeStr(v)}" ${v === selectedConjVerb ? 'selected' : ''}>${v} (${VERB_CONJUGATION_DATA[v].roman})</option>`).join('')}
+      </select>
+    </div>
+    <p class="conj-table-note"><strong>${current.verb}</strong> (${current.roman}) — ${current.english}. Columns are formality levels (তুই/তুমি/আপনি).</p>
+    <div class="conj-table-scroll">
+      <table class="conj-table">
+        <thead>
+          <tr>
+            <th>Tense</th>
+            <th>তুই<br><span class="conj-th-sub">very informal</span></th>
+            <th>তুমি<br><span class="conj-th-sub">casual</span></th>
+            <th>আপনি<br><span class="conj-th-sub">formal</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tenseOrder.map(tk => {
+            const t = current.tenses[tk];
+            return `<tr>
+              <td>${t.label}</td>
+              <td><span class="conj-bn">${t.forms.tui[0]}</span><span class="conj-rom">${t.forms.tui[1]}</span></td>
+              <td><span class="conj-bn">${t.forms.tumi[0]}</span><span class="conj-rom">${t.forms.tumi[1]}</span></td>
+              <td><span class="conj-bn">${t.forms.apni[0]}</span><span class="conj-rom">${t.forms.apni[1]}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  const sel = document.getElementById('conj-verb-select');
+  if (sel) sel.onchange = () => setConjugationVerb(sel.value);
+}
+
+function setConjugationVerb(verb) {
+  if (!VERB_CONJUGATION_DATA[verb]) return;
+  selectedConjVerb = verb;
+  renderConjugationTableUI();
+}
+
+function openVerbConjugationFromVocab(lemma) {
+  const verb = getConjugationVerbFromLemma(lemma);
+  if (!verb) return;
+  setConjugationVerb(verb);
+  switchTab('grammar');
+  const wrap = document.getElementById('conj-table-wrap');
+  const btn = document.getElementById('conj-toggle-btn');
+  if (wrap && btn && wrap.hidden) {
+    wrap.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+  }
+  const section = document.querySelector('.conj-table-section');
+  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ════════════════════════════════════════
 //  GRAMMAR HOME
 // ════════════════════════════════════════
 function renderGrammarHome() {
+  renderConjugationTableUI();
   const grid = document.getElementById('grammar-module-grid');
   grid.innerHTML = '';
   // Remove stale PT card first, then re-add if needed
@@ -6893,6 +7041,7 @@ document.addEventListener('click', function(e) {
     case 'retry-grammar-quiz': retryGrammarQuiz(); break;
     case 'retry-missed-grammar': retryMissedGrammar(); break;
     case 'toggle-conj-table': toggleConjTable(); break;
+    case 'select-conj-verb': setConjugationVerb(el.value); break;
     // Phrases
     case 'flip-ps-card': flipPsCard(); break;
     case 'prev-ps-card': prevPsCard(); break;
@@ -6979,6 +7128,7 @@ document.addEventListener('click', function(e) {
     case 'speak-wm-bengali': speakBengali(document.getElementById('wm-bengali').textContent); break;
     case 'speak-vocab-example': speakVocabExample(); break;
     case 'study-word-next': studyWordNext(el.dataset.lemma); break;
+    case 'open-verb-conjugation': closeWordModal(); openVerbConjugationFromVocab(el.dataset.lemma); break;
     // Listening
     case 'start-letter-listening': startLetterListening(); break;
     case 'start-vocab-listening': startVocabListening(); break;
