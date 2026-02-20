@@ -479,7 +479,29 @@ function _defaultProgressSettings() {
 }
 
 function _newProgressState() {
-  return { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{}, settings: _defaultProgressSettings() };
+  return {
+    mastery: {},
+    xp: 0,
+    streak: 0,
+    lastDate: null,
+    freezeTokens: 0,
+    lastFreezeUsedDate: null,
+    quizHistory: {},
+    settings: _defaultProgressSettings(),
+  };
+}
+
+function _normalizeProgressState(data) {
+  if (!data || typeof data !== 'object') return _newProgressState();
+  if (!data.mastery || typeof data.mastery !== 'object') data.mastery = {};
+  if (!data.quizHistory || typeof data.quizHistory !== 'object') data.quizHistory = {};
+  if (typeof data.xp !== 'number') data.xp = 0;
+  if (typeof data.streak !== 'number') data.streak = 0;
+  if (typeof data.freezeTokens !== 'number') data.freezeTokens = 0;
+  if (typeof data.lastFreezeUsedDate !== 'string') data.lastFreezeUsedDate = null;
+  if (typeof data.lastDate !== 'string') data.lastDate = null;
+  if (!data.settings || typeof data.settings !== 'object') data.settings = _defaultProgressSettings();
+  return data;
 }
 
 let progress = _newProgressState();
@@ -505,7 +527,7 @@ function _loadProgressLS(name) {
     }
   } catch(e) {}
 
-  if (!data || !data.mastery) data = _newProgressState();
+  data = _normalizeProgressState(data);
 
   const defaults = _defaultProgressSettings();
   let mutated = false;
@@ -626,18 +648,33 @@ function getModuleProgress(mod) {
 function updateStreak() {
   const today = new Date().toISOString().slice(0, 10);
   if (progress.lastDate === today) return;
+
+  const prevStreak = progress.streak || 0;
+
   if (progress.lastDate) {
     const last = new Date(progress.lastDate);
     const now = new Date(today);
-    const diff = (now - last) / (1000*60*60*24);
+    const diff = Math.round((now - last) / (1000 * 60 * 60 * 24));
+
     if (diff <= 1) {
-      progress.streak++;
+      progress.streak = prevStreak + 1;
+    } else if (diff === 2 && (progress.freezeTokens || 0) > 0) {
+      progress.freezeTokens -= 1;
+      progress.lastFreezeUsedDate = today;
+      showToast('🧊 Streak freeze used — streak preserved!');
+      progress.streak = prevStreak;
     } else {
       progress.streak = 1;
     }
   } else {
     progress.streak = 1;
   }
+
+  if (progress.streak > 0 && progress.streak % 7 === 0 && progress.streak > prevStreak) {
+    progress.freezeTokens = (progress.freezeTokens || 0) + 1;
+    showToast('🧊 +1 streak freeze token for reaching ' + progress.streak + ' days!');
+  }
+
   progress.lastDate = today;
   saveProgress();
 }
@@ -4684,7 +4721,7 @@ function importProgress() {
           return;
         }
         if (!await showConfirm('Import this progress data? It will overwrite your current progress for "' + currentUser + '".')) return;
-        progress = data;
+        progress = _normalizeProgressState(data);
         _flushSave();
         updateNav();
         renderHome();
@@ -4712,7 +4749,7 @@ function updateProfileMenuHeader() {
   const el = document.getElementById('pmh-name');
   const st = document.getElementById('pmh-stats');
   if (el) el.textContent = currentUser || '';
-  if (st) st.innerHTML = `<span>⭐ ${progress.xp} XP</span><span>🔥 ${progress.streak}</span><span>🏅 ${(progress.achievements||[]).length}</span>`;
+  if (st) st.innerHTML = `<span>⭐ ${progress.xp} XP</span><span>🔥 ${progress.streak}</span><span>🧊 ${progress.freezeTokens || 0}</span><span>🏅 ${(progress.achievements||[]).length}</span>`;
 }
 
 // ════════════════════════════════════════
@@ -5351,11 +5388,16 @@ function renderTodayScreen() {
 
   // ── Streak / XP summary ──
   const xpToday = (progress.practiceLog || {})[new Date().toISOString().slice(0,10)] || 0;
+  const freezeUsedToday = progress.lastFreezeUsedDate === new Date().toISOString().slice(0, 10);
   html += `<div class="today-xp-bar">
     <span class="today-xp-label">Today's XP</span>
     <span class="today-xp-val">${xpToday} XP</span>
-    <span class="today-streak">🔥 ${progress.streak || 0} day streak</span>
+    <span class="today-streak">🔥 ${progress.streak || 0} day streak · 🧊 ${progress.freezeTokens || 0} token${(progress.freezeTokens || 0) === 1 ? '' : 's'}</span>
   </div>`;
+
+  if (freezeUsedToday) {
+    html += `<div class="today-freeze-feedback">🧊 A freeze token protected your streak today.</div>`;
+  }
 
   body.innerHTML = html;
 }
