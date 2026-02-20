@@ -2432,13 +2432,49 @@ function getFilteredVocab() {
   });
 }
 
+function hasActiveVocabCategoryFilter() {
+  return !!vbFilter;
+}
+
+function getFilteredVocabSubset() {
+  if (!hasActiveVocabCategoryFilter()) return [];
+  return getFilteredVocab();
+}
+
+function startFilteredVocabQuiz() {
+  const words = getFilteredVocabSubset();
+  if (!words.length) return;
+
+  vmixIsActive = false;
+  vlWords = words;
+  vlCatId = vbFilter;
+  vqCatRef = vbFilter;
+  generateVocabQuiz(words);
+  vqIndex = 0;
+  vqCorrect = 0;
+  vqMissed = [];
+  _quizStartTime = Date.now();
+
+  const cat = VOCAB_CATEGORIES[vbFilter];
+  const label = cat ? cat.title : 'Filtered Vocab';
+  document.getElementById('vq-title').textContent = label + ' Quiz';
+  showScreen('vocab-quiz');
+  renderVocabQuestion();
+  updateStreak();
+}
+
 function renderVocabList() {
   const filtered = getFilteredVocab();
   const start = vbPage * VB_PAGE_SIZE;
   const page = filtered.slice(start, start + VB_PAGE_SIZE);
 
   const container = document.getElementById('vocab-list');
-  container.innerHTML = page.map(w => {
+  const filteredSubset = getFilteredVocabSubset();
+  const ctaHtml = hasActiveVocabCategoryFilter() ? `<div style="margin:4px 0 10px;display:flex;justify-content:center;">
+      <button class="btn-primary" data-action="start-vocab-filter-quiz">▶ Quiz filtered list (${filteredSubset.length})</button>
+    </div>` : '';
+
+  container.innerHTML = ctaHtml + page.map(w => {
     const m = getVocabMastery(w);
     return `<div class="vocab-row" data-action="show-vocab-detail" data-lemma="${w.lemma.replace(/'/g,'&apos;')}">
       <div class="vr-bengali">${w.lemma}</div>
@@ -2449,7 +2485,7 @@ function renderVocabList() {
   }).join('');
 
   if (page.length === 0) {
-    container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:40px;">No words found</div>';
+    container.innerHTML = ctaHtml + '<div style="text-align:center;color:var(--text-dim);padding:40px;">No words found</div>';
   }
 
   // Pagination
@@ -6651,6 +6687,7 @@ document.addEventListener('click', function(e) {
     case 'retry-vocab-quiz': retryVocabQuiz(); break;
     case 'retry-missed-vocab': retryMissedVocab(); break;
     case 'set-vocab-filter': setVocabFilter(a.catid || null); break;
+    case 'start-vocab-filter-quiz': startFilteredVocabQuiz(); break;
     case 'show-vocab-detail': showVocabDetail(a.lemma); break;
     case 'show-vocab-detail-search': closeSearch(); showVocabDetail(JSON.parse(a.lemma)); break;
     case 'vocab-page-prev': vbPage--; renderVocabList(); break;
