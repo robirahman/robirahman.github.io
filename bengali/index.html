@@ -497,8 +497,13 @@ permalink: /bengali/
     <button class="canvas-close-btn" data-action="close-canvas">✕</button>
     <div class="canvas-char-label" id="canvas-char-label"></div>
     <canvas id="tracing-canvas" width="400" height="400"></canvas>
+    <div id="canvas-writing-status" class="canvas-writing-status"></div>
     <div id="stroke-hints" class="stroke-hints"></div>
-    <button class="btn-primary canvas-clear-btn" data-action="clear-canvas">Clear</button>
+    <div class="canvas-actions-row">
+      <button class="nav-btn" data-action="step-stroke-animation">▶ Step Stroke</button>
+      <button class="nav-btn" data-action="clear-canvas">Clear</button>
+      <button class="btn-primary" data-action="complete-canvas-letter">Mark Complete ✓</button>
+    </div>
   </div>
 </div>
 
