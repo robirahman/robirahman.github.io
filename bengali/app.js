@@ -4176,11 +4176,11 @@ function renderProfileList(forceShowPicker) {
   const list = document.getElementById('profile-list');
   const inputWrap = document.getElementById('profile-input-wrap');
 
-  // If no profiles at all, show create-first input (with no cancel)
+  // If no profiles at all, show create-first input (cancel only if guest)
   if (users.length === 0 && !forceShowPicker) {
     list.innerHTML = '';
     inputWrap.classList.add('active');
-    document.getElementById('profile-cancel-btn').style.display = 'none';
+    document.getElementById('profile-cancel-btn').style.display = currentUser === null ? '' : 'none';
     document.getElementById('profile-name-input').focus();
     document.querySelector('.profile-subtitle').textContent = 'Create your first profile';
     return;
@@ -4235,6 +4235,11 @@ function showNewProfileInput() {
 
 function cancelNewProfile() {
   document.getElementById('profile-input-wrap').classList.remove('active');
+  if (!currentUser) {
+    document.getElementById('profile-screen').classList.remove('active');
+    document.getElementById('main-nav').style.display = '';
+    document.getElementById('tab-bar').style.display = '';
+  }
 }
 
 async function renameProfile(oldName) {
@@ -4273,8 +4278,22 @@ function selectProfile(name) {
   enterApp();
 }
 
+function enterAppAsGuest() {
+  currentUser = null;
+  progress = _newProgressState();
+  document.getElementById('profile-screen').classList.remove('active');
+  document.getElementById('main-nav').style.display = '';
+  document.getElementById('tab-bar').style.display = '';
+  applyThemePalette(getThemePalette());
+  updateNav();
+  updatePlacementRetakeButton();
+  switchTab('alphabet');
+  document.getElementById('guest-banner').style.display = '';
+}
+
 function enterApp() {
   // Hide profile screen, show app
+  document.getElementById('guest-banner').style.display = 'none';
   document.getElementById('profile-screen').classList.remove('active');
   document.getElementById('main-nav').style.display = '';
   document.getElementById('tab-bar').style.display = '';
@@ -5984,7 +6003,11 @@ function navigateToLetter(letterChar) {
 //  INIT
 // ════════════════════════════════════════
 ensureReadingUI();
-showProfileScreen();
+if (_listUsers().length === 0) {
+  enterAppAsGuest();
+} else {
+  showProfileScreen();
+}
 attachLearnKeyHandler();
 
 // ── Global Search ──────────────────────────────────────────
@@ -6811,6 +6834,7 @@ document.addEventListener('click', function(e) {
     case 'close-progress': closeProgressPanel(); break;
     case 'close-stats': closeStatsPanel(); break;
     case 'start-review-session': startReviewSession(); break;
+    case 'show-profile-screen': showProfileScreen(false); break;
     case 'create-profile': createProfile(); break;
     case 'cancel-new-profile': cancelNewProfile(); break;
     // Audio

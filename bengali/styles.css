@@ -698,6 +698,20 @@ nav h1 span { color: var(--accent); }
 .tab-btn:hover { color: var(--text); }
 .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
+/* ─── GUEST BANNER ─── */
+.guest-banner {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 10px 16px;
+  background: rgba(244,165,50,0.12); border-bottom: 1.5px solid var(--accent);
+  font-size: 0.9rem; color: var(--text-dim);
+}
+.guest-banner-btn {
+  background: var(--accent); color: #1a1a2e;
+  border: none; border-radius: 8px; padding: 6px 14px;
+  font-size: 0.85rem; font-weight: 700; cursor: pointer;
+}
+.guest-banner-btn:hover { opacity: 0.85; }
+
 /* ─── VOCAB BROWSE ─── */
 #vocab-browse .vb-header {
   display: flex; align-items: center; justify-content: space-between;
