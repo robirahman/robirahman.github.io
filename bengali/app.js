@@ -123,6 +123,7 @@ function _newProgressState() {
     lastFreezeUsedDate: null,
     quizHistory: {},
     reading: { completed: {}, best: {}, unlocked: 1 },
+    writing: { mastery: {}, completed: {} },
     settings: _defaultProgressSettings(),
   };
 }
@@ -140,6 +141,9 @@ function _normalizeProgressState(data) {
   if (!data.reading.completed || typeof data.reading.completed !== 'object') data.reading.completed = {};
   if (!data.reading.best || typeof data.reading.best !== 'object') data.reading.best = {};
   if (typeof data.reading.unlocked !== 'number') data.reading.unlocked = 1;
+  if (!data.writing || typeof data.writing !== 'object') data.writing = { mastery: {}, completed: {} };
+  if (!data.writing.mastery || typeof data.writing.mastery !== 'object') data.writing.mastery = {};
+  if (!data.writing.completed || typeof data.writing.completed !== 'object') data.writing.completed = {};
   if (!data.settings || typeof data.settings !== 'object') data.settings = _defaultProgressSettings();
   return data;
 }
@@ -283,6 +287,30 @@ function getModuleProgress(mod) {
   let mastered = mod.letters.filter(l => getMastery(l.letter) >= 3).length;
   let seen = mod.letters.filter(l => getMastery(l.letter) >= 1).length;
   return { total, mastered, seen, pct: Math.round((mastered / total) * 100) };
+}
+
+function getWritingMastery(letter) {
+  return (progress.writing && progress.writing.mastery && progress.writing.mastery[letter]) || 0;
+}
+
+function getWritingModuleProgress(mod) {
+  const total = mod.letters.length;
+  const completed = mod.letters.filter(l => !!(progress.writing && progress.writing.completed && progress.writing.completed[l.letter])).length;
+  const mastered = mod.letters.filter(l => getWritingMastery(l.letter) >= 3).length;
+  return { total, completed, mastered, pct: Math.round((completed / total) * 100) };
+}
+
+function markWritingComplete(letter) {
+  if (!progress.writing) progress.writing = { mastery: {}, completed: {} };
+  if (!progress.writing.mastery) progress.writing.mastery = {};
+  if (!progress.writing.completed) progress.writing.completed = {};
+  const prev = progress.writing.mastery[letter] || 0;
+  const next = Math.min(3, prev + 1);
+  progress.writing.mastery[letter] = next;
+  if (next >= 2) progress.writing.completed[letter] = true;
+  if (prev === 0) addXP(3); // optional XP bonus for first trace
+  saveProgress();
+  return next;
 }
 
 function updateStreak() {
@@ -448,6 +476,10 @@ function renderHome() {
       const totalWaves = Math.ceil(total / MIXED_WAVE_SIZE);
       progressHTML = `<div class="module-progress"><div class="module-progress-fill" style="width:${pct}%;background:${mod.color()}"></div></div>
         <div class="progress-label">${mastered}/${total} mastered · Wave ${wave}/${totalWaves} unlocked</div>`;
+    } else if (mod.isWriting) {
+      const prog = getWritingModuleProgress(mod);
+      progressHTML = `<div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:${mod.color()}"></div></div>
+        <div class="progress-label">${prog.completed}/${prog.total} completed · ${prog.mastered} mastered</div>`;
     } else {
       const prog = getModuleProgress(mod);
       progressHTML = prog ?
@@ -467,6 +499,8 @@ function renderHome() {
         showScreen('chart');
       } else if (mod.isMixed) {
         startMixedPractice();
+      } else if (mod.isWriting) {
+        startWritingPractice(mod);
       } else {
         startLearn(mod);
       }
@@ -755,6 +789,13 @@ let currentCardIndex = 0;
 let _moduleHomeScreen = 'home'; // tracks which home to return to from learn/quiz/results
 function goModuleHome() { showScreen(_moduleHomeScreen); }
 
+function startWritingPractice(mod) {
+  startLearn(mod);
+  const qbtn = document.getElementById('quiz-start-btn');
+  qbtn.textContent = 'Open Tracing Canvas ✏️';
+  qbtn.onclick = () => openCanvas();
+}
+
 function startLearn(mod) {
   currentModule = mod;
   currentCardIndex = 0;
@@ -829,6 +870,10 @@ function speakCurrentLetter() {
 // ════════════════════════════════════════
 let _canvasDrawing = false, _canvasLastX = 0, _canvasLastY = 0;
 let _canvasKeyHandler = null;
+let _canvasUserStrokes = [];
+let _canvasCurrentStroke = null;
+let _canvasTemplateSegments = [];
+let _canvasTemplateStep = 0;
 
 function _drawCanvasBg(ctx, canvas, letter) {
   ctx.save();
@@ -838,6 +883,65 @@ function _drawCanvasBg(ctx, canvas, letter) {
   ctx.textBaseline = 'middle';
   ctx.fillText(letter, canvas.width / 2, canvas.height / 2);
   ctx.restore();
+}
+
+function _buildStrokeTemplate(letter, w, h) {
+  const hintCount = Math.max(1, (STROKE_HINTS[letter] || []).length);
+  // Scaffold only: derive rough guide paths from hint count.
+  // This can later be swapped with true vector stroke-order data per letter.
+  const cx = w / 2, cy = h / 2;
+  const radius = Math.min(w, h) * 0.25;
+  const seed = letter.charCodeAt(0) % 360;
+  const segments = [];
+  for (let i = 0; i < hintCount; i++) {
+    const a1 = (seed + i * (240 / hintCount)) * Math.PI / 180;
+    const a2 = a1 + (Math.PI / (2.5 + (i % 2)));
+    segments.push([
+      [cx + Math.cos(a1) * radius, cy + Math.sin(a1) * radius],
+      [cx + Math.cos((a1 + a2) / 2) * radius * 0.45, cy + Math.sin((a1 + a2) / 2) * radius * 0.45],
+      [cx + Math.cos(a2) * radius * 0.92, cy + Math.sin(a2) * radius * 0.92],
+    ]);
+  }
+  return segments;
+}
+
+function _redrawCanvas() {
+  const canvas = document.getElementById('tracing-canvas');
+  const ctx = canvas.getContext('2d');
+  const letter = document.getElementById('canvas-char-label').textContent;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  _drawCanvasBg(ctx, canvas, letter);
+
+  // Draw scaffold template paths.
+  _canvasTemplateSegments.forEach((seg, idx) => {
+    ctx.beginPath();
+    ctx.moveTo(seg[0][0], seg[0][1]);
+    ctx.quadraticCurveTo(seg[1][0], seg[1][1], seg[2][0], seg[2][1]);
+    ctx.strokeStyle = idx < _canvasTemplateStep ? 'rgba(246, 184, 63, 0.9)' : 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = idx < _canvasTemplateStep ? 3.5 : 2;
+    ctx.setLineDash(idx < _canvasTemplateStep ? [] : [8, 7]);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Draw user captured strokes.
+  ctx.strokeStyle = 'var(--accent)';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  _canvasUserStrokes.forEach(path => {
+    if (!path.length) return;
+    ctx.beginPath();
+    ctx.moveTo(path[0][0], path[0][1]);
+    for (let i = 1; i < path.length; i++) ctx.lineTo(path[i][0], path[i][1]);
+    ctx.stroke();
+  });
+}
+
+function stepStrokeAnimation() {
+  if (!_canvasTemplateSegments.length) return;
+  _canvasTemplateStep = (_canvasTemplateStep + 1) % (_canvasTemplateSegments.length + 1);
+  _redrawCanvas();
 }
 
 function openCanvas() {
@@ -850,7 +954,11 @@ function openCanvas() {
   const canvas = document.getElementById('tracing-canvas');
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  _drawCanvasBg(ctx, canvas, letter);
+  _canvasUserStrokes = [];
+  _canvasCurrentStroke = null;
+  _canvasTemplateSegments = _buildStrokeTemplate(letter, canvas.width, canvas.height);
+  _canvasTemplateStep = 0;
+  _redrawCanvas();
   _setupCanvasListeners(canvas);
 
   // Populate stroke hints
@@ -859,7 +967,12 @@ function openCanvas() {
     const tips = STROKE_HINTS[letter] || ['Trace the character shape carefully', 'Follow the natural stroke direction'];
     hintsEl.innerHTML = tips.map((tip, i) =>
       `<div class="stroke-hint-item"><span class="stroke-hint-num">${i + 1}.</span> ${escapeStr(tip)}</div>`
-    ).join('');
+    ).join('') + `<div class="stroke-hint-note">Template is scaffolded from text hints and can be upgraded with vector stroke data later.</div>`;
+  }
+
+  const status = document.getElementById('canvas-writing-status');
+  if (status) {
+    status.textContent = `Writing mastery: ${getWritingMastery(letter)}/3`;
   }
 }
 
@@ -873,10 +986,18 @@ function closeCanvas() {
 
 function clearCanvas() {
   const canvas = document.getElementById('tracing-canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  _canvasUserStrokes = [];
+  _canvasCurrentStroke = null;
+  _redrawCanvas();
+}
+
+function completeCanvasLetter() {
   const letter = document.getElementById('canvas-char-label').textContent;
-  _drawCanvasBg(ctx, canvas, letter);
+  if (!letter) return;
+  const level = markWritingComplete(letter);
+  const status = document.getElementById('canvas-writing-status');
+  if (status) status.textContent = `Writing mastery: ${level}/3`;
+  showToast(level >= 3 ? '🌟 Writing mastery reached!' : '✅ Letter marked as traced');
 }
 
 function _setupCanvasListeners(canvas) {
@@ -887,9 +1008,8 @@ function _setupCanvasListeners(canvas) {
   const c = fresh;
   const ctx = c.getContext('2d');
 
-  // Re-draw background after clone (clone doesn't copy canvas pixels)
-  const letter = document.getElementById('canvas-char-label').textContent;
-  _drawCanvasBg(ctx, c, letter);
+  // Re-draw canvas state after clone (clone doesn't copy canvas pixels)
+  _redrawCanvas();
 
   const getPos = (e) => {
     const r = c.getBoundingClientRect();
@@ -901,6 +1021,8 @@ function _setupCanvasListeners(canvas) {
     e.preventDefault();
     _canvasDrawing = true;
     [_canvasLastX, _canvasLastY] = getPos(e);
+    _canvasCurrentStroke = [[_canvasLastX, _canvasLastY]];
+    _canvasUserStrokes.push(_canvasCurrentStroke);
   };
   const draw = (e) => {
     if (!_canvasDrawing) return;
@@ -913,9 +1035,13 @@ function _setupCanvasListeners(canvas) {
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.stroke();
+    if (_canvasCurrentStroke) _canvasCurrentStroke.push([x, y]);
     [_canvasLastX, _canvasLastY] = [x, y];
   };
-  const stop = () => { _canvasDrawing = false; };
+  const stop = () => {
+    _canvasDrawing = false;
+    _canvasCurrentStroke = null;
+  };
 
   c.addEventListener('mousedown', start);
   c.addEventListener('mousemove', draw);
@@ -6587,6 +6713,8 @@ document.addEventListener('click', function(e) {
     case 'open-canvas': openCanvas(); break;
     case 'close-canvas': closeCanvas(); break;
     case 'clear-canvas': clearCanvas(); break;
+    case 'step-stroke-animation': stepStrokeAnimation(); break;
+    case 'complete-canvas-letter': completeCanvasLetter(); break;
     case 'navigate-letter': navigateToLetter(a.letter); break;
     case 'show-chart-detail': showChartDetail(el); break;
     // Vocab

@@ -306,6 +306,7 @@ const STROKE_HINTS = {
 // ════════════════════════════════════════
 const MODULES = [
   { id:'mixed', title:'Mixed Practice', desc:'Adaptive lessons — new letters introduced as you master earlier ones', icon:'🧠', isMixed: true, color: () => 'var(--accent)' },
+  { id:'writing-core', title:'Writing Practice', desc:'Trace core alphabet letters with scaffolded stroke hints', icon:'✍️', isWriting: true, letters: ALL_LETTERS.map(l => ({...l})), color: () => '#f6b83f' },
   { id:'vowels', title:'Vowels (স্বরবর্ণ)', desc:'11 vowel letters — the foundation', icon:'🔤', letters: VOWELS.map(v=>({...v,type:'vowel'})), color: var_vowel },
   { id:'consonants-1', title:'Consonants I (ক–ঙ)', desc:'Velar stops — k/kh/g/gh/ng', icon:'🅰️', letters: CONSONANTS_VELAR.map(c=>({...c,type:'consonant'})), color: var_consonant },
   { id:'consonants-2', title:'Consonants II (চ–ঞ)', desc:'Palatal stops — ch/chh/j/jh/ny', icon:'🅱️', letters: CONSONANTS_PALATAL.map(c=>({...c,type:'consonant'})), color: var_consonant },
