@@ -754,6 +754,13 @@ function showScreen(id) {
   if (id === 'placement-results') renderPlacementResultsUI();
 }
 
+function _isTypingTarget(el) {
+  if (!el) return false;
+  const tag = (el.tagName || '').toLowerCase();
+  if (['input', 'textarea', 'select'].includes(tag)) return true;
+  return !!el.isContentEditable;
+}
+
 // ════════════════════════════════════════
 //  HOME
 // ════════════════════════════════════════
@@ -1221,6 +1228,21 @@ function showCard() {
 
 function flipCard() {
   document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+let _learnKeyHandlerAttached = false;
+function attachLearnKeyHandler() {
+  if (_learnKeyHandlerAttached) return;
+  document.addEventListener('keydown', function(e) {
+    if (_isTypingTarget(document.activeElement)) return;
+    const learnScreen = document.getElementById('learn');
+    if (!learnScreen || !learnScreen.classList.contains('active')) return;
+    if (e.key === ' ') {
+      e.preventDefault();
+      flipCard();
+    }
+  });
+  _learnKeyHandlerAttached = true;
 }
 
 function nextCard() {
@@ -5916,6 +5938,16 @@ let _quizKeyHandler = null;
 function attachQuizKeyHandler(screenPrefix) {
   detachQuizKeyHandler();
   _quizKeyHandler = function(e) {
+    if (_isTypingTarget(document.activeElement)) return;
+
+    // FSRS rating shortcuts (active only while rating buttons are shown)
+    if (_pendingRating) {
+      const key = e.key.toLowerCase();
+      if (key === '1' || key === 'n') { onRatingSelected(FSRS_HARD); return; }
+      if (key === '2' || key === 'y') { onRatingSelected(FSRS_GOOD); return; }
+      if (key === '3') { onRatingSelected(FSRS_EASY); return; }
+    }
+
     // Number keys 1-4: select MC option
     if (['1','2','3','4'].includes(e.key)) {
       const idx = parseInt(e.key) - 1;
@@ -5982,6 +6014,7 @@ function navigateToLetter(letterChar) {
 //  INIT
 // ════════════════════════════════════════
 showProfileScreen();
+attachLearnKeyHandler();
 
 // ── Global Search ──────────────────────────────────────────
 let _searchTimer = null;
