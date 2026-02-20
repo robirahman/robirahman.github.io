@@ -538,16 +538,6 @@ function getMastery(letter) {
   return progress.mastery[letter] || 0; // 0=unseen, 1=seen, 2=learning, 3=mastered
 }
 
-function addMastery(letter, correct) {
-  const cur = getMastery(letter);
-  if (correct) {
-    progress.mastery[letter] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[letter] = Math.max(1, cur - 1);
-  }
-  saveProgress();
-}
-
 function getModuleProgress(mod) {
   if (mod.isChart) return null;
   let total = mod.letters.length;
@@ -1531,6 +1521,7 @@ function answerMC(btn, chosen) {
     _trackMistake(q.letter, 'alphabet');
     applyFsrsRating(q.letter, FSRS_AGAIN);
     _trackLastSeen(q.letter);
+    saveProgress();
     checkAchievements();
     document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
   }
@@ -1585,6 +1576,7 @@ function answerSpell() {
     _recordMiss(quizMissed, q);
     _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
     q.letters.forEach(l => { applyFsrsRating(l.letter, FSRS_AGAIN); _trackLastSeen(l.letter); });
+    saveProgress();
     checkAchievements();
     document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
   }
@@ -1619,6 +1611,7 @@ function answerFIB() {
       applyFsrsRating(q.letter, FSRS_AGAIN);
       _trackLastSeen(q.letter);
     }
+    saveProgress();
     checkAchievements();
     document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
   }
@@ -1757,6 +1750,7 @@ function onRatingSelected(rating) {
   extraKeys.forEach(k => _trackLastSeen(k));
   hideRatingButtons();
   _pendingRating = null;
+  saveProgress();
   checkAchievements();
   document.getElementById(nextBtnId).className = 'btn-primary quiz-next-btn show';
 }
@@ -1790,6 +1784,7 @@ function dontKnowQuiz() {
     applyFsrsRating(q.letter, FSRS_AGAIN);
     _trackLastSeen(q.letter);
   }
+  saveProgress();
   checkAchievements();
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -1980,17 +1975,6 @@ function _vocabKey(w) {
 function getVocabMastery(w) {
   return progress.mastery[_vocabKey(w)] || 0;
 }
-function addVocabMastery(w, correct) {
-  const key = _vocabKey(w);
-  const cur = progress.mastery[key] || 0;
-  if (correct) {
-    progress.mastery[key] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[key] = Math.max(1, cur - 1);
-  }
-  saveProgress();
-}
-
 // ════════════════════════════════════════
 //  VOCAB HOME
 // ════════════════════════════════════════
@@ -2762,6 +2746,7 @@ function answerVocabMC(btn, chosen) {
     _trackMistake(_vocabKey(q.word), 'vocab');
     applyFsrsRating(_vocabKey(q.word), FSRS_AGAIN);
     _trackLastSeen(_vocabKey(q.word));
+    saveProgress();
     checkAchievements();
     showVocabFeedback(false, q.correct, q.word && q.word.example);
     document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -2801,6 +2786,7 @@ function answerVocabFIB() {
     _trackMistake(_vocabKey(q.word), 'vocab');
     applyFsrsRating(_vocabKey(q.word), FSRS_AGAIN);
     _trackLastSeen(_vocabKey(q.word));
+    saveProgress();
     checkAchievements();
     showVocabFeedback(false, q.answer, q.word && q.word.example);
     document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -2834,6 +2820,7 @@ function dontKnowVocab() {
   _trackMistake(_vocabKey(q.word), 'vocab');
   applyFsrsRating(_vocabKey(q.word), FSRS_AGAIN);
   _trackLastSeen(_vocabKey(q.word));
+  saveProgress();
   checkAchievements();
   showVocabFeedback(false, q.answer || q.correct, q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -2908,16 +2895,6 @@ function retryMissedVocab() {
 // ════════════════════════════════════════
 function getGrammarMastery(lessonId, questionIdx) {
   return progress.mastery['g:' + lessonId + ':' + questionIdx] || 0;
-}
-function addGrammarMastery(lessonId, questionIdx, correct) {
-  const key = 'g:' + lessonId + ':' + questionIdx;
-  const cur = progress.mastery[key] || 0;
-  if (correct) {
-    progress.mastery[key] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[key] = Math.max(1, cur - 1);
-  }
-  saveProgress();
 }
 function getLessonProgress(lesson) {
   const total = lesson.quiz.length;
@@ -3203,7 +3180,9 @@ function answerGrammarMC(btn, chosen) {
     _recordMiss(gqMissed, q);
     _trackMistake(gKey, 'grammar');
     applyFsrsRating(gKey, FSRS_AGAIN);
+    _trackLastSeen(gKey);
     _trackLastSeen('g:' + lessonId);
+    saveProgress();
     checkAchievements();
     showGrammarFeedback(false, q.explanation || q.correct);
     document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -3239,7 +3218,9 @@ function answerGrammarFIB() {
     _recordMiss(gqMissed, q);
     _trackMistake(gFibKey, 'grammar');
     applyFsrsRating(gFibKey, FSRS_AGAIN);
+    _trackLastSeen(gFibKey);
     _trackLastSeen('g:' + lessonId);
+    saveProgress();
     checkAchievements();
     showGrammarFeedback(false, q.answer, q.explanation);
     document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -3304,7 +3285,9 @@ function checkWordOrder() {
     _recordMiss(gqMissed, q);
     _trackMistake(gWoKey, 'grammar');
     applyFsrsRating(gWoKey, FSRS_AGAIN);
+    _trackLastSeen(gWoKey);
     _trackLastSeen('g:' + lessonId);
+    saveProgress();
     checkAchievements();
     showGrammarFeedback(false, woAnswer, q.explanation);
     document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -3348,7 +3331,9 @@ function dontKnowGrammar() {
   const gDkKey = 'g:' + lessonId + ':' + qIdx;
   _trackMistake(gDkKey, 'grammar');
   applyFsrsRating(gDkKey, FSRS_AGAIN);
+  _trackLastSeen(gDkKey);
   _trackLastSeen('g:' + lessonId);
+  saveProgress();
   checkAchievements();
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -5363,7 +5348,6 @@ function applyFsrsRating(key, rating) {
   } else {
     progress.mastery[key] = masteryFromFsrs(newS);
   }
-  saveProgress();
 }
 
 // Returns elapsed days since key was last seen, or Infinity if never
@@ -5757,17 +5741,6 @@ function openVocabBrowseSearch(query) {
 
 function getPhraseMastery(phraseId) {
   return progress.mastery['ph:' + phraseId] || 0;
-}
-
-function addPhraseMastery(phraseId, correct) {
-  const key = 'ph:' + phraseId;
-  const cur = progress.mastery[key] || 0;
-  if (correct) {
-    progress.mastery[key] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[key] = Math.max(1, cur - 1);
-  }
-  saveProgress();
 }
 
 function getSituationProgress(slug) {
@@ -6178,6 +6151,7 @@ function answerPhrasesMC(btn, chosen) {
     _trackMistake('ph:' + q._phraseId, 'phrases');
     applyFsrsRating('ph:' + q._phraseId, FSRS_AGAIN);
     _trackLastSeen('ph:' + q._phraseId);
+    saveProgress();
     checkAchievements();
     showPhrasesFeedback(false, fbAnswer);
     document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -6207,6 +6181,7 @@ function answerPhrasesFIB() {
     _trackMistake('ph:' + q._phraseId, 'phrases');
     applyFsrsRating('ph:' + q._phraseId, FSRS_AGAIN);
     _trackLastSeen('ph:' + q._phraseId);
+    saveProgress();
     checkAchievements();
     showPhrasesFeedback(false, q.bengali + ' (' + q.answer + ')');
     document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -6235,6 +6210,7 @@ function dontKnowPhrases() {
   _trackMistake('ph:' + q._phraseId, 'phrases');
   applyFsrsRating('ph:' + q._phraseId, FSRS_AGAIN);
   _trackLastSeen('ph:' + q._phraseId);
+  saveProgress();
   checkAchievements();
   document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
