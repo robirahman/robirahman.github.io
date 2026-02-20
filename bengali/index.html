@@ -119,6 +119,7 @@ permalink: /bengali/
     <button data-action="switch-profile"><span class="pm-icon">🔄</span>Switch Profile</button>
     <details class="settings-collapsible">
       <summary class="settings-section-label settings-collapsible-hdr">Advanced</summary>
+      <button class="settings-toggle-btn" data-action="toggle-slow-audio" id="settings-slow-audio-btn">🐢 Slow Audio: <span id="slow-audio-status">Off</span></button>
       <button data-action="import-progress"><span class="pm-icon">⬆</span>Import Progress</button>
       <button data-action="export-progress"><span class="pm-icon">⬇</span>Export Progress</button>
       <div class="settings-divider"></div>
@@ -474,6 +475,7 @@ permalink: /bengali/
     <button class="canvas-close-btn" data-action="close-canvas">✕</button>
     <div class="canvas-char-label" id="canvas-char-label"></div>
     <canvas id="tracing-canvas" width="400" height="400"></canvas>
+    <div id="stroke-hints" class="stroke-hints"></div>
     <button class="btn-primary canvas-clear-btn" data-action="clear-canvas">Clear</button>
   </div>
 </div>
