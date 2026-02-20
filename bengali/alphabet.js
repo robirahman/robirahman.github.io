@@ -304,6 +304,10 @@ const STROKE_HINTS = {
 // ════════════════════════════════════════
 //  MODULES
 // ════════════════════════════════════════
+function var_vowel(){ return 'var(--vowel)'; }
+function var_consonant(){ return 'var(--consonant)'; }
+function var_special(){ return 'var(--special)'; }
+
 const MODULES = [
   { id:'mixed', title:'Mixed Practice', desc:'Adaptive lessons — new letters introduced as you master earlier ones', icon:'🧠', isMixed: true, color: () => 'var(--accent)' },
   { id:'writing-core', title:'Writing Practice', desc:'Trace core alphabet letters with scaffolded stroke hints', icon:'✍️', isWriting: true, letters: ALL_LETTERS.map(l => ({...l})), color: () => '#f6b83f' },
