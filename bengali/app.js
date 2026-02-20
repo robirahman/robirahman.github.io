@@ -494,6 +494,31 @@ function _lsKey(name) {
   return LS_PREFIX + name;
 }
 
+function prunePracticeLog(log, maxDays = 365) {
+  if (!log || typeof log !== 'object') return {};
+
+  const dayMs = 24 * 60 * 60 * 1000;
+  const safeMaxDays = Math.max(1, Math.floor(maxDays) || 365);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayUtc = Date.parse(todayStr + 'T00:00:00Z');
+  const cutoffUtc = todayUtc - ((safeMaxDays - 1) * dayMs);
+  const cutoffStr = new Date(cutoffUtc).toISOString().slice(0, 10);
+
+  const pruned = {};
+  Object.keys(log)
+    .sort()
+    .forEach((k) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+      const keyUtc = Date.parse(k + 'T00:00:00Z');
+      if (Number.isNaN(keyUtc)) return;
+      if (new Date(keyUtc).toISOString().slice(0, 10) !== k) return;
+      if (k < cutoffStr) return;
+      pruned[k] = log[k];
+    });
+
+  return pruned;
+}
+
 function _loadProgressLS(name) {
   let data = null;
   let hadStoredData = false;
@@ -528,12 +553,27 @@ function _loadProgressLS(name) {
     mutated = true;
   }
 
+  const originalLog = data.practiceLog;
+  const prunedLog = prunePracticeLog(originalLog);
+  const originalKeys = (originalLog && typeof originalLog === 'object') ? Object.keys(originalLog).sort() : [];
+  const prunedKeys = Object.keys(prunedLog);
+  const logChanged = !originalLog || typeof originalLog !== 'object'
+    || originalKeys.length !== prunedKeys.length
+    || originalKeys.some((k, i) => k !== prunedKeys[i] || originalLog[k] !== prunedLog[k]);
+  if (logChanged) {
+    data.practiceLog = prunedLog;
+    mutated = true;
+  }
+
   if (mutated && hadStoredData) _saveProgressLS(name, data);
   return data;
 }
 
 
 function _saveProgressLS(name, data) {
+  if (data && typeof data === 'object') {
+    data.practiceLog = prunePracticeLog(data.practiceLog);
+  }
   try {
     localStorage.setItem(_lsKey(name), JSON.stringify(data));
     _persistenceWarningState = { quota: false, security: false, generic: false };
