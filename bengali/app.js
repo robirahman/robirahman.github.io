@@ -538,16 +538,6 @@ function getMastery(letter) {
   return progress.mastery[letter] || 0; // 0=unseen, 1=seen, 2=learning, 3=mastered
 }
 
-function addMastery(letter, correct) {
-  const cur = getMastery(letter);
-  if (correct) {
-    progress.mastery[letter] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[letter] = Math.max(1, cur - 1);
-  }
-  saveProgress();
-}
-
 function getModuleProgress(mod) {
   if (mod.isChart) return null;
   let total = mod.letters.length;
@@ -808,6 +798,8 @@ function renderArithmeticQuestion() {
   document.getElementById('quiz-feedback').className = 'quiz-feedback';
   document.getElementById('quiz-feedback').textContent = '';
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn';
+  document.getElementById('quiz-rating-area').classList.remove('show');
+  _pendingRating = null;
 
   const qa = document.getElementById('quiz-question-area');
   qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div><div class="quiz-letter">${q.display}</div>`;
@@ -1178,14 +1170,16 @@ function generateQuiz(letters, forceMode) {
   quizQuestions = [];
   const shuffled = [...letters].sort(() => Math.random() - 0.5);
 
-  // Weight by urgency: overdue ratio = time-since-last-seen / review-interval
-  // Unseen items (mastery 0) get high priority; recently-seen mastered items get low priority
-  const ls = progress.lastSeen || {};
-  const now = Date.now();
+  // Weight by urgency: overdue ratio = elapsed_days / stability (FSRS), or legacy interval ratio
   const urgency = l => {
     const m = getMastery(l.letter);
-    if (m === 0) return 500; // never practised — high priority
-    const seenAgo = ls[l.letter] ? now - new Date(ls[l.letter]).getTime() : Infinity;
+    if (m === 0) return 500; // never practised — highest priority
+    const card = progress.fsrs && progress.fsrs[l.letter];
+    if (card && card.s > 0) {
+      return _elapsedDays(l.letter) / card.s; // > 1 = overdue
+    }
+    const seenAgo = (progress.lastSeen && progress.lastSeen[l.letter])
+      ? Date.now() - new Date(progress.lastSeen[l.letter]).getTime() : Infinity;
     return seenAgo / REVIEW_INTERVALS_MS[m];
   };
   const weighted = [...shuffled].sort((a, b) => urgency(b) - urgency(a));
@@ -1464,6 +1458,8 @@ function renderQuestion() {
   fb.className = 'quiz-feedback';
   fb.textContent = '';
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn';
+  document.getElementById('quiz-rating-area').classList.remove('show');
+  _pendingRating = null;
 
   if (q.type === 'mc' || q.type === 'listening-mc') {
     aa.innerHTML = '<div class="mc-options">' +
@@ -1517,17 +1513,18 @@ function answerMC(btn, chosen) {
     quizCorrect++;
     addXP(10);
     showFeedback(true, q.fullAnswer || q.correct);
-    setTimeout(() => { const nb = document.getElementById('quiz-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
+    showRatingButtons(q.letter, 'quiz-rating-area', 'quiz-next-btn');
   } else {
     btn.classList.add('wrong');
     showFeedback(false, q.fullAnswer || q.correct);
     _recordMiss(quizMissed, q);
     _trackMistake(q.letter, 'alphabet');
+    applyFsrsRating(q.letter, FSRS_AGAIN);
+    _trackLastSeen(q.letter);
+    saveProgress();
+    checkAchievements();
+    document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
   }
-  addMastery(q.letter, correct);
-  _trackLastSeen(q.letter);
-  checkAchievements();
-  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 let spellTileOrder = [];
@@ -1572,15 +1569,17 @@ function answerSpell() {
     quizCorrect++;
     addXP(15);
     showFeedback(true, q.correct);
+    showRatingButtons(q.letters.map(l => l.letter), 'quiz-rating-area', 'quiz-next-btn');
   } else {
     showFeedback(false, q.correct);
     _showInlineAnswer('quiz-answer-area', q.correct);
     _recordMiss(quizMissed, q);
     _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
+    q.letters.forEach(l => { applyFsrsRating(l.letter, FSRS_AGAIN); _trackLastSeen(l.letter); });
+    saveProgress();
+    checkAchievements();
+    document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
   }
-  q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
-  checkAchievements();
-  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 function answerFIB() {
@@ -1598,21 +1597,24 @@ function answerFIB() {
     quizCorrect++;
     addXP(15); // FIB worth more XP
     showFeedback(true, q.answer);
+    const fibKeys = q.letters ? q.letters.map(l => l.letter) : [q.letter];
+    showRatingButtons(fibKeys, 'quiz-rating-area', 'quiz-next-btn');
   } else {
     input.classList.add('wrong');
     showFeedback(false, q.answer);
     _showInlineAnswer('quiz-answer-area', q.answer);
     _recordMiss(quizMissed, q);
     _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
+    if (q.letters) {
+      q.letters.forEach(l => { applyFsrsRating(l.letter, FSRS_AGAIN); _trackLastSeen(l.letter); });
+    } else {
+      applyFsrsRating(q.letter, FSRS_AGAIN);
+      _trackLastSeen(q.letter);
+    }
+    saveProgress();
+    checkAchievements();
+    document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
   }
-  if (q.letters) {
-    q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
-  } else {
-    addMastery(q.letter, correct);
-    _trackLastSeen(q.letter);
-  }
-  checkAchievements();
-  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 function reportProblem(quizType) {
@@ -1707,6 +1709,52 @@ function _showInlineAnswer(areaId, answer) {
   aa.appendChild(div);
 }
 
+// ────────────────────────────────────────
+//  FSRS rating UI helpers
+// ────────────────────────────────────────
+let _pendingRating = null;
+// { keys: string[], ratingAreaId, nextBtnId, extraKeys: [] }
+// keys: one or more FSRS keys to apply the rating to (multi-letter for spell questions)
+// extraKeys: additional _trackLastSeen keys (e.g. lesson-level key for grammar)
+
+function showRatingButtons(keys, ratingAreaId, nextBtnId, extraKeys) {
+  const keyArr = Array.isArray(keys) ? keys : [keys];
+  _pendingRating = { keys: keyArr, ratingAreaId, nextBtnId, extraKeys: extraKeys || [] };
+  // Preview intervals using the first (or only) key's FSRS state
+  const previewKey = keyArr[0];
+  const area = document.getElementById(ratingAreaId);
+  if (!area) return;
+  [FSRS_HARD, FSRS_GOOD, FSRS_EASY].forEach((rating, i) => {
+    const days = fsrsPreviewInterval(previewKey, rating);
+    const spans = area.querySelectorAll('.rating-interval');
+    if (spans[i]) spans[i].textContent = days === 1 ? '1d' : days + 'd';
+  });
+  area.classList.add('show');
+  // Next button stays hidden until rated
+  document.getElementById(nextBtnId).className = 'btn-primary quiz-next-btn';
+}
+
+function hideRatingButtons() {
+  if (!_pendingRating) return;
+  const area = document.getElementById(_pendingRating.ratingAreaId);
+  if (area) area.classList.remove('show');
+}
+
+function onRatingSelected(rating) {
+  if (!_pendingRating) return;
+  const { keys, nextBtnId, extraKeys } = _pendingRating;
+  keys.forEach(key => {
+    applyFsrsRating(key, rating);
+    _trackLastSeen(key);
+  });
+  extraKeys.forEach(k => _trackLastSeen(k));
+  hideRatingButtons();
+  _pendingRating = null;
+  saveProgress();
+  checkAchievements();
+  document.getElementById(nextBtnId).className = 'btn-primary quiz-next-btn show';
+}
+
 function dontKnowQuiz() {
   if (quizAnswered) return;
   quizAnswered = true;
@@ -1731,11 +1779,12 @@ function dontKnowQuiz() {
   _recordMiss(quizMissed, q);
   _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
   if (q.letters) {
-    q.letters.forEach(l => { addMastery(l.letter, false); _trackLastSeen(l.letter); });
+    q.letters.forEach(l => { applyFsrsRating(l.letter, FSRS_AGAIN); _trackLastSeen(l.letter); });
   } else {
-    addMastery(q.letter, false);
+    applyFsrsRating(q.letter, FSRS_AGAIN);
     _trackLastSeen(q.letter);
   }
+  saveProgress();
   checkAchievements();
   document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -1926,17 +1975,6 @@ function _vocabKey(w) {
 function getVocabMastery(w) {
   return progress.mastery[_vocabKey(w)] || 0;
 }
-function addVocabMastery(w, correct) {
-  const key = _vocabKey(w);
-  const cur = progress.mastery[key] || 0;
-  if (correct) {
-    progress.mastery[key] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[key] = Math.max(1, cur - 1);
-  }
-  saveProgress();
-}
-
 // ════════════════════════════════════════
 //  VOCAB HOME
 // ════════════════════════════════════════
@@ -2502,13 +2540,17 @@ function startVocabQuiz() {
 
 function generateVocabQuiz(words, forceMode) {
   vqQuestions = [];
-  // Weight by urgency: overdue ratio = time-since-last-seen / review-interval
-  const ls = progress.lastSeen || {};
-  const now = Date.now();
+  // Weight by urgency: overdue ratio = elapsed_days / stability (FSRS), or legacy interval ratio
   const urgency = w => {
     const m = getVocabMastery(w);
     if (m === 0) return 500;
-    const seenAgo = ls[_vocabKey(w)] ? now - new Date(ls[_vocabKey(w)]).getTime() : Infinity;
+    const vk = _vocabKey(w);
+    const card = progress.fsrs && progress.fsrs[vk];
+    if (card && card.s > 0) {
+      return _elapsedDays(vk) / card.s;
+    }
+    const seenAgo = (progress.lastSeen && progress.lastSeen[vk])
+      ? Date.now() - new Date(progress.lastSeen[vk]).getTime() : Infinity;
     return seenAgo / REVIEW_INTERVALS_MS[m];
   };
   const sorted = [...words].sort((a, b) => urgency(b) - urgency(a));
@@ -2658,6 +2700,8 @@ function renderVocabQuestion() {
   const fb = document.getElementById('vq-feedback');
   fb.className = 'quiz-feedback';
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn';
+  document.getElementById('vq-rating-area').classList.remove('show');
+  _pendingRating = null;
 
   if (q.type === 'mc' || q.type === 'mc-reverse' || q.type === 'listening-mc') {
     aa.innerHTML = '<div class="mc-options">' +
@@ -2695,16 +2739,18 @@ function answerVocabMC(btn, chosen) {
   btn.classList.add(correct ? 'correct' : 'wrong');
   if (correct) {
     vqCorrect++; addXP(10);
-    setTimeout(() => { const nb = document.getElementById('vq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
+    showVocabFeedback(true, q.correct, false);
+    showRatingButtons(_vocabKey(q.word), 'vq-rating-area', 'vq-next-btn');
   } else {
     _recordMiss(vqMissed, q);
     _trackMistake(_vocabKey(q.word), 'vocab');
+    applyFsrsRating(_vocabKey(q.word), FSRS_AGAIN);
+    _trackLastSeen(_vocabKey(q.word));
+    saveProgress();
+    checkAchievements();
+    showVocabFeedback(false, q.correct, q.word && q.word.example);
+    document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
   }
-  addVocabMastery(q.word, correct);
-  _trackLastSeen(_vocabKey(q.word));
-  checkAchievements();
-  showVocabFeedback(correct, q.correct, !correct && q.word && q.word.example);
-  document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 function answerVocabFIB() {
@@ -2730,13 +2776,21 @@ function answerVocabFIB() {
     }
   }
   input.classList.add(correct ? 'correct' : 'wrong');
-  if (correct) { vqCorrect++; addXP(15); }
-  else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); _trackMistake(_vocabKey(q.word), 'vocab'); }
-  addVocabMastery(q.word, correct);
-  _trackLastSeen(_vocabKey(q.word));
-  checkAchievements();
-  showVocabFeedback(correct, q.answer, !correct && q.word && q.word.example);
-  document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
+  if (correct) {
+    vqCorrect++; addXP(15);
+    showVocabFeedback(true, q.answer, false);
+    showRatingButtons(_vocabKey(q.word), 'vq-rating-area', 'vq-next-btn');
+  } else {
+    _showInlineAnswer('vq-answer-area', q.answer);
+    _recordMiss(vqMissed, q);
+    _trackMistake(_vocabKey(q.word), 'vocab');
+    applyFsrsRating(_vocabKey(q.word), FSRS_AGAIN);
+    _trackLastSeen(_vocabKey(q.word));
+    saveProgress();
+    checkAchievements();
+    showVocabFeedback(false, q.answer, q.word && q.word.example);
+    document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
+  }
 }
 
 function showVocabFeedback(correct, answer, example) {
@@ -2764,8 +2818,9 @@ function dontKnowVocab() {
   }
   _recordMiss(vqMissed, q);
   _trackMistake(_vocabKey(q.word), 'vocab');
-  addVocabMastery(q.word, false);
+  applyFsrsRating(_vocabKey(q.word), FSRS_AGAIN);
   _trackLastSeen(_vocabKey(q.word));
+  saveProgress();
   checkAchievements();
   showVocabFeedback(false, q.answer || q.correct, q.word && q.word.example);
   document.getElementById('vq-next-btn').className = 'btn-primary quiz-next-btn show';
@@ -2840,16 +2895,6 @@ function retryMissedVocab() {
 // ════════════════════════════════════════
 function getGrammarMastery(lessonId, questionIdx) {
   return progress.mastery['g:' + lessonId + ':' + questionIdx] || 0;
-}
-function addGrammarMastery(lessonId, questionIdx, correct) {
-  const key = 'g:' + lessonId + ':' + questionIdx;
-  const cur = progress.mastery[key] || 0;
-  if (correct) {
-    progress.mastery[key] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[key] = Math.max(1, cur - 1);
-  }
-  saveProgress();
 }
 function getLessonProgress(lesson) {
   const total = lesson.quiz.length;
@@ -3049,6 +3094,8 @@ function renderGrammarQuestion() {
   fb.className = 'quiz-feedback';
   fb.textContent = '';
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn';
+  document.getElementById('gq-rating-area').classList.remove('show');
+  _pendingRating = null;
 
   // Build question area based on type
   if (q.type === 'translate-mc') {
@@ -3122,22 +3169,24 @@ function answerGrammarMC(btn, chosen) {
     if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
   });
   btn.classList.add(correct ? 'correct' : 'wrong');
-  if (correct) {
-    gqCorrect++; addXP(10);
-    setTimeout(() => { const nb = document.getElementById('gq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
-  } else {
-    _recordMiss(gqMissed, q);
-    const _gLid = q._lessonId || (currentGrammarLesson && currentGrammarLesson.id) || '';
-    const _gQi = q._qIdx != null ? q._qIdx : gqIndex;
-    _trackMistake('g:' + _gLid + ':' + _gQi, 'grammar');
-  }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
-  addGrammarMastery(lessonId, qIdx, correct);
-  _trackLastSeen('g:' + lessonId);
-  checkAchievements();
-  showGrammarFeedback(correct, q.explanation || q.correct);
-  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+  const gKey = 'g:' + lessonId + ':' + qIdx;
+  if (correct) {
+    gqCorrect++; addXP(10);
+    showGrammarFeedback(true, q.explanation || q.correct);
+    showRatingButtons(gKey, 'gq-rating-area', 'gq-next-btn', ['g:' + lessonId]);
+  } else {
+    _recordMiss(gqMissed, q);
+    _trackMistake(gKey, 'grammar');
+    applyFsrsRating(gKey, FSRS_AGAIN);
+    _trackLastSeen(gKey);
+    _trackLastSeen('g:' + lessonId);
+    saveProgress();
+    checkAchievements();
+    showGrammarFeedback(false, q.explanation || q.correct);
+    document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+  }
 }
 
 function answerGrammarFIB() {
@@ -3157,15 +3206,25 @@ function answerGrammarFIB() {
     : (q.acceptable.some(a => a.toLowerCase() === val || _normRoman(a) === normVal) ||
        q.acceptable.some(a => a === rawInput));
   input.classList.add(correct ? 'correct' : 'wrong');
-  if (correct) { gqCorrect++; addXP(15); }
-  else { _showInlineAnswer('gq-answer-area', q.answer); _recordMiss(gqMissed, q); const _gLid2 = q._lessonId || (currentGrammarLesson && currentGrammarLesson.id) || ''; const _gQi2 = q._qIdx != null ? q._qIdx : gqIndex; _trackMistake('g:' + _gLid2 + ':' + _gQi2, 'grammar'); }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
-  addGrammarMastery(lessonId, qIdx, correct);
-  _trackLastSeen('g:' + lessonId);
-  checkAchievements();
-  showGrammarFeedback(correct, q.answer, !correct && q.explanation);
-  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+  const gFibKey = 'g:' + lessonId + ':' + qIdx;
+  if (correct) {
+    gqCorrect++; addXP(15);
+    showGrammarFeedback(true, q.answer, false);
+    showRatingButtons(gFibKey, 'gq-rating-area', 'gq-next-btn', ['g:' + lessonId]);
+  } else {
+    _showInlineAnswer('gq-answer-area', q.answer);
+    _recordMiss(gqMissed, q);
+    _trackMistake(gFibKey, 'grammar');
+    applyFsrsRating(gFibKey, FSRS_AGAIN);
+    _trackLastSeen(gFibKey);
+    _trackLastSeen('g:' + lessonId);
+    saveProgress();
+    checkAchievements();
+    showGrammarFeedback(false, q.answer, q.explanation);
+    document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+  }
 }
 
 function selectWordTile(tile) {
@@ -3213,19 +3272,26 @@ function checkWordOrder() {
   // Disable remaining tiles
   document.querySelectorAll('#gq-word-tiles .word-tile').forEach(t => t.style.pointerEvents = 'none');
   document.querySelectorAll('#gq-answer-wo .word-tile').forEach(t => t.style.pointerEvents = 'none');
-  if (correct) { gqCorrect++; addXP(15); }
-  else {
-    _showInlineAnswer('gq-answer-area', q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
-    _recordMiss(gqMissed, q);
-    const _gLid3 = q._lessonId || (currentGrammarLesson && currentGrammarLesson.id) || '';
-    const _gQi3 = q._qIdx != null ? q._qIdx : gqIndex;
-    _trackMistake('g:' + _gLid3 + ':' + _gQi3, 'grammar');
-  }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
-  addGrammarMastery(lessonId, qIdx, correct);
-  showGrammarFeedback(correct, q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''), !correct && q.explanation);
-  document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+  const gWoKey = 'g:' + lessonId + ':' + qIdx;
+  const woAnswer = q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : '');
+  if (correct) {
+    gqCorrect++; addXP(15);
+    showGrammarFeedback(true, woAnswer, false);
+    showRatingButtons(gWoKey, 'gq-rating-area', 'gq-next-btn', ['g:' + lessonId]);
+  } else {
+    _showInlineAnswer('gq-answer-area', woAnswer);
+    _recordMiss(gqMissed, q);
+    _trackMistake(gWoKey, 'grammar');
+    applyFsrsRating(gWoKey, FSRS_AGAIN);
+    _trackLastSeen(gWoKey);
+    _trackLastSeen('g:' + lessonId);
+    saveProgress();
+    checkAchievements();
+    showGrammarFeedback(false, woAnswer, q.explanation);
+    document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
+  }
 }
 
 function showGrammarFeedback(correct, answer, explanation) {
@@ -3262,9 +3328,12 @@ function dontKnowGrammar() {
   _recordMiss(gqMissed, q);
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
-  _trackMistake('g:' + lessonId + ':' + qIdx, 'grammar');
-  addGrammarMastery(lessonId, qIdx, false);
+  const gDkKey = 'g:' + lessonId + ':' + qIdx;
+  _trackMistake(gDkKey, 'grammar');
+  applyFsrsRating(gDkKey, FSRS_AGAIN);
+  _trackLastSeen(gDkKey);
   _trackLastSeen('g:' + lessonId);
+  saveProgress();
   checkAchievements();
   document.getElementById('gq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -4031,9 +4100,14 @@ function renderPlacementResultsUI() {
 }
 
 function applyPlacementResults() {
-  // Bulk-write pending mastery
+  if (!progress.fsrs) progress.fsrs = {};
+  const sMap = { 1: 1, 2: 3, 3: 7, 4: 21 };
+  // Bulk-write pending mastery and seed FSRS stability from placed level
   for (const [key, level] of Object.entries(ptPendingMastery)) {
     progress.mastery[key] = level;
+    if (!progress.fsrs[key]) {
+      progress.fsrs[key] = { s: sMap[level] || 1, d: 5, reps: level, lapses: 0 };
+    }
   }
   progress.placementTaken = true;
   saveProgress();
@@ -4775,6 +4849,16 @@ function migrateProgress() {
   if (!progress.achievements) progress.achievements = [];
   if (!progress.practiceLog) progress.practiceLog = {};
   if (!progress.lastSeen) progress.lastSeen = {};
+  if (!progress.fsrs) {
+    progress.fsrs = {};
+    // Seed FSRS data from existing integer mastery so scheduling is continuous
+    const sMap = { 1: 1, 2: 3, 3: 7, 4: 21 };
+    Object.entries(progress.mastery || {}).forEach(([key, level]) => {
+      if (level >= 1) {
+        progress.fsrs[key] = { s: sMap[level] || 1, d: 5, reps: level, lapses: 0 };
+      }
+    });
+  }
 }
 
 // ════════════════════════════════════════
@@ -5166,49 +5250,188 @@ const REVIEW_INTERVALS_MS = {
   4: 30 * 24*60*60*1000,   // well-known: after 30 days
 };
 
+// ════════════════════════════════════════
+//  FSRS-4.5 SPACED REPETITION
+// ════════════════════════════════════════
+// Default weight vector (FSRS-4.5 open-source defaults)
+const FSRS_W = [0.4072,1.1829,3.1262,15.4722,7.2102,0.5316,1.0651,0.0589,
+                1.5330,0.1544,1.0070,1.9395,0.1100,0.2900,2.2700,0.0700,2.9898,0.5100,0.4300];
+const FSRS_AGAIN = 1, FSRS_HARD = 2, FSRS_GOOD = 3, FSRS_EASY = 4;
+
+// Initial stability (days) after first exposure, indexed by rating 1-4
+function fsrsInitS(rating) { return FSRS_W[rating - 1]; }
+
+// Initial difficulty (1-10) after first exposure, indexed by rating
+function fsrsInitD(rating) {
+  return Math.max(1, Math.min(10, FSRS_W[4] - Math.exp(FSRS_W[5] * (rating - 1)) + 1));
+}
+
+// Estimated probability of recall after elapsedDays given stability s
+function fsrsR(s, elapsedDays) {
+  return Math.pow(1 + elapsedDays / (9 * s), -1);
+}
+
+// New stability after a successful recall (rating 2-4)
+function fsrsSAfterRecall(d, s, r, rating) {
+  const hardPenalty = rating === FSRS_HARD ? FSRS_W[15] : 1;
+  const easyBonus   = rating === FSRS_EASY ? FSRS_W[16] : 1;
+  return s * (Math.exp(FSRS_W[8]) * (11 - d) *
+    Math.pow(s, -FSRS_W[9]) * (Math.exp(FSRS_W[10] * (1 - r)) - 1) *
+    hardPenalty * easyBonus) + 1;
+}
+
+// New stability after forgetting (rating 1 / Again)
+function fsrsSAfterForgetting(d, s, r) {
+  return FSRS_W[11] * Math.pow(d, -FSRS_W[12]) *
+    (Math.pow(s + 1, FSRS_W[13]) - 1) * Math.exp(FSRS_W[14] * (1 - r));
+}
+
+// Updated difficulty after a review
+function fsrsNextD(d, rating) {
+  const d3 = fsrsInitD(FSRS_GOOD);
+  const dp = d - FSRS_W[6] * (rating - 3);
+  return Math.max(1, Math.min(10, FSRS_W[7] * d3 + (1 - FSRS_W[7]) * dp));
+}
+
+// Derive integer mastery 0-4 from FSRS stability (for curriculum/display)
+function masteryFromFsrs(s) {
+  if (!s || s < 0.5) return 1;
+  if (s < 7)  return 2;
+  if (s < 21) return 3;
+  return 4;
+}
+
+// Preview the resulting interval in days for a given rating without committing
+function fsrsPreviewInterval(key, rating) {
+  const card = progress.fsrs && progress.fsrs[key];
+  let previewS;
+  if (!card || card.reps === 0) {
+    previewS = fsrsInitS(rating);
+  } else {
+    const ls = progress.lastSeen && progress.lastSeen[key]
+      ? new Date(progress.lastSeen[key]).getTime() : Date.now();
+    const elapsedDays = Math.max(0, (Date.now() - ls) / 86400000);
+    const r = fsrsR(card.s, elapsedDays);
+    previewS = fsrsSAfterRecall(card.d, card.s, r, rating);
+  }
+  return Math.max(1, Math.round(Math.max(0.1, previewS)));
+}
+
+// Apply a rating to a card's FSRS state and update progress.mastery
+function applyFsrsRating(key, rating) {
+  if (!progress.fsrs) progress.fsrs = {};
+  const card = progress.fsrs[key] || { s: 0, d: 5, reps: 0, lapses: 0 };
+  const lastMs = progress.lastSeen && progress.lastSeen[key]
+    ? new Date(progress.lastSeen[key]).getTime() : Date.now();
+  const elapsedDays = Math.max(0, (Date.now() - lastMs) / 86400000);
+  let newS, newD;
+  if (card.reps === 0) {
+    newS = fsrsInitS(rating);
+    newD = fsrsInitD(rating);
+  } else if (rating === FSRS_AGAIN) {
+    const r = fsrsR(card.s, elapsedDays);
+    newS = Math.max(0.1, fsrsSAfterForgetting(card.d, card.s, r));
+    newD = fsrsNextD(card.d, rating);
+    card.lapses = (card.lapses || 0) + 1;
+  } else {
+    const r = fsrsR(card.s, elapsedDays);
+    newS = Math.max(0.1, fsrsSAfterRecall(card.d, card.s, r, rating));
+    newD = fsrsNextD(card.d, rating);
+  }
+  card.s = newS;
+  card.d = newD;
+  card.reps = (card.reps || 0) + 1;
+  progress.fsrs[key] = card;
+  // Keep integer mastery in sync for curriculum/achievement code
+  if (rating === FSRS_AGAIN) {
+    progress.mastery[key] = Math.max(1, (progress.mastery[key] || 1) - 1);
+  } else {
+    progress.mastery[key] = masteryFromFsrs(newS);
+  }
+}
+
+// Returns elapsed days since key was last seen, or Infinity if never
+function _elapsedDays(key) {
+  const ls = progress.lastSeen && progress.lastSeen[key];
+  if (!ls) return Infinity;
+  return (Date.now() - new Date(ls).getTime()) / 86400000;
+}
+
+// True if the card identified by key is due for review using FSRS,
+// falling back to the old interval map when no FSRS data exists yet.
+function _fsrsIsDue(key, fallbackMastery) {
+  const card = progress.fsrs && progress.fsrs[key];
+  if (!card) {
+    if (!fallbackMastery || fallbackMastery === 0) return false;
+    const ls = progress.lastSeen && progress.lastSeen[key]
+      ? new Date(progress.lastSeen[key]).getTime() : 0;
+    return Date.now() - ls >= REVIEW_INTERVALS_MS[fallbackMastery];
+  }
+  return _elapsedDays(key) >= card.s; // both in days
+}
+
 function getDueItems() {
-  const now = Date.now();
-  const lastSeen = progress.lastSeen || {};
   const due = { letters: [], vocab: [], grammar: [], phrases: [] };
   // Letters
   ALL_LETTERS.forEach(l => {
     const key = l.letter;
-    const mastery = getMastery(key);
-    if (mastery === 0) return; // never seen — not in review queue, discovered via modules
-    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
-    if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.letters.push(l);
+    if (getMastery(key) === 0) return; // never seen
+    if (_fsrsIsDue(key, getMastery(key))) due.letters.push(l);
   });
   // Vocab
   VOCAB_DATA.forEach(w => {
     const key = _vocabKey(w);
-    const mastery = getVocabMastery(w);
-    if (mastery === 0) return;
-    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
-    if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.vocab.push(w);
+    if (getVocabMastery(w) === 0) return;
+    if (_fsrsIsDue(key, getVocabMastery(w))) due.vocab.push(w);
   });
-  // Grammar (per-lesson level: average raw mastery across all quiz questions)
+  // Grammar — lesson is due when average FSRS stability across its questions is overdue
   GRAMMAR_LESSONS.forEach(lesson => {
     const prog = getLessonProgress(lesson);
     if (prog.seen === 0) return;
-    const key = 'g:' + lesson.id;
-    const rawSum = lesson.quiz.reduce((s, _, i) => s + getGrammarMastery(lesson.id, i), 0);
-    const avgMastery = Math.min(4, Math.max(1, Math.round(rawSum / lesson.quiz.length)));
-    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
-    const interval = REVIEW_INTERVALS_MS[avgMastery];
-    if (now - ls >= interval) due.grammar.push(lesson);
+    // Compute average stability across all questions in the lesson
+    let totalS = 0, n = 0;
+    lesson.quiz.forEach((_, i) => {
+      const qKey = 'g:' + lesson.id + ':' + i;
+      const card = progress.fsrs && progress.fsrs[qKey];
+      if (card) { totalS += card.s; n++; }
+    });
+    const lessonKey = 'g:' + lesson.id;
+    if (n === 0) {
+      // No FSRS data yet — fall back to old mastery-based check
+      const rawSum = lesson.quiz.reduce((s, _, i) => s + getGrammarMastery(lesson.id, i), 0);
+      const avgMastery = Math.min(4, Math.max(1, Math.round(rawSum / lesson.quiz.length)));
+      const ls = progress.lastSeen && progress.lastSeen[lessonKey]
+        ? new Date(progress.lastSeen[lessonKey]).getTime() : 0;
+      if (Date.now() - ls >= REVIEW_INTERVALS_MS[avgMastery]) due.grammar.push(lesson);
+    } else {
+      if (_elapsedDays(lessonKey) >= totalS / n) due.grammar.push(lesson);
+    }
   });
-  // Phrases (per-situation level: average mastery of phrases)
+  // Phrases — situation is due when average FSRS stability across its phrases is overdue
   PHRASES_WAVE_ORDER.forEach(slug => {
     const phrases = PHRASES_DATA.filter(p => p.situation === slug);
     const seenPhrases = phrases.filter(p => getPhraseMastery(p.id) > 0);
     if (seenPhrases.length === 0) return;
-    const key = 'ph-sit:' + slug;
-    const avgMastery = Math.round(seenPhrases.reduce((s, p) => s + getPhraseMastery(p.id), 0) / seenPhrases.length);
-    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
-    const interval = REVIEW_INTERVALS_MS[Math.max(1, Math.min(4, avgMastery))];
-    if (now - ls >= interval) {
-      const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
-      if (sit) due.phrases.push(sit);
+    const sitKey = 'ph-sit:' + slug;
+    let totalS = 0, n = 0;
+    seenPhrases.forEach(p => {
+      const card = progress.fsrs && progress.fsrs['ph:' + p.id];
+      if (card) { totalS += card.s; n++; }
+    });
+    if (n === 0) {
+      // Fall back to old mastery-based check
+      const avgMastery = Math.round(seenPhrases.reduce((s, p) => s + getPhraseMastery(p.id), 0) / seenPhrases.length);
+      const ls = progress.lastSeen && progress.lastSeen[sitKey]
+        ? new Date(progress.lastSeen[sitKey]).getTime() : 0;
+      if (Date.now() - ls >= REVIEW_INTERVALS_MS[Math.max(1, Math.min(4, avgMastery))]) {
+        const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+        if (sit) due.phrases.push(sit);
+      }
+    } else {
+      if (_elapsedDays(sitKey) >= totalS / n) {
+        const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+        if (sit) due.phrases.push(sit);
+      }
     }
   });
   return due;
@@ -5518,17 +5741,6 @@ function openVocabBrowseSearch(query) {
 
 function getPhraseMastery(phraseId) {
   return progress.mastery['ph:' + phraseId] || 0;
-}
-
-function addPhraseMastery(phraseId, correct) {
-  const key = 'ph:' + phraseId;
-  const cur = progress.mastery[key] || 0;
-  if (correct) {
-    progress.mastery[key] = Math.min(4, cur + 1);
-  } else {
-    progress.mastery[key] = Math.max(1, cur - 1);
-  }
-  saveProgress();
 }
 
 function getSituationProgress(slug) {
@@ -5848,6 +6060,8 @@ function renderPhrasesQuestion() {
   fb.className = 'quiz-feedback';
   fb.textContent = '';
   document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn';
+  document.getElementById('phq-rating-area').classList.remove('show');
+  _pendingRating = null;
 
   if (q.type === 'phrases-mc') {
     qa.innerHTML = `
@@ -5925,23 +6139,23 @@ function answerPhrasesMC(btn, chosen) {
     if (b.dataset.answer === q.correct) b.classList.add('reveal-correct');
   });
   btn.classList.add(correct ? 'correct' : 'wrong');
+  let fbAnswer = q.correct;
+  if (q.type === 'phrases-dialogue') fbAnswer = q.correct + ' — ' + q.correctEnglish;
   if (correct) {
     phqCorrect++;
     addXP(10);
-    setTimeout(() => { const nb = document.getElementById('phq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
+    showPhrasesFeedback(true, fbAnswer);
+    showRatingButtons('ph:' + q._phraseId, 'phq-rating-area', 'phq-next-btn');
   } else {
     _recordMiss(phqMissed, q);
     _trackMistake('ph:' + q._phraseId, 'phrases');
+    applyFsrsRating('ph:' + q._phraseId, FSRS_AGAIN);
+    _trackLastSeen('ph:' + q._phraseId);
+    saveProgress();
+    checkAchievements();
+    showPhrasesFeedback(false, fbAnswer);
+    document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
   }
-  addPhraseMastery(q._phraseId, correct);
-  _trackLastSeen('ph:' + q._phraseId);
-  checkAchievements();
-  // Build a meaningful feedback string
-  let fbAnswer = q.correct;
-  if (q.type === 'phrases-dialogue') fbAnswer = q.correct + ' — ' + q.correctEnglish;
-  else if (q.type === 'phrases-mc-reverse') fbAnswer = q.correct;
-  showPhrasesFeedback(correct, fbAnswer);
-  document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 function answerPhrasesFIB() {
@@ -5959,16 +6173,19 @@ function answerPhrasesFIB() {
   if (correct) {
     phqCorrect++;
     addXP(15);
+    showPhrasesFeedback(true, q.bengali + ' (' + q.answer + ')');
+    showRatingButtons('ph:' + q._phraseId, 'phq-rating-area', 'phq-next-btn');
   } else {
     _showInlineAnswer('phq-answer-area', q.answer);
     _recordMiss(phqMissed, q);
     _trackMistake('ph:' + q._phraseId, 'phrases');
+    applyFsrsRating('ph:' + q._phraseId, FSRS_AGAIN);
+    _trackLastSeen('ph:' + q._phraseId);
+    saveProgress();
+    checkAchievements();
+    showPhrasesFeedback(false, q.bengali + ' (' + q.answer + ')');
+    document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
   }
-  addPhraseMastery(q._phraseId, correct);
-  _trackLastSeen('ph:' + q._phraseId);
-  checkAchievements();
-  showPhrasesFeedback(correct, q.bengali + ' (' + q.answer + ')');
-  document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
 
 function dontKnowPhrases() {
@@ -5991,8 +6208,9 @@ function dontKnowPhrases() {
   }
   _recordMiss(phqMissed, q);
   _trackMistake('ph:' + q._phraseId, 'phrases');
-  addPhraseMastery(q._phraseId, false);
+  applyFsrsRating('ph:' + q._phraseId, FSRS_AGAIN);
   _trackLastSeen('ph:' + q._phraseId);
+  saveProgress();
   checkAchievements();
   document.getElementById('phq-next-btn').className = 'btn-primary quiz-next-btn show';
 }
@@ -6096,6 +6314,7 @@ document.addEventListener('click', function(e) {
     // Alphabet quiz
     case 'answer-mc': answerMC(el, a.answer); break;
     case 'dont-know-quiz': dontKnowQuiz(); break;
+    case 'rate-answer': onRatingSelected(+a.rating); break;
     case 'select-spell': selectSpellTile(el); break;
     case 'answer-spell': answerSpell(); break;
     case 'answer-fib': answerFIB(); break;
