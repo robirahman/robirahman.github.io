@@ -5320,7 +5320,7 @@ function renderTodayScreen() {
   let html = `<div class="today-date">${today}</div>`;
 
   // ── Lesson of the Day ──
-  const lessonOfDay = getLessonOfDay();
+  const lessonOfDay = getLessonOfDay(getLessonProgress);
   if (lessonOfDay) {
     const firstExample = lessonOfDay.examples && lessonOfDay.examples[0];
     html += `<div class="today-lesson-card">
