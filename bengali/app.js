@@ -5229,7 +5229,7 @@ function renderTodayScreen() {
   </div>`;
 
   // ── Mistake Review ──
-  const mistakeCount = (progress.recentMistakes || []).length;
+  const mistakeCount = getResolvableUnresolvedMistakes().length;
   if (mistakeCount > 0) {
     html += `<div class="today-section">
       <div class="today-section-hdr">
@@ -5254,24 +5254,56 @@ function renderTodayScreen() {
   body.innerHTML = html;
 }
 
-function startMistakeReview() {
+function getResolvableUnresolvedMistakes() {
   const mistakes = (progress.recentMistakes || []).slice(-50);
-  if (mistakes.length === 0) { showAlert('No mistakes to review yet!'); return; }
 
-  // Deduplicate by {type,key}, keeping most recent
+  // Deduplicate by {type,key}, keeping most recent (matches review flow)
   const seen = new Set();
   const unique = [];
   for (let i = mistakes.length - 1; i >= 0; i--) {
     const m = mistakes[i];
-    const dedupeKey = (m.type || 'alphabet') + '|' + m.key;
+    const type = m.type || 'alphabet';
+    const dedupeKey = type + '|' + m.key;
     if (!seen.has(dedupeKey)) {
       seen.add(dedupeKey);
-      unique.push({ key: m.key, type: m.type || 'alphabet' });
+      unique.push({ key: m.key, type });
     }
   }
 
+  return unique.filter(({ key, type }) => {
+    if (type === 'alphabet') return getMastery(key) <= 2;
+
+    if (type === 'vocab') {
+      const word = VMIX_CURRICULUM.find(w => _vocabKey(w) === key);
+      return !!word && getVocabMastery(word) <= 2;
+    }
+
+    if (type === 'grammar') {
+      const m = /^g:([^:]+):(\d+)$/.exec(key);
+      if (!m) return false;
+      const lessonId = m[1], qIdx = +m[2];
+      const lesson = GRAMMAR_LESSONS.find(l => l.id === lessonId);
+      if (!lesson || !lesson.quiz[qIdx]) return false;
+      return getGrammarMastery(lessonId, qIdx) <= 2;
+    }
+
+    if (type === 'phrases') {
+      const phraseId = key.replace(/^ph:/, '');
+      const phrase = PHRASES_DATA.find(p => p.id === phraseId);
+      if (!phrase) return false;
+      return getPhraseMastery(phraseId) <= 2;
+    }
+
+    return false;
+  });
+}
+
+function startMistakeReview() {
+  const mistakes = getResolvableUnresolvedMistakes();
+  if (mistakes.length === 0) { showAlert('No mistakes to review yet!'); return; }
+
   // Group by type and enqueue each resolvable group
-  const byType = unique.reduce((acc, m) => {
+  const byType = mistakes.reduce((acc, m) => {
     if (!acc[m.type]) acc[m.type] = [];
     acc[m.type].push(m.key);
     return acc;
