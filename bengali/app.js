@@ -750,10 +750,25 @@ function showScreen(id) {
   if (id === 'chart') renderChart();
   if (id === 'numbers-home') renderNumbersHome();
   if (id === 'vocab-home') renderVocabHome();
+  if (id === 'listening-home') renderListeningHome();
   if (id === 'grammar-home') renderGrammarHome();
   if (id === 'phrases-home') renderPhrasesHome();
   if (id === 'today-screen') renderTodayScreen();
   if (id === 'placement-results') renderPlacementResultsUI();
+}
+
+function renderListeningHome() {
+  const host = document.getElementById('listening-vocab-categories');
+  if (!host) return;
+
+  const cats = Object.keys(VOCAB_CATEGORIES)
+    .map(catId => ({ catId, count: VOCAB_DATA.filter(w => w.category === catId).length }))
+    .filter(({ count }) => count > 0);
+
+  host.innerHTML = cats.map(({ catId, count }) => {
+    const cat = VOCAB_CATEGORIES[catId];
+    return `<button class="chip" data-action="start-vocab-listening" data-catid="${catId}">${cat.icon} ${cat.title} (${count})</button>`;
+  }).join('');
 }
 
 function _isTypingTarget(el) {
@@ -2300,6 +2315,7 @@ function renderVocabHome() {
       <div class="progress-label">${mastered}/${words.length} mastered</div>
       <div class="module-card-actions">
         <button class="mc-action-btn" data-action="start-vocab-learn" data-catid="${catId}">📖 Review</button>
+        <button class="mc-action-btn" data-action="start-vocab-listening" data-catid="${catId}">🎧 Listen</button>
         <button class="mc-action-btn mc-action-quiz" data-action="start-vocab-cat-quiz" data-catid="${catId}">▶ Quiz</button>
       </div>
     `;
@@ -2917,7 +2933,7 @@ function generateVocabQuiz(words, forceMode) {
     } else if (qtype === 'listening-mc') {
       // Play word; pick English meaning
       const correct = w.english;
-      const pool = shuffle(VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.english)
+      const pool = shuffle(words.filter(x => x.lemma !== w.lemma).map(x => x.english)
         .filter(v => v !== correct));
       const picks = pool.slice(0, 3);
       vqQuestions.push({
@@ -4844,11 +4860,23 @@ function startLetterListening() {
   showScreen('quiz'); renderQuestion();
 }
 function startVocabListening() {
-  const seen = VOCAB_DATA.filter(w => getVocabMastery(w) > 0);
-  const words = seen.length >= 4 ? seen : VOCAB_DATA.slice(0, 20);
-  generateVocabQuiz(words, 'listening');
+  startVocabListeningForCategory(null);
+}
+
+function startVocabListeningForCategory(catId = null) {
+  const scoped = catId
+    ? VOCAB_DATA.filter(w => w.category === catId)
+    : VOCAB_DATA;
+  const seen = scoped.filter(w => getVocabMastery(w) > 0);
+  const words = seen.length >= 4 ? seen : scoped.slice(0, 20);
+  if (words.length === 0) return;
+
+  generateVocabQuiz(words);
   vqIndex = 0; vqCorrect = 0; vqMissed = [];
-  document.getElementById('vq-title').textContent = '🎧 Vocabulary';
+  const catTitle = catId ? VOCAB_CATEGORIES[catId]?.title || catId : null;
+  document.getElementById('vq-title').textContent = catTitle
+    ? `🎧 Vocabulary · ${catTitle}`
+    : '🎧 Vocabulary';
   showScreen('vocab-quiz'); renderVocabQuestion();
 }
 
@@ -7027,6 +7055,7 @@ document.addEventListener('click', function(e) {
     case 'vocab-page-next': vbPage++; renderVocabList(); break;
     case 'start-vocab-learn': e.stopPropagation(); startVocabLearn(a.catid); break;
     case 'start-vocab-cat-quiz': e.stopPropagation(); _startVocabCatQuiz(a.catid); break;
+    case 'start-vocab-listening': e.stopPropagation(); startVocabListeningForCategory(a.catid || null); break;
     // Grammar
     case 'flip-gl-card': flipGlCard(); break;
     case 'prev-gl-card': prevGlCard(); break;
@@ -7131,7 +7160,6 @@ document.addEventListener('click', function(e) {
     case 'open-verb-conjugation': closeWordModal(); openVerbConjugationFromVocab(el.dataset.lemma); break;
     // Listening
     case 'start-letter-listening': startLetterListening(); break;
-    case 'start-vocab-listening': startVocabListening(); break;
     // Onboarding
     case 'dismiss-onboarding': dismissOnboarding(); break;
     // Bengali keyboard
