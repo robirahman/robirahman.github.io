@@ -1150,6 +1150,3 @@ const PHRASES_DATA = [
     english: "Half, double",
   },
 ];
-
-
-export { PHRASES_SITUATIONS, PHRASES_WAVE_ORDER, PHRASES_DATA };

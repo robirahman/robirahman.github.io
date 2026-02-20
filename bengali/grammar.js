@@ -1252,6 +1252,3 @@ Nilufar</div>`,
     ]
   },
 ];
-
-
-export { GRAMMAR_LESSONS };
