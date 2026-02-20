@@ -2497,7 +2497,7 @@ async function loadVocabPack(packNum) {
   try {
     const resp = await fetch(`vocab-pack-${packNum}.json`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const words = await resp.json();
+    const words = (await resp.json()).map(w => ({ ...w, related: Array.isArray(w.related) ? w.related : [] }));
     VOCAB_DATA.push(...words);
     VMIX_CURRICULUM.push(...words); // packs are pre-sorted in curriculum order
   } catch (err) {
@@ -2731,6 +2731,69 @@ function renderVocabList() {
 
 let _wordModalLemma = null;
 
+function getRelatedWordRef(entry) {
+  if (entry && typeof entry === "object") return entry.ref ?? entry.id ?? entry.lemma ?? '';
+  return entry;
+}
+
+function getRelatedWordType(entry) {
+  if (entry && typeof entry === "object" && typeof entry.type === "string" && entry.type.trim()) {
+    return entry.type.trim().toLowerCase();
+  }
+  return 'related';
+}
+
+function resolveRelatedWord(entry, lookupByLemma, lookupByRank, lookupBySenseId) {
+  const ref = getRelatedWordRef(entry);
+  if (typeof ref === 'number') return lookupByRank.get(ref) || null;
+  if (typeof ref !== 'string') return null;
+  const key = ref.trim();
+  if (!key) return null;
+  if (/^\d+$/.test(key)) return lookupByRank.get(Number(key)) || null;
+  return lookupByLemma.get(key) || lookupBySenseId.get(key) || null;
+}
+
+function renderWordModalRelated(currentWord) {
+  const section = document.getElementById('wm-related');
+  const listEl = document.getElementById('wm-related-list');
+  if (!section || !listEl) return;
+
+  const related = Array.isArray(currentWord.related) ? currentWord.related : [];
+  if (!related.length) {
+    section.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+
+  const lookupByLemma = new Map(VOCAB_DATA.map(w => [w.lemma, w]));
+  const lookupByRank = new Map(VOCAB_DATA.map(w => [w.freqRank, w]));
+  const lookupBySenseId = new Map(VOCAB_DATA.filter(w => w.senseId).map(w => [w.senseId, w]));
+
+  const rendered = [];
+  const seen = new Set([currentWord.lemma]);
+  related.forEach(item => {
+    const word = resolveRelatedWord(item, lookupByLemma, lookupByRank, lookupBySenseId);
+    if (!word || seen.has(word.lemma)) return;
+    seen.add(word.lemma);
+    rendered.push({ word, type: getRelatedWordType(item) });
+  });
+
+  const sample = rendered.slice(0, 3);
+  if (!sample.length) {
+    section.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+
+  listEl.innerHTML = sample.map(({ word, type }) =>
+    `<button class="wm-related-item" data-action="open-related-word" data-lemma="${escapeStr(word.lemma)}">
+      <span class="wm-related-lemma">${escapeStr(word.lemma)}</span>
+      <span class="wm-related-type">${escapeStr(type)}</span>
+    </button>`
+  ).join('');
+  section.style.display = '';
+}
+
 function showVocabDetail(bengali) {
   const w = VOCAB_DATA.find(w => w.lemma === bengali);
   if (!w) return;
@@ -2745,6 +2808,7 @@ function showVocabDetail(bengali) {
   if (wmEx) wmEx.textContent = w.example || '';
   const wmExBtn = document.getElementById('wm-example-btn');
   if (wmExBtn) wmExBtn.style.display = w.example ? '' : 'none';
+  renderWordModalRelated(w);
   // Update study button
   const studyBtn = document.getElementById('wm-study-btn');
   if (studyBtn) {
@@ -7403,6 +7467,7 @@ document.addEventListener('click', function(e) {
     case 'flip-word-modal': flipWordModal(); break;
     case 'speak-wm-bengali': speakBengali(document.getElementById('wm-bengali').textContent); break;
     case 'speak-vocab-example': speakVocabExample(); break;
+    case 'open-related-word': showVocabDetail(a.lemma); break;
     case 'study-word-next': studyWordNext(el.dataset.lemma); break;
     case 'open-verb-conjugation': closeWordModal(); openVerbConjugationFromVocab(el.dataset.lemma); break;
     // Listening
