@@ -1174,7 +1174,7 @@ function renderQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-idx="${i}" data-answer="${escapeStr(opt)}" data-action="answer-mc">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-quiz">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-quiz\">I don't know</button>";
     attachQuizKeyHandler('quiz');
   } else if (q.type === 'spell') {
     spellTileOrder = [];
@@ -2397,7 +2397,7 @@ function renderVocabQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-vocab">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-vocab">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-vocab\">I don't know</button>";
     attachQuizKeyHandler('vq');
   } else {
     const vqHintHtml = q.hint
@@ -2791,7 +2791,7 @@ function renderGrammarQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-grammar">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-grammar">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-grammar\">I don't know</button>";
     attachQuizKeyHandler('gq');
 
   } else if (q.type === 'fib') {
@@ -2833,7 +2833,7 @@ function renderGrammarQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-grammar">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-grammar">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-grammar\">I don't know</button>";
     attachQuizKeyHandler('gq');
   }
 }
@@ -5384,7 +5384,7 @@ function renderPhrasesQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-phrases">${escHtml(opt)}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-phrases">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-phrases\">I don't know</button>";
     attachQuizKeyHandler('phq');
 
   } else if (q.type === 'phrases-mc-reverse') {
@@ -5396,7 +5396,7 @@ function renderPhrasesQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-phrases">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-phrases">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-phrases\">I don't know</button>";
     attachQuizKeyHandler('phq');
 
   } else if (q.type === 'phrases-listening') {
@@ -5409,7 +5409,7 @@ function renderPhrasesQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-phrases">${escHtml(opt)}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-phrases">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-phrases\">I don't know</button>";
     attachQuizKeyHandler('phq');
 
   } else if (q.type === 'phrases-fib') {
@@ -5435,7 +5435,7 @@ function renderPhrasesQuestion() {
       q.options.map((opt, i) =>
         `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-mc-phrases">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`
       ).join('') + '</div>' +
-      '<button class="idk-btn" data-action="dont-know-phrases">I don't know</button>';
+      "<button class=\"idk-btn\" data-action=\"dont-know-phrases\">I don't know</button>";
     attachQuizKeyHandler('phq');
   }
 }
