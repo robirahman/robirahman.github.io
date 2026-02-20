@@ -3061,15 +3061,17 @@ let gqIsMixed = false;
 let gqWordOrder = [];  // current word-order answer
 let gqMissed = [];
 
-function startGrammarQuiz() {
-  if (!currentGrammarLesson) return;
+function startGrammarQuiz(options = {}) {
+  const hasScopedQuestions = Array.isArray(options.questions) && options.questions.length > 0;
+  if (!hasScopedQuestions && !currentGrammarLesson) return;
   gqIsMixed = false;
-  gqQuestions = [...currentGrammarLesson.quiz];
+  gqQuestions = hasScopedQuestions ? [...options.questions] : [...currentGrammarLesson.quiz];
   gqIndex = 0;
   gqCorrect = 0;
   gqMissed = [];
   _quizStartTime = Date.now();
-  document.getElementById('gq-title').textContent = currentGrammarLesson.title + ' Quiz';
+  const defaultTitle = currentGrammarLesson ? currentGrammarLesson.title + ' Quiz' : 'Grammar Quiz';
+  document.getElementById('gq-title').textContent = options.title || defaultTitle;
   showScreen('grammar-quiz');
   renderGrammarQuestion();
   updateStreak();
@@ -5217,26 +5219,62 @@ function startMistakeReview() {
   const mistakes = (progress.recentMistakes || []).slice(-50);
   if (mistakes.length === 0) { showAlert('No mistakes to review yet!'); return; }
 
-  // Deduplicate by key, keeping most recent
+  // Deduplicate by {type,key}, keeping most recent
   const seen = new Set();
   const unique = [];
   for (let i = mistakes.length - 1; i >= 0; i--) {
-    if (!seen.has(mistakes[i].key)) { seen.add(mistakes[i].key); unique.push(mistakes[i]); }
+    const m = mistakes[i];
+    const dedupeKey = (m.type || 'alphabet') + '|' + m.key;
+    if (!seen.has(dedupeKey)) {
+      seen.add(dedupeKey);
+      unique.push({ key: m.key, type: m.type || 'alphabet' });
+    }
   }
 
-  // Separate by type
-  const alphaKeys = unique.filter(m => m.type === 'alphabet').map(m => m.key);
-  const alphaLetters = alphaKeys.map(k => ALL_LETTERS.find(l => l.letter === k)).filter(Boolean);
+  // Group by type and enqueue each resolvable group
+  const byType = unique.reduce((acc, m) => {
+    if (!acc[m.type]) acc[m.type] = [];
+    acc[m.type].push(m.key);
+    return acc;
+  }, {});
 
-  if (alphaLetters.length > 0) {
-    // Use existing alphabet quiz flow
-    switchTab('alphabet');
-    currentModule = { id:'mistake-review', title:'Mistake Review', letters: alphaLetters, color: () => 'var(--wrong)' };
-    generateQuiz(alphaLetters);
-    showScreen('quiz');
-  } else {
-    showAlert('Mistake review for vocab/grammar/phrases: go to the relevant tab and start a quiz.');
+  const queue = [];
+
+  const alphaLetters = (byType.alphabet || [])
+    .map(k => ALL_LETTERS.find(l => l.letter === k))
+    .filter(Boolean);
+  if (alphaLetters.length > 0) queue.push({ type: 'letters', data: alphaLetters, fromMistakes: true });
+
+  const vocabKeys = new Set(byType.vocab || []);
+  const vocabWords = VMIX_CURRICULUM.filter(w => vocabKeys.has(_vocabKey(w)));
+  if (vocabWords.length > 0) queue.push({ type: 'vocab', data: vocabWords, fromMistakes: true });
+
+  const grammarQuestions = [];
+  (byType.grammar || []).forEach(key => {
+    const m = /^g:([^:]+):(\d+)$/.exec(key);
+    if (!m) return;
+    const lessonId = m[1], qIdx = +m[2];
+    const lesson = GRAMMAR_LESSONS.find(l => l.id === lessonId);
+    if (!lesson || !lesson.quiz[qIdx]) return;
+    grammarQuestions.push({ ...lesson.quiz[qIdx], _lessonId: lesson.id, _qIdx: qIdx });
+  });
+  if (grammarQuestions.length > 0) {
+    queue.push({ type: 'grammar', questions: grammarQuestions, title: '🔁 Mistake Review — Grammar', fromMistakes: true });
   }
+
+  const phraseIds = new Set((byType.phrases || []).map(k => k.replace(/^ph:/, '')));
+  const phrases = PHRASES_DATA.filter(p => phraseIds.has(p.id));
+  if (phrases.length > 0) {
+    queue.push({ type: 'phrases', phrases, title: '🔁 Mistake Review — Phrases', fromMistakes: true });
+  }
+
+  if (queue.length === 0) {
+    showAlert('No resolvable recent mistakes to review right now.');
+    return;
+  }
+
+  _reviewQueue = queue;
+  _runNextReviewItem();
 }
 
 // ════════════════════════════════════════
@@ -5477,26 +5515,28 @@ function _runNextReviewItem() {
   }
   const item = _reviewQueue.shift();
   if (item.type === 'letters') {
-    const mod = { id: 'review', title: 'Review Session', letters: item.data, isMixed: true };
+    const isMistake = !!item.fromMistakes;
+    const sessionTitle = isMistake ? 'Mistake Review' : 'Review Session';
+    const mod = { id: isMistake ? 'mistake-review' : 'review', title: sessionTitle, letters: item.data, isMixed: true };
     currentModule = mod;
     quizModuleRef = mod;
     generateQuiz(item.data);
     quizIndex = 0; quizCorrect = 0; quizMissed = [];
-    document.getElementById('quiz-title').textContent = '🔔 Review Session';
+    document.getElementById('quiz-title').textContent = isMistake ? '🔁 Mistake Review' : '🔔 Review Session';
     showScreen('quiz');
     renderQuestion();
   } else if (item.type === 'vocab') {
     generateVocabQuiz(item.data);
     vqIndex = 0; vqCorrect = 0; vqMissed = [];
-    document.getElementById('vq-title').textContent = '🔔 Review Session';
+    document.getElementById('vq-title').textContent = item.fromMistakes ? '🔁 Mistake Review — Vocab' : '🔔 Review Session';
     showScreen('vocab-quiz');
     renderVocabQuestion();
   } else if (item.type === 'grammar') {
-    currentGrammarLesson = item.lesson;
-    startGrammarQuiz();
+    if (item.lesson) currentGrammarLesson = item.lesson;
+    startGrammarQuiz({ questions: item.questions, title: item.title });
   } else if (item.type === 'phrases') {
-    currentPhrasesSituation = item.situation.slug;
-    startPhrasesQuiz();
+    if (item.situation) currentPhrasesSituation = item.situation.slug;
+    startPhrasesQuiz({ phrases: item.phrases, title: item.title });
   }
 }
 
@@ -5997,19 +6037,21 @@ function buildPhrasesQuizQuestions(phrases) {
   return shuffle(questions);
 }
 
-function startPhrasesQuiz() {
-  const slug = currentPhrasesSituation;
-  if (!slug) return;
+function startPhrasesQuiz(options = {}) {
+  const hasScopedPhrases = Array.isArray(options.phrases) && options.phrases.length > 0;
+  const slug = options.slug || currentPhrasesSituation;
+  if (!hasScopedPhrases && !slug) return;
   phqIsMixed = false;
-  phqCurrentSituationSlug = slug;
+  phqCurrentSituationSlug = hasScopedPhrases ? null : slug;
   const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
-  const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+  const phrases = hasScopedPhrases ? options.phrases : PHRASES_DATA.filter(p => p.situation === slug);
   phqQuestions = buildPhrasesQuizQuestions(phrases).slice(0, 12);
   phqIndex = 0;
   phqCorrect = 0;
   phqMissed = [];
   _quizStartTime = Date.now();
-  document.getElementById('phq-title').textContent = (sit ? sit.title : 'Phrases') + ' Quiz';
+  const defaultTitle = (sit ? sit.title : 'Phrases') + ' Quiz';
+  document.getElementById('phq-title').textContent = options.title || defaultTitle;
   showScreen('phrases-quiz');
   renderPhrasesQuestion();
   updateStreak();
