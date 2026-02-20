@@ -472,7 +472,17 @@ function var_special(){ return 'var(--special)'; }
 // ════════════════════════════════════════
 //  PROGRESS / STATE
 // ════════════════════════════════════════
-let progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+const DEFAULT_PROGRESS_SETTINGS = Object.freeze({ fibMode: 'latin', listeningMode: 'text', palette: 'sundarbans' });
+
+function _defaultProgressSettings() {
+  return { ...DEFAULT_PROGRESS_SETTINGS };
+}
+
+function _newProgressState() {
+  return { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{}, settings: _defaultProgressSettings() };
+}
+
+let progress = _newProgressState();
 let _saveTimer = null;
 let currentUser = null;
 let _persistenceWarningState = { quota: false, security: false, generic: false };
@@ -485,15 +495,43 @@ function _lsKey(name) {
 }
 
 function _loadProgressLS(name) {
+  let data = null;
+  let hadStoredData = false;
   try {
     const raw = localStorage.getItem(_lsKey(name));
     if (raw) {
-      const data = JSON.parse(raw);
-      if (data && data.mastery) return data;
+      data = JSON.parse(raw);
+      hadStoredData = true;
     }
   } catch(e) {}
-  return { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+
+  if (!data || !data.mastery) data = _newProgressState();
+
+  const defaults = _defaultProgressSettings();
+  let mutated = false;
+  if (!data.settings || typeof data.settings !== 'object') {
+    data.settings = {};
+    mutated = true;
+  }
+
+  // Per-profile one-time migration from legacy global keys.
+  if (!data.settings.fibMode) {
+    data.settings.fibMode = localStorage.getItem('bengali_fib_mode') || defaults.fibMode;
+    mutated = true;
+  }
+  if (!data.settings.listeningMode) {
+    data.settings.listeningMode = localStorage.getItem('bengali_listening_mode') || defaults.listeningMode;
+    mutated = true;
+  }
+  if (!data.settings.palette) {
+    data.settings.palette = localStorage.getItem('bengali_palette') || defaults.palette;
+    mutated = true;
+  }
+
+  if (mutated && hadStoredData) _saveProgressLS(name, data);
+  return data;
 }
+
 
 function _saveProgressLS(name, data) {
   try {
@@ -4287,7 +4325,7 @@ function createProfile() {
     return;
   }
   currentUser = name;
-  progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  progress = _newProgressState();
   saveProgress();
   enterApp();
 }
@@ -4304,6 +4342,7 @@ function enterApp() {
   document.getElementById('main-nav').style.display = '';
   document.getElementById('tab-bar').style.display = '';
   migrateProgress();
+  applyThemePalette(getThemePalette());
   updateNav();
   updatePlacementRetakeButton();
   switchTab('alphabet');
@@ -4381,9 +4420,13 @@ async function unlockAllContent(btn) {
 }
 
 // ── FIB Input Mode ──────────────────────────────────────────────────
-function getFibMode() { return localStorage.getItem('bengali_fib_mode') || 'latin'; }
+function getFibMode() {
+  return progress.settings?.fibMode || DEFAULT_PROGRESS_SETTINGS.fibMode;
+}
 function setFibMode(mode) {
-  localStorage.setItem('bengali_fib_mode', mode);
+  if (!progress.settings) progress.settings = _defaultProgressSettings();
+  progress.settings.fibMode = mode;
+  saveProgress();
   _updateFibModeChips();
   if (mode === 'latin') { document.getElementById('bng-kbd').classList.remove('open'); }
 }
@@ -4396,9 +4439,13 @@ function _updateFibModeChips() {
 }
 
 // ── Listening Mode ─────────────────────────────────────────────────
-function getListeningMode() { return localStorage.getItem('bengali_listening_mode') || 'text'; }
+function getListeningMode() {
+  return progress.settings?.listeningMode || DEFAULT_PROGRESS_SETTINGS.listeningMode;
+}
 function setListeningMode(mode) {
-  localStorage.setItem('bengali_listening_mode', mode);
+  if (!progress.settings) progress.settings = _defaultProgressSettings();
+  progress.settings.listeningMode = mode;
+  saveProgress();
   _updateListenModeChips();
 }
 function _updateListenModeChips() {
@@ -4410,13 +4457,21 @@ function _updateListenModeChips() {
 }
 
 // ── Cultural theme palette ───────────────────────────────────────────────────
-function setThemePalette(name) {
+function getThemePalette() {
+  return progress.settings?.palette || DEFAULT_PROGRESS_SETTINGS.palette;
+}
+function applyThemePalette(name) {
   document.documentElement.dataset.palette = (name === 'sundarbans') ? '' : name;
-  localStorage.setItem('bengali_palette', name);
+}
+function setThemePalette(name) {
+  if (!progress.settings) progress.settings = _defaultProgressSettings();
+  progress.settings.palette = name;
+  applyThemePalette(name);
+  saveProgress();
   _updateThemeSwatches();
 }
 function _updateThemeSwatches() {
-  const current = localStorage.getItem('bengali_palette') || 'sundarbans';
+  const current = getThemePalette();
   document.querySelectorAll('.theme-swatch').forEach(el => {
     el.classList.toggle('active', el.dataset.palette === current);
   });
@@ -4474,7 +4529,7 @@ function switchProfile() {
   // Flush pending save, then show profile picker
   if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
   currentUser = null;
-  progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  progress = _newProgressState();
   closeSettingsPanel();
   showProfileScreen(true);
 }
@@ -4485,7 +4540,7 @@ async function deleteCurrentProfile() {
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
   _deleteProgressLS(currentUser);
   currentUser = null;
-  progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+  progress = _newProgressState();
   showProfileScreen(true);
 }
 
@@ -4517,7 +4572,7 @@ async function deleteProfile(name) {
   if (name === currentUser) {
     if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
     currentUser = null;
-    progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
+    progress = _newProgressState();
   }
   renderProfileList(true);
 }
@@ -4867,10 +4922,6 @@ function toggleTheme() {
     document.documentElement.dataset.theme = 'light';
     const btn = document.getElementById('nav-theme-btn');
     if (btn) btn.textContent = '🌙';
-  }
-  const palette = localStorage.getItem('bengali_palette');
-  if (palette && palette !== 'sundarbans') {
-    document.documentElement.dataset.palette = palette;
   }
 })();
 
