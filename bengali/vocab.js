@@ -1,6 +1,6 @@
 // Bengali Vocabulary — 4,399 most common words
-// Source schema: [lemma, roman, english, category, pos, example]
-// Runtime schema: { lemma, roman, english, category, pos, example, freqRank }
+// Source schema: [lemma, roman, english, category, pos, example, senseId?, related?]
+// Runtime schema: { lemma, roman, english, category, pos, example, senseId, related, freqRank }
 
 
 const VOCAB_DATA_RAW = [
@@ -11,14 +11,14 @@ const VOCAB_DATA_RAW = [
 ["এই","ei","this","pronouns","pronoun","এই বাড়িটা সুন্দর। (ei barita shundor — This house is beautiful.)"],
 ["তার","tar","his / her / its","pronouns","pronoun","তার বই খুবই সুন্দর। (tar boi khuboi sundar — His/her book is very beautiful.)"],
 ["যে","je","that / which / who","pronouns","pronoun","যে ছেলেটি এসেছে সে খুব বুদ্ধিমান। (je cheletí esechhe se khub budhiman — The boy who came is very intelligent.)"],
-["আমি","ami","I / me","pronouns","pronoun","আমি বাংলা শিখছি। (ami bangla shikhchhi — I am learning Bengali.)"],
+["আমি","ami","I / me","pronouns","pronoun","আমি বাংলা শিখছি। (ami bangla shikhchhi — I am learning Bengali.)","",[{"ref":"আমার","type":"derived"},{"ref":"আমরা","type":"derived"},{"ref":"আমাদের","type":"compound"}]],
 // ─── NUMBERS ───
-["একটি","ekti","a / one","numbers","number","আমার একটি বিড়াল আছে। (amar ekti biral ache — I have a cat.)"],
+["একটি","ekti","a / one","numbers","number","আমার একটি বিড়াল আছে। (amar ekti biral ache — I have a cat.)","",[{"ref":"এক","type":"derived"},{"ref":"একটা","type":"synonym"}]],
 // ─── VERBS ───
-["করে","kore","does / makes","verbs","verb","সে প্রতিদিন কাজ করে। (se protidine kaj kore — She does work every day.)"],
-["করা","kora","to do / to make","verbs","verb","তুমি কী করছ? (tumi ki korchho — What are you doing?)"],
-["করতে","korte","to do / to make","verbs","verb","আমি এটা করতে চাই। (ami eta korte chai — I want to do this.)"],
-["হবে","hobe","will be / shall be","verbs","verb","আগামীকাল ছুটির দিন হবে। (agamikal chutir din hobe — Tomorrow will be a holiday.)"],
+["করে","kore","does / makes","verbs","verb","সে প্রতিদিন কাজ করে। (se protidine kaj kore — She does work every day.)","",[{"ref":"করা","type":"derived"},{"ref":"করতে","type":"derived"},{"ref":"কাজ","type":"compound"}]],
+["করা","kora","to do / to make","verbs","verb","তুমি কী করছ? (tumi ki korchho — What are you doing?)","",[{"ref":"করে","type":"derived"},{"ref":"করতে","type":"derived"},{"ref":"কাজ","type":"compound"}]],
+["করতে","korte","to do / to make","verbs","verb","আমি এটা করতে চাই। (ami eta korte chai — I want to do this.)","",[{"ref":"করা","type":"derived"},{"ref":"করে","type":"derived"}]],
+["হবে","hobe","will be / shall be","verbs","verb","আগামীকাল ছুটির দিন হবে। (agamikal chutir din hobe — Tomorrow will be a holiday.)","",[{"ref":"হতে","type":"derived"},{"ref":"হচ্ছে","type":"derived"},{"ref":"হয়ে","type":"derived"}]],
 // ─── ADVERBS ───
 ["এবং","ebong","and","adverbs","conjunction","সে এবং আমি বন্ধু। (she ebong ami bondhu — She and I are friends.)"],
 ["আর","ar","and / more / else","adverbs","particle","আর কিছু লাগবে? (ar kichhu lagbe? — Do you need anything more?)"],
@@ -44,8 +44,8 @@ const VOCAB_DATA_RAW = [
 ["এটা","eta","this (thing)","pronouns","pronoun","এটা কী? (eta ki — What is this?)"],
 ["সেই","sei","that / the same","pronouns","pronoun","সেই মেয়েটি আমার বন্ধু। (sei meytî amar bondhu — That girl is my friend.)"],
 // ─── NUMBERS ───
-["এক","ek","one","numbers","number","টেবিলে একটি বই আছে। (tebile ekti boi achhe — There is one book on the table.)"],
-["একটা","ekta","a / one","numbers","number","একটা পেন্সিল কিনো। (ekta pencil kino — Buy a pencil.)"],
+["এক","ek","one","numbers","number","টেবিলে একটি বই আছে। (tebile ekti boi achhe — There is one book on the table.)","",[{"ref":"একটি","type":"derived"},{"ref":"একটা","type":"derived"},{"ref":"একজন","type":"compound"}]],
+["একটা","ekta","a / one","numbers","number","একটা পেন্সিল কিনো। (ekta pencil kino — Buy a pencil.)","",[{"ref":"একটি","type":"synonym"},{"ref":"এক","type":"derived"}]],
 ["একজন","ekjon","one person / a person","numbers","number","একজন শিক্ষক এসেছেন। (ekjon shikkhok esechhen — A teacher has come.)"],
 ["নয়","noy","nine","numbers","number","সে নয় বছর আগে এসেছিল। (she noy bochor age eshechhilo — She came nine years ago.)"],
 // ─── VERBS ───
@@ -364,7 +364,7 @@ const VOCAB_TOTAL_WORDS = 4399; // updated by build_vocab_packs.py
 
 // VOCAB_DATA is mutable so lazy-loaded packs can be appended at runtime.
 // Pack 0 is inlined here; packs 1-3 are fetched from vocab-pack-N.json.
-let VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example, senseId = ''], index) => ({
+let VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, example, senseId = '', related = []], index) => ({
   lemma,
   roman,
   english,
@@ -372,6 +372,7 @@ let VOCAB_DATA = VOCAB_DATA_RAW.map(([lemma, roman, english, category, pos, exam
   pos,
   example: example || '',
   senseId: senseId || '',
+  related: Array.isArray(related) ? related : [],
   freqRank: index + 1,
 }));
 
