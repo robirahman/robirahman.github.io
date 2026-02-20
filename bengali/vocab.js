@@ -406,3 +406,6 @@ const VOCAB_CATEGORIES = {
   "technology":  { title:"Technology", icon:"💻", color:"#49c0f8" },
   "phrases":     { title:"Useful Phrases", icon:"💬", color:"#58cc02" },
 };
+
+
+export { VOCAB_DATA_RAW, VOCAB_TOTAL_WORDS, VOCAB_DATA, VOCAB_CATEGORIES };
