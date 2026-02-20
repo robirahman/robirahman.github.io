@@ -475,6 +475,7 @@ function var_special(){ return 'var(--special)'; }
 let progress = { mastery:{}, xp:0, streak:0, lastDate:null, quizHistory:{} };
 let _saveTimer = null;
 let currentUser = null;
+let _persistenceWarningState = { quota: false, security: false, generic: false };
 
 // ── localStorage helpers ──
 const LS_PREFIX = 'bengali_progress_';
@@ -495,7 +496,45 @@ function _loadProgressLS(name) {
 }
 
 function _saveProgressLS(name, data) {
-  localStorage.setItem(_lsKey(name), JSON.stringify(data));
+  try {
+    localStorage.setItem(_lsKey(name), JSON.stringify(data));
+    _persistenceWarningState = { quota: false, security: false, generic: false };
+    if (document.body) delete document.body.dataset.persistenceUnavailable;
+    return true;
+  } catch (e) {
+    const isDomErr = e instanceof DOMException;
+    const isQuotaError = isDomErr && (
+      e.name === 'QuotaExceededError' ||
+      e.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+      e.code === 22 ||
+      e.code === 1014
+    );
+    const isSecurityError = isDomErr && e.name === 'SecurityError';
+
+    if (document.body) document.body.dataset.persistenceUnavailable = 'true';
+
+    if (isQuotaError) {
+      console.warn('Progress could not be saved: storage quota exceeded.', e);
+      if (!_persistenceWarningState.quota) {
+        _persistenceWarningState.quota = true;
+        showAlert('Progress could not be saved because browser storage is full. You can clear site storage or export your progress data to avoid losing updates.');
+      }
+    } else if (isSecurityError) {
+      console.warn('Progress could not be saved: storage is unavailable in this context.', e);
+      if (!_persistenceWarningState.security) {
+        _persistenceWarningState.security = true;
+        showAlert('Progress persistence is unavailable in this browsing mode (for example private mode or restricted storage settings). You can keep practicing, but progress may not be saved after you close this session.');
+      }
+    } else {
+      console.warn('Progress could not be saved due to an unexpected storage error.', e);
+      if (!_persistenceWarningState.generic) {
+        _persistenceWarningState.generic = true;
+        showAlert('Progress could not be saved due to a storage error. You can continue practicing in this session, but persistence may be unavailable.');
+      }
+    }
+
+    return false;
+  }
 }
 
 function _deleteProgressLS(name) {
