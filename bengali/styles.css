@@ -1795,6 +1795,25 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   cursor:pointer; margin-top:8px; }
 .canvas-practice-btn:hover { background:rgba(255,255,255,0.08); color:var(--text); }
 
+.canvas-actions-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.canvas-writing-status {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+.stroke-hint-note {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.35;
+}
+
 /* ─── APP MODAL (replaces native alert/confirm) ─── */
 .app-modal-overlay {
   position: fixed; inset: 0; z-index: 9000;
