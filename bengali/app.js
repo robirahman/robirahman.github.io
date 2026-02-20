@@ -223,7 +223,7 @@ const CONJUNCTS = [
   { letter:'ট্ট', name:'Ṭṭo (ṭṭo)',  romanized:'ṭṭo',   ipa:'ʈʈ',   sound:'ট + ট combined', example:'চট্ট (choṭṭo — quick)',         type:'conjunct' },
   { letter:'ণ্ড', name:'Ṇḍo (ṇḍo)',  romanized:'ṇḍo',   ipa:'ɳɖ',   sound:'ণ + ড combined', example:'পণ্ড (poṇḍo — waste)',          type:'conjunct' },
   { letter:'ত্ত', name:'Tto (tto)',   romanized:'tto',   ipa:'tt̪',   sound:'ত + ত combined', example:'উত্তর (uttor — answer)',        type:'conjunct' },
-  { letter:'ত্থ', name:'Ttho (ttho)', romanized:'ttho',  ipa:'t̪t̪ʰ',  sound:'ত + থ combined', example:'সত্থ (shottha — truth)',        type:'conjunct' },
+  { letter:'ত্থ', name:'Ttho (ttho)', romanized:'ttho',  ipa:'t̪t̪ʰ',  sound:'ত + থ combined', example:'স্বাস্থ্য (shasthyo — health)',        type:'conjunct' },
   { letter:'দ্ধ', name:'Ddho (ddho)', romanized:'ddho',  ipa:'d̪d̪ʱ',  sound:'দ + ধ combined', example:'শুদ্ধ (shudddho — pure)',       type:'conjunct' },
   { letter:'দ্ব', name:'Dbo (dbo)',   romanized:'dbo',   ipa:'d̪b',   sound:'দ + ব combined', example:'দ্বার (dbar — door)',           type:'conjunct' },
   { letter:'ন্ত', name:'Nto (nto)',   romanized:'nto',   ipa:'nt̪',   sound:'ন + ত combined', example:'অন্ত (onto — end)',              type:'conjunct' },
