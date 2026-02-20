@@ -332,6 +332,42 @@ const NUMBER_MODULES = [
   { id:'numbers-calendar',  title:'Dates & Calendar',      desc:'Read Bengali date strings in MCQ/FIB',        icon:'📅', isArithmetic: true, quizMode: 'calendar-dates', color: () => 'var(--accent)' },
 ];
 
+const READING_PASSAGES = [
+  {
+    id: 'morning-routine',
+    title: 'সকালের ছোট রুটিন',
+    level: 'A1',
+    text: 'আমি প্রতিদিন সকালে তাড়াতাড়ি উঠি। জানালা খুলে একটু বাতাস নেই এবং এক গ্লাস পানি খাই। তারপর রান্নাঘরে যাই। মা চা বানান আর আমি টেবিল সাজাই। আমরা একসাথে নাস্তা করি। আজ নাস্তায় রুটি, ডিম, আর কলা ছিল। নাস্তার পরে আমি ব্যাগ গুছাই, বই দেখি, এবং স্কুলে যাওয়ার আগে দশ মিনিট বাংলা পড়ি। ছোট এই অভ্যাস আমাকে শান্ত ও প্রস্তুত রাখে।',
+    vocabIds: ['আমি','সকালে','পানি','মা','চা','আমরা','নাস্তা','রুটি','ডিম','কলা','বই','স্কুলে','বাংলা'],
+    checks: [
+      { prompt: 'নাস্তায় কী ছিল?', options: ['রুটি, ডিম, আর কলা', 'ভাত আর মাছ', 'শুধু চা'], correct: 0 },
+      { prompt: 'স্কুলে যাওয়ার আগে লেখক কী করে?', options: ['ঘুমায়', 'দশ মিনিট বাংলা পড়ে', 'দৌড়ায়'], correct: 1 },
+    ],
+  },
+  {
+    id: 'market-day',
+    title: 'বাজারের দিন',
+    level: 'A2',
+    text: 'শুক্রবার বিকেলে আমি আর আমার ভাই বাজারে যাই। আমাদের তালিকায় ছিল শাকসবজি, মাছ, আর কিছু ফল। প্রথমে আমরা টমেটো, আলু, পেঁয়াজ, আর ধনেপাতা কিনি। তারপর মাছের দোকানে গিয়ে ছোট একটি রুই মাছ নিই। বিক্রেতা দাম একটু বেশি বলেছিল, তাই ভাই হাসিমুখে দরদাম করে। ফেরার পথে আমরা একটি দোকান থেকে দই কিনি। বাড়িতে এসে মা বলেন, আজকের কেনাকাটা খুব ভালো হয়েছে।',
+    vocabIds: ['আমি','ভাই','বাজারে','আমাদের','ফল','আমরা','টমেটো','আলু','পেঁয়াজ','মাছ','দাম','বাড়িতে','মা'],
+    checks: [
+      { prompt: 'বাজারে কারা গিয়েছিল?', options: ['আমি আর আমার ভাই', 'আমি একা', 'মা আর বাবা'], correct: 0 },
+      { prompt: 'দোকানদারের দাম বেশি হলে কী করা হয়?', options: ['কিছু কেনা হয়নি', 'দরদাম করা হয়', 'বাড়ি ফেরা হয়'], correct: 1 },
+    ],
+  },
+  {
+    id: 'rainy-evening',
+    title: 'বর্ষার সন্ধ্যা',
+    level: 'B1',
+    text: 'আজ বিকেলে হঠাৎ বৃষ্টি শুরু হলে শহরের রাস্তা দ্রুত ভিজে যায়। অফিস থেকে ফেরার সময় বাস দেরি করছিল, তাই আমি একটি বইয়ের দোকানে ঢুকে দাঁড়াই। ভেতরে কয়েকজন ছাত্র গল্পের বই দেখছিল। দোকানদার খুব শান্তভাবে সবাইকে সাহায্য করছিলেন। বৃষ্টি কিছুটা কমলে আমি ছাতা খুলে বাসস্ট্যান্ডে যাই। বাড়ি পৌঁছে গরম চা খেতে খেতে মনে হলো, অপেক্ষার সেই সময়টা মোটেও নষ্ট হয়নি। নতুন একটি ভালো গল্পের বইও পেয়ে গেছি।',
+    vocabIds: ['আজ','বৃষ্টি','শহর','রাস্তা','অফিস','সময়','আমি','বই','দোকানে','ছাত্র','সবাই','বাড়ি','চা'],
+    checks: [
+      { prompt: 'বাস দেরি করায় লেখক কোথায় দাঁড়ায়?', options: ['রেস্টুরেন্টে', 'বইয়ের দোকানে', 'পার্কে'], correct: 1 },
+      { prompt: 'শেষে লেখকের অনুভূতি কী?', options: ['সময় নষ্ট হয়েছে', 'ক্লান্ত লেগেছে', 'অপেক্ষার সময়টা কাজে লেগেছে'], correct: 2 },
+    ],
+  },
+];
+
 // ════════════════════════════════════════
 //  MIXED PRACTICE — ADAPTIVE ALGORITHM
 // ════════════════════════════════════════
@@ -489,6 +525,7 @@ function _newProgressState() {
     freezeTokens: 0,
     lastFreezeUsedDate: null,
     quizHistory: {},
+    reading: { completed: {}, best: {}, unlocked: 1 },
     settings: _defaultProgressSettings(),
   };
 }
@@ -502,6 +539,10 @@ function _normalizeProgressState(data) {
   if (typeof data.freezeTokens !== 'number') data.freezeTokens = 0;
   if (typeof data.lastFreezeUsedDate !== 'string') data.lastFreezeUsedDate = null;
   if (typeof data.lastDate !== 'string') data.lastDate = null;
+  if (!data.reading || typeof data.reading !== 'object') data.reading = { completed: {}, best: {}, unlocked: 1 };
+  if (!data.reading.completed || typeof data.reading.completed !== 'object') data.reading.completed = {};
+  if (!data.reading.best || typeof data.reading.best !== 'object') data.reading.best = {};
+  if (typeof data.reading.unlocked !== 'number') data.reading.unlocked = 1;
   if (!data.settings || typeof data.settings !== 'object') data.settings = _defaultProgressSettings();
   return data;
 }
@@ -753,6 +794,7 @@ function showScreen(id) {
   if (id === 'listening-home') renderListeningHome();
   if (id === 'grammar-home') renderGrammarHome();
   if (id === 'phrases-home') renderPhrasesHome();
+  if (id === 'reading-screen') renderReadingScreen();
   if (id === 'today-screen') renderTodayScreen();
   if (id === 'placement-results') renderPlacementResultsUI();
 }
@@ -2202,6 +2244,7 @@ const alphabetScreens = ['home','learn','quiz','results','chart'];
 const vocabScreens = ['vocab-home','vocab-browse','vocab-learn','vocab-quiz','vocab-results'];
 const grammarScreens = ['grammar-home','grammar-lesson','grammar-quiz','grammar-results'];
 const phrasesScreens = ['phrases-home','phrases-situation','phrases-quiz','phrases-results'];
+const readingScreens = ['reading-screen'];
 
 function switchTab(tab) {
   currentTab = tab;
@@ -2220,6 +2263,8 @@ function switchTab(tab) {
     showScreen('numbers-home');
   } else if (tab === 'phrases') {
     showScreen('phrases-home');
+  } else if (tab === 'reading') {
+    showScreen('reading-screen');
   } else {
     showScreen('grammar-home');
   }
@@ -5551,12 +5596,193 @@ function _buildHeatmap() {
 
 // ════════════════════════════════════════
 //  TODAY SCREEN
+// ════════════════════════════════════════
 function getLessonOfDay() {
   return GRAMMAR_LESSONS.find(l => {
     const p = getLessonProgress(l);
     return p.pct < 100;
   }) || null;
 }
+
+
+function _passageWordCount(text) {
+  return (text.match(/[ঀ-৿A-Za-z]+/g) || []).length;
+}
+
+const READING_PASSAGE_BANK = READING_PASSAGES.map(p => ({
+  ...p,
+  length: _passageWordCount(p.text),
+  vocabIds: Array.from(new Set(p.vocabIds || [])),
+}));
+
+let readingSession = null;
+
+function ensureReadingUI() {
+  const tabBar = document.getElementById('tab-bar');
+  if (tabBar && !tabBar.querySelector('[data-tab="reading"]')) {
+    const readingBtn = document.createElement('button');
+    readingBtn.className = 'tab-btn';
+    readingBtn.dataset.action = 'switch-tab';
+    readingBtn.dataset.tab = 'reading';
+    readingBtn.textContent = 'Reading';
+    const phrasesBtn = tabBar.querySelector('[data-tab="phrases"]');
+    if (phrasesBtn && phrasesBtn.nextSibling) tabBar.insertBefore(readingBtn, phrasesBtn.nextSibling);
+    else tabBar.appendChild(readingBtn);
+  }
+
+  if (!document.getElementById('reading-screen')) {
+    const home = document.getElementById('home');
+    if (!home || !home.parentElement) return;
+    const screen = document.createElement('div');
+    screen.className = 'screen';
+    screen.id = 'reading-screen';
+    screen.innerHTML = `
+      <div class="module-home-header">
+        <h2>Reading</h2>
+        <p style="color:var(--text-dim)">Short passages with vocabulary-aware filtering and quick lookup.</p>
+      </div>
+      <div id="reading-body" style="padding:0 1rem 2rem"></div>`;
+    home.parentElement.insertBefore(screen, home.nextSibling);
+  }
+}
+
+function getReadingUnlockedCount() {
+  const completed = Object.keys(progress.reading?.completed || {}).length;
+  const unlocked = Math.max(1, Math.min(READING_PASSAGE_BANK.length, 1 + Math.floor(completed / 1)));
+  progress.reading.unlocked = unlocked;
+  return unlocked;
+}
+
+function _readingMasteryRatio(passage) {
+  if (!passage.vocabIds.length) return 1;
+  let known = 0;
+  passage.vocabIds.forEach(id => {
+    if (getVocabMastery(id) >= 2) known++;
+  });
+  return known / passage.vocabIds.length;
+}
+
+function getRecommendedReadingPassages() {
+  const unlocked = getReadingUnlockedCount();
+  return READING_PASSAGE_BANK
+    .slice(0, unlocked)
+    .filter(p => _readingMasteryRatio(p) >= 0.65)
+    .sort((a, b) => _readingMasteryRatio(b) - _readingMasteryRatio(a));
+}
+
+function renderReadingScreen() {
+  ensureReadingUI();
+  const body = document.getElementById('reading-body');
+  if (!body) return;
+
+  const unlockedCount = getReadingUnlockedCount();
+  const recommended = getRecommendedReadingPassages();
+  const completedCount = Object.keys(progress.reading?.completed || {}).length;
+
+  let html = `<div class="today-section"><div class="today-section-hdr"><span class="today-section-icon">📘</span><div><div class="today-section-title">Reading Progress</div><div class="today-section-sub">${completedCount}/${READING_PASSAGE_BANK.length} passages completed · ${unlockedCount}/${READING_PASSAGE_BANK.length} unlocked</div></div></div></div>`;
+
+  html += '<div class="today-section"><div class="today-section-hdr"><span class="today-section-icon">🧭</span><div><div class="today-section-title">Recommended</div><div class="today-section-sub">Passages where most required vocabulary is already familiar</div></div></div>';
+  if (recommended.length) {
+    html += recommended.slice(0, 2).map(p => `<button class="btn-secondary today-action-btn" data-action="start-reading-passage" data-id="${p.id}">Start: ${escHtml(p.title)} (${p.level})</button>`).join('');
+  } else {
+    html += '<div class="today-done-badge">Review more vocabulary to unlock easier reading first.</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="today-section"><div class="today-section-hdr"><span class="today-section-icon">📚</span><div><div class="today-section-title">Passage Bank</div><div class="today-section-sub">CEFR-like level, tokenized vocabulary IDs, and 50–150 word passages</div></div></div>';
+  READING_PASSAGE_BANK.forEach((p, idx) => {
+    const unlocked = idx < unlockedCount;
+    const mastery = Math.round(_readingMasteryRatio(p) * 100);
+    const best = progress.reading?.best?.[p.id];
+    html += `<div class="module-card" style="margin-top:10px;cursor:${unlocked ? 'pointer' : 'not-allowed'};opacity:${unlocked ? '1' : '0.55'}" ${unlocked ? `data-action="start-reading-passage" data-id="${p.id}"` : ''}>
+      <div class="module-icon">📄</div>
+      <h3>${escHtml(p.title)}</h3>
+      <p>Level ${p.level} · ${p.length} words · vocab IDs: ${p.vocabIds.length}</p>
+      <div class="progress-label">Known required vocab: ${mastery}%${typeof best === 'number' ? ` · Best check score: ${best}%` : ''}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  if (readingSession) {
+    html += renderReadingSessionHTML();
+  }
+
+  body.innerHTML = html;
+}
+
+function startReadingPassage(id) {
+  const passage = READING_PASSAGE_BANK.find(p => p.id === id);
+  if (!passage) return;
+  readingSession = { id, answers: {}, submitted: false };
+  switchTab('reading');
+  renderReadingScreen();
+}
+
+function renderReadingSessionHTML() {
+  const passage = READING_PASSAGE_BANK.find(p => p.id === readingSession.id);
+  if (!passage) return '';
+
+  const tokens = passage.text.split(/(\s+)/).map(tok => {
+    const lemma = tok.replace(/[^ঀ-৿A-Za-z]/g, '');
+    if (!lemma) return escHtml(tok);
+    const isTracked = passage.vocabIds.includes(lemma);
+    const unknown = isTracked && getVocabMastery(lemma) < 3;
+    if (!unknown) return escHtml(tok);
+    const safeLemma = escapeStr(lemma);
+    return `<span class="today-word-bn" style="cursor:pointer;border-bottom:1px dashed var(--accent)" data-action="reading-lookup" data-lemma="${safeLemma}">${escHtml(tok)}</span>`;
+  }).join('');
+
+  let html = `<div class="today-section"><div class="today-section-hdr"><span class="today-section-icon">📝</span><div><div class="today-section-title">${escHtml(passage.title)}</div><div class="today-section-sub">Tap underlined words for lookup.</div></div></div><div style="line-height:1.9;font-size:1.02rem">${tokens}</div></div>`;
+
+  html += '<div class="today-section"><div class="today-section-hdr"><span class="today-section-icon">✅</span><div><div class="today-section-title">Comprehension Check</div></div></div>';
+  passage.checks.forEach((q, qi) => {
+    html += `<div style="margin:10px 0"><div style="margin-bottom:6px">${qi + 1}. ${escHtml(q.prompt)}</div><div class="mc-options">`;
+    q.options.forEach((opt, oi) => {
+      const selected = readingSession.answers[qi] === oi;
+      html += `<button class="mc-btn ${selected ? 'selected' : ''}" data-action="answer-reading-check" data-qi="${qi}" data-oi="${oi}">${escHtml(opt)}</button>`;
+    });
+    html += '</div></div>';
+  });
+
+  html += `<button class="btn-primary today-action-btn" data-action="submit-reading-check">Submit & Earn XP →</button></div>`;
+  return html;
+}
+
+function answerReadingCheck(qi, oi) {
+  if (!readingSession) return;
+  readingSession.answers[qi] = oi;
+  renderReadingScreen();
+}
+
+function submitReadingCheck() {
+  if (!readingSession || readingSession.submitted) return;
+  const passage = READING_PASSAGE_BANK.find(p => p.id === readingSession.id);
+  if (!passage) return;
+
+  const total = passage.checks.length;
+  let correct = 0;
+  passage.checks.forEach((q, i) => {
+    if (readingSession.answers[i] === q.correct) correct++;
+  });
+  const pct = Math.round((correct / total) * 100);
+  progress.reading.completed[passage.id] = true;
+  const prev = progress.reading.best[passage.id] || 0;
+  if (pct > prev) progress.reading.best[passage.id] = pct;
+  progress.reading.unlocked = getReadingUnlockedCount();
+  const xp = 20 + Math.max(0, pct - 50);
+  addXP(xp);
+  saveProgress();
+  checkAchievements();
+  readingSession.submitted = true;
+  showAlert(`Reading check: ${correct}/${total} (${pct}%). +${xp} XP earned!`);
+  renderReadingScreen();
+}
+
+function openReadingLookup(lemma) {
+  if (!lemma) return;
+  showVocabDetail(lemma);
+}
+
 
 // ════════════════════════════════════════
 function renderTodayScreen() {
@@ -5677,6 +5903,22 @@ function renderTodayScreen() {
       </div>
     </div>
     <button class="btn-secondary today-action-btn" data-action="switch-tab" data-tab="phrases">Go to Phrases →</button>
+  </div>`;
+
+  // ── Reading ──
+  const readingUnlocked = getReadingUnlockedCount();
+  const readingNext = READING_PASSAGE_BANK.slice(0, readingUnlocked).find(p => !progress.reading?.completed?.[p.id]);
+  const readingRecommended = getRecommendedReadingPassages()[0];
+  html += `<div class="today-section">
+    <div class="today-section-hdr">
+      <span class="today-section-icon">📘</span>
+      <div>
+        <div class="today-section-title">Reading</div>
+        <div class="today-section-sub">${Object.keys(progress.reading?.completed || {}).length}/${READING_PASSAGE_BANK.length} passages completed · ${readingUnlocked}/${READING_PASSAGE_BANK.length} unlocked</div>
+      </div>
+    </div>
+    ${readingRecommended ? `<div class="progress-label">Recommended: ${escHtml(readingRecommended.title)} (${readingRecommended.level})</div>` : ''}
+    <button class="btn-secondary today-action-btn" data-action="start-reading-passage" data-id="${readingNext ? readingNext.id : READING_PASSAGE_BANK[0].id}">${readingNext ? 'Continue Reading' : 'Review Reading'} →</button>
   </div>`;
 
   // ── Mistake Review ──
@@ -6299,6 +6541,7 @@ function navigateToLetter(letterChar) {
 // ════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════
+ensureReadingUI();
 showProfileScreen();
 attachLearnKeyHandler();
 
@@ -7102,6 +7345,10 @@ document.addEventListener('click', function(e) {
     case 'vocab-practice': switchTab('vocabulary'); startMixedVocabPractice(); break;
     case 'open-grammar-lesson': switchTab('grammar'); openGrammarLesson(a.id); break;
     case 'start-mistake-review': startMistakeReview(); break;
+    case 'start-reading-passage': startReadingPassage(a.id); break;
+    case 'answer-reading-check': answerReadingCheck(+a.qi, +a.oi); break;
+    case 'submit-reading-check': submitReadingCheck(); break;
+    case 'reading-lookup': openReadingLookup(a.lemma); break;
     case 'run-next-review': _runNextReviewItem(); break;
     // Settings / UI
     case 'open-settings': openSettingsPanel(); break;
