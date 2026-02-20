@@ -567,6 +567,13 @@ nav h1 span { color: var(--accent); }
   font-weight: 600; transition: color 0.2s;
 }
 .pt-retake-btn:hover { color: #f4d58d; }
+.pt-dismiss-btn {
+  position: absolute; top: 0; right: 0; background: transparent; border: none;
+  color: var(--text-dim); font-size: 1.2rem; cursor: pointer;
+  width: 2.5rem; height: 2.5rem; display: flex; align-items: center;
+  justify-content: center; border-radius: 50%; transition: background 0.15s;
+}
+.pt-dismiss-btn:hover { background: rgba(255,255,255,0.1); }
 
 @media (max-width: 600px) {
   .placement-results-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1411,6 +1418,7 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .ml-chip.lvl1 { border-color: var(--text-dim); color: var(--text-dim); background: rgba(255,255,255,0.04); }
 .ml-chip.lvl2 { border-color: var(--accent-dim); color: var(--text); background: rgba(244,165,50,0.08); }
 .ml-chip.lvl3 { border-color: var(--accent); color: var(--accent); background: rgba(244,165,50,0.15); }
+.ml-chip.lvl4 { border-color: var(--gold); color: var(--gold); background: rgba(200,184,71,0.18); }
 .ml-label { color: var(--text-dim); }
 .listening-controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 20px auto 8px; }
 .listening-play-btn {
@@ -1634,3 +1642,28 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   color:var(--text-dim); border-radius:10px; padding:8px 16px; font-size:0.9rem;
   cursor:pointer; margin-top:8px; }
 .canvas-practice-btn:hover { background:rgba(255,255,255,0.08); color:var(--text); }
+
+/* ─── APP MODAL (replaces native alert/confirm) ─── */
+.app-modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0,0,0,0.72);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.app-modal-box {
+  background: var(--card); border-radius: var(--radius);
+  padding: 28px 28px 20px; max-width: 420px; width: 100%;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+}
+.app-modal-msg {
+  font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+.app-modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.app-modal-btn {
+  padding: 9px 20px; border-radius: 10px; border: none;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+}
+.app-modal-btn:hover { opacity: 0.85; }
+.app-modal-btn-ok { background: var(--accent); color: #000; }
+.app-modal-btn-cancel { background: rgba(255,255,255,0.1); color: var(--text); }

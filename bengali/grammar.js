@@ -1,4 +1,4 @@
-// Bengali Grammar — 30 structured lessons
+// Bengali Grammar — 36 structured lessons
 // Format matches vocab.js pattern for consistency
 const GRAMMAR_LESSONS = [
   // ═══════════════════════════════════════
