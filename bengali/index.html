@@ -506,32 +506,10 @@ permalink: /bengali/
   </div>
   <div class="conj-table-section">
     <button class="conj-table-toggle" data-action="toggle-conj-table" aria-expanded="false" id="conj-toggle-btn">
-      করা — Verb Conjugation Reference <span class="conj-toggle-arrow">▸</span>
+      ক্রিয়া রূপান্তর — Verb Conjugation Explorer <span class="conj-toggle-arrow">▸</span>
     </button>
     <div class="conj-table-wrap" id="conj-table-wrap" hidden>
-      <p class="conj-table-note">করা (to do) — base form used to show endings. Informal registers only; very formal omitted.</p>
-      <div class="conj-table-scroll">
-        <table class="conj-table">
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>Present<br><span class="conj-th-sub">habitual</span></th>
-              <th>Past<br><span class="conj-th-sub">simple</span></th>
-              <th>Future<br><span class="conj-th-sub">simple</span></th>
-              <th>Continuous<br><span class="conj-th-sub">present</span></th>
-              <th>Perfect<br><span class="conj-th-sub">past</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><span class="conj-bn">আমি</span> <span class="conj-rom">ami</span></td><td><span class="conj-bn">করি</span> <span class="conj-rom">kori</span></td><td><span class="conj-bn">করলাম</span> <span class="conj-rom">korlam</span></td><td><span class="conj-bn">করব</span> <span class="conj-rom">korbo</span></td><td><span class="conj-bn">করছি</span> <span class="conj-rom">korchi</span></td><td><span class="conj-bn">করেছি</span> <span class="conj-rom">korechi</span></td></tr>
-            <tr><td><span class="conj-bn">তুমি</span> <span class="conj-rom">tumi</span></td><td><span class="conj-bn">করো</span> <span class="conj-rom">koro</span></td><td><span class="conj-bn">করলে</span> <span class="conj-rom">korle</span></td><td><span class="conj-bn">করবে</span> <span class="conj-rom">korbe</span></td><td><span class="conj-bn">করছ</span> <span class="conj-rom">korcho</span></td><td><span class="conj-bn">করেছ</span> <span class="conj-rom">korecho</span></td></tr>
-            <tr><td><span class="conj-bn">তুই</span> <span class="conj-rom">tui</span></td><td><span class="conj-bn">করিস</span> <span class="conj-rom">koris</span></td><td><span class="conj-bn">করলি</span> <span class="conj-rom">korli</span></td><td><span class="conj-bn">করবি</span> <span class="conj-rom">korbi</span></td><td><span class="conj-bn">করছিস</span> <span class="conj-rom">korchis</span></td><td><span class="conj-bn">করেছিস</span> <span class="conj-rom">korechis</span></td></tr>
-            <tr><td><span class="conj-bn">আপনি</span> <span class="conj-rom">apni</span></td><td><span class="conj-bn">করেন</span> <span class="conj-rom">koren</span></td><td><span class="conj-bn">করলেন</span> <span class="conj-rom">korlen</span></td><td><span class="conj-bn">করবেন</span> <span class="conj-rom">korben</span></td><td><span class="conj-bn">করছেন</span> <span class="conj-rom">korchen</span></td><td><span class="conj-bn">করেছেন</span> <span class="conj-rom">korechen</span></td></tr>
-            <tr><td><span class="conj-bn">সে / এ</span> <span class="conj-rom">she / e</span></td><td><span class="conj-bn">করে</span> <span class="conj-rom">kore</span></td><td><span class="conj-bn">করল</span> <span class="conj-rom">korlo</span></td><td><span class="conj-bn">করবে</span> <span class="conj-rom">korbe</span></td><td><span class="conj-bn">করছে</span> <span class="conj-rom">korche</span></td><td><span class="conj-bn">করেছে</span> <span class="conj-rom">koreche</span></td></tr>
-            <tr><td><span class="conj-bn">তারা / ওরা</span> <span class="conj-rom">tara / ora</span></td><td><span class="conj-bn">করে</span> <span class="conj-rom">kore</span></td><td><span class="conj-bn">করল</span> <span class="conj-rom">korlo</span></td><td><span class="conj-bn">করবে</span> <span class="conj-rom">korbe</span></td><td><span class="conj-bn">করছে</span> <span class="conj-rom">korche</span></td><td><span class="conj-bn">করেছে</span> <span class="conj-rom">koreche</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div id="conj-table-ui"></div>
     </div>
   </div>
   <div class="module-grid" id="grammar-module-grid"></div>
@@ -703,6 +681,7 @@ permalink: /bengali/
     </div>
     <p class="word-modal-hint">Tap card to flip</p>
     <button id="wm-study-btn" class="wm-study-btn" data-action="study-word-next">+ Study this word</button>
+    <button id="wm-conj-btn" class="wm-conj-btn" data-action="open-verb-conjugation" style="display:none">ক্রিয়া রূপ দেখুন</button>
   </div>
 </div>
 
