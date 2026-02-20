@@ -5415,11 +5415,13 @@ const MAX_REVIEW_GRAMMAR = 3;
 const MAX_REVIEW_PHRASES = 3;
 
 // ════════════════════════════════════════
-//  FSRS-4.5 SPACED REPETITION
+//  FSRS-4.5 SPACED REPETITION (17-parameter variant)
 // ════════════════════════════════════════
-// Default weight vector (FSRS-4.5 open-source defaults)
+// Default FSRS-4.5 weights for formulas that reference w[0]..w[16].
 const FSRS_W = [0.4072,1.1829,3.1262,15.4722,7.2102,0.5316,1.0651,0.0589,
-                1.5330,0.1544,1.0070,1.9395,0.1100,0.2900,2.2700,0.0700,2.9898,0.5100,0.4300];
+                1.5330,0.1544,1.0070,1.9395,0.1100,0.2900,2.2700,0.0700,2.9898];
+// Keep this in sync with formulas below; they implement the FSRS-4.5 17-weight model.
+if (FSRS_W.length !== 17) throw new Error(`FSRS_W must contain 17 weights for FSRS-4.5 formulas (got ${FSRS_W.length})`);
 const FSRS_AGAIN = 1, FSRS_HARD = 2, FSRS_GOOD = 3, FSRS_EASY = 4;
 
 // Initial stability (days) after first exposure, indexed by rating 1-4
