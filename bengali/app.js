@@ -5145,9 +5145,9 @@ function ensureReadingUI() {
     screen.className = 'screen';
     screen.id = 'reading-screen';
     screen.innerHTML = `
-      <div class="module-home-header">
-        <h2>Reading</h2>
-        <p style="color:var(--text-dim)">Short passages with vocabulary-aware filtering and quick lookup.</p>
+      <div class="hero">
+        <h2>পাঠ</h2>
+        <p>Short passages with vocabulary-aware filtering and quick lookup.</p>
       </div>
       <div id="reading-body" style="padding:0 1rem 2rem"></div>`;
     home.parentElement.insertBefore(screen, home.nextSibling);
