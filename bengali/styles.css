@@ -13,6 +13,8 @@
   --special: #f0c060;
   --radius: 16px;
   --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --border: rgba(255,255,255,0.15);
+  --muted: rgba(232,245,236,0.45);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -1659,7 +1661,7 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;
   white-space: pre-wrap;
 }
-.app-modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.app-modal-btns { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 .app-modal-btn {
   padding: 9px 20px; border-radius: 10px; border: none;
   font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
@@ -1667,3 +1669,64 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .app-modal-btn:hover { opacity: 0.85; }
 .app-modal-btn-ok { background: var(--accent); color: #000; }
 .app-modal-btn-cancel { background: rgba(255,255,255,0.1); color: var(--text); }
+
+/* ─── STROKE HINTS (canvas overlay) ─── */
+.stroke-hints {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 0.78rem; color: var(--text-dim);
+  max-height: 120px; overflow: hidden;
+  margin: 8px 0 4px; width: 100%; text-align: left;
+}
+.stroke-hint-item {
+  padding-left: 2px; line-height: 1.4;
+}
+.stroke-hint-num {
+  font-weight: 700; color: var(--accent); margin-right: 4px;
+}
+
+/* ─── TODAY LESSON CARD ─── */
+.today-lesson-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border-left: 3.5px solid var(--accent);
+  padding: 16px 20px;
+  margin-bottom: 14px;
+}
+.tlc-badge {
+  display: inline-block;
+  background: rgba(62,201,122,0.15);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.tlc-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.tlc-example {
+  display: flex; flex-direction: column; gap: 2px;
+  margin-bottom: 12px;
+}
+.tlc-bn { font-size: 1.4rem; font-weight: 700; color: var(--text); }
+.tlc-en { font-size: 0.8rem; color: var(--text-dim); }
+
+/* ─── SETTINGS TOGGLE BUTTON ─── */
+.settings-toggle-btn {
+  display: block; width: 100%;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-size: 0.88rem; font-weight: 600;
+  text-align: left; cursor: pointer;
+  margin-bottom: 4px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.settings-toggle-btn:hover { background: rgba(255,255,255,0.1); }
+.settings-toggle-btn.active { border-color: var(--accent); color: var(--accent); }

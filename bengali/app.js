@@ -208,6 +208,100 @@ const MATRA_COMBOS = [
 ];
 
 // ════════════════════════════════════════
+//  CONJUNCT CONSONANTS  (যুক্তবর্ণ)
+// ════════════════════════════════════════
+const CONJUNCTS = [
+  { letter:'ক্ত', name:'Kto (kto)',   romanized:'kto',   ipa:'kt',   sound:'ক + ত combined', example:'রক্ত (rokto — blood)',          type:'conjunct' },
+  { letter:'ক্ষ', name:'Ksha (ksha)', romanized:'ksha',  ipa:'kʃ',   sound:'ক + ষ combined', example:'ক্ষমা (kshoma — forgiveness)', type:'conjunct' },
+  { letter:'ক্স', name:'Ks (ks)',     romanized:'ks',    ipa:'ks',   sound:'ক + স combined', example:'বক্স (boks — box)',             type:'conjunct' },
+  { letter:'গ্ধ', name:'Gdh (gdh)',   romanized:'gdh',   ipa:'gdʱ',  sound:'গ + ধ combined', example:'মুগ্ধ (mugdho — enchanted)',    type:'conjunct' },
+  { letter:'গ্ন', name:'Gno (gno)',   romanized:'gno',   ipa:'gn',   sound:'গ + ন combined', example:'মগ্ন (mogno — engrossed)',      type:'conjunct' },
+  { letter:'ঙ্ক', name:'Ngko (ngko)', romanized:'ngko',  ipa:'ŋk',   sound:'ঙ + ক combined', example:'অঙ্ক (ongko — mathematics)',    type:'conjunct' },
+  { letter:'চ্ছ', name:'Cchho',       romanized:'cchho', ipa:'tʃʰ',  sound:'চ + ছ combined', example:'ইচ্ছা (icchha — desire)',       type:'conjunct' },
+  { letter:'জ্ঞ', name:'Gyo (gyo)',   romanized:'gyo',   ipa:'dʒɲ',  sound:'জ + ঞ combined', example:'জ্ঞান (gyan — knowledge)',      type:'conjunct' },
+  { letter:'জ্ব', name:'Jbo (jbo)',   romanized:'jbo',   ipa:'dʒb',  sound:'জ + ব combined', example:'জ্বর (jbor — fever)',           type:'conjunct' },
+  { letter:'ট্ট', name:'Ṭṭo (ṭṭo)',  romanized:'ṭṭo',   ipa:'ʈʈ',   sound:'ট + ট combined', example:'চট্ট (choṭṭo — quick)',         type:'conjunct' },
+  { letter:'ণ্ড', name:'Ṇḍo (ṇḍo)',  romanized:'ṇḍo',   ipa:'ɳɖ',   sound:'ণ + ড combined', example:'পণ্ড (poṇḍo — waste)',          type:'conjunct' },
+  { letter:'ত্ত', name:'Tto (tto)',   romanized:'tto',   ipa:'tt̪',   sound:'ত + ত combined', example:'উত্তর (uttor — answer)',        type:'conjunct' },
+  { letter:'ত্থ', name:'Ttho (ttho)', romanized:'ttho',  ipa:'t̪t̪ʰ',  sound:'ত + থ combined', example:'সত্থ (shottha — truth)',        type:'conjunct' },
+  { letter:'দ্ধ', name:'Ddho (ddho)', romanized:'ddho',  ipa:'d̪d̪ʱ',  sound:'দ + ধ combined', example:'শুদ্ধ (shudddho — pure)',       type:'conjunct' },
+  { letter:'দ্ব', name:'Dbo (dbo)',   romanized:'dbo',   ipa:'d̪b',   sound:'দ + ব combined', example:'দ্বার (dbar — door)',           type:'conjunct' },
+  { letter:'ন্ত', name:'Nto (nto)',   romanized:'nto',   ipa:'nt̪',   sound:'ন + ত combined', example:'অন্ত (onto — end)',              type:'conjunct' },
+  { letter:'ন্দ', name:'Ndo (ndo)',   romanized:'ndo',   ipa:'nd̪',   sound:'ন + দ combined', example:'আনন্দ (anondo — joy)',           type:'conjunct' },
+  { letter:'ন্ধ', name:'Ndho (ndho)', romanized:'ndho',  ipa:'nd̪ʱ',  sound:'ন + ধ combined', example:'অন্ধ (ondho — blind)',           type:'conjunct' },
+  { letter:'ন্ন', name:'Nno (nno)',   romanized:'nno',   ipa:'nn',   sound:'ন + ন combined', example:'অন্ন (onno — food/rice)',        type:'conjunct' },
+  { letter:'ন্ম', name:'Nmo (nmo)',   romanized:'nmo',   ipa:'nm',   sound:'ন + ম combined', example:'জন্ম (jonmo — birth)',           type:'conjunct' },
+  { letter:'ব্র', name:'Bro (bro)',   romanized:'bro',   ipa:'br',   sound:'ব + র combined', example:'ব্রত (broto — vow)',             type:'conjunct' },
+  { letter:'ভ্র', name:'Bhro (bhro)', romanized:'bhro',  ipa:'bʱr',  sound:'ভ + র combined', example:'ভ্রম (bhrom — mistake)',         type:'conjunct' },
+  { letter:'ম্ব', name:'Mbo (mbo)',   romanized:'mbo',   ipa:'mb',   sound:'ম + ব combined', example:'লম্বা (lomba — tall)',           type:'conjunct' },
+  { letter:'শ্ব', name:'Shbo (shbo)', romanized:'shbo',  ipa:'ʃb',   sound:'শ + ব combined', example:'বিশ্ব (bishbo — world)',         type:'conjunct' },
+  { letter:'শ্র', name:'Shro (shro)', romanized:'shro',  ipa:'ʃr',   sound:'শ + র combined', example:'শ্রম (shrom — labour)',          type:'conjunct' },
+  { letter:'ষ্ট', name:'Shṭo (shṭo)', romanized:'shṭo',  ipa:'ʃʈ',   sound:'ষ + ট combined', example:'কষ্ট (koshṭo — hardship)',       type:'conjunct' },
+  { letter:'ষ্ণ', name:'Shṇo (shṇo)', romanized:'shṇo',  ipa:'ʃɳ',   sound:'ষ + ণ combined', example:'কৃষ্ণ (krishno — Krishna)',       type:'conjunct' },
+  { letter:'স্ত', name:'Sto (sto)',   romanized:'sto',   ipa:'st̪',   sound:'স + ত combined', example:'স্থান (sthan — place)',          type:'conjunct' },
+  { letter:'স্থ', name:'Stho (stho)', romanized:'stho',  ipa:'st̪ʰ',  sound:'স + থ combined', example:'স্থাপন (sthapona — establish)',  type:'conjunct' },
+  { letter:'স্প', name:'Spo (spo)',   romanized:'spo',   ipa:'sp',   sound:'স + প combined', example:'স্পষ্ট (sposhṭo — clear)',       type:'conjunct' },
+  { letter:'হ্ন', name:'Hno (hno)',   romanized:'hno',   ipa:'hn',   sound:'হ + ন combined', example:'চিহ্ন (chihno — sign/mark)',      type:'conjunct' },
+  { letter:'ল্ল', name:'Llo (llo)',   romanized:'llo',   ipa:'ll',   sound:'ল + ল combined', example:'উল্লাস (ullas — jubilation)',     type:'conjunct' },
+];
+
+// ════════════════════════════════════════
+//  STROKE ORDER HINTS
+// ════════════════════════════════════════
+const STROKE_HINTS = {
+  'অ': ['Draw the curved hook from upper-right downward', 'Add the lower horizontal tail curving right'],
+  'আ': ['Draw অ first', 'Add a vertical bar extending down on the right'],
+  'ই': ['Draw a short vertical stroke', 'Curve the top to the left', 'Add the lower curved tail'],
+  'ঈ': ['Draw ই first', 'Add the long extending tail looping right'],
+  'উ': ['Draw the top curved hook leftward', 'Continue down with the body curve'],
+  'ঊ': ['Draw উ first', 'Add the extra loop at the bottom'],
+  'ঋ': ['Draw the upper curve', 'Add the descending stroke with a hook at bottom'],
+  'এ': ['Draw the top horizontal bar', 'Curve down and left to form the body'],
+  'ঐ': ['Draw এ first', 'Add the upper loop extending right'],
+  'ও': ['Draw the upper closed loop', 'Add the lower descending curve'],
+  'ঔ': ['Draw ও first', 'Add the rightward extending ear'],
+  'ক': ['Vertical stroke downward', 'Arc from top curving right', 'Small hook at bottom-right'],
+  'খ': ['Vertical stroke down', 'Add horizontal bar at mid-height', 'Curve upper-right portion'],
+  'গ': ['Draw the top curved hook', 'Continue down into the body', 'Add the lower right extension'],
+  'ঘ': ['Draw গ shape', 'Add the additional upper-left loop'],
+  'ঙ': ['Small circle on top-right', 'Descending stroke with left foot'],
+  'চ': ['Draw the upper curve arcing right', 'Connect down into the lower body'],
+  'ছ': ['Draw চ first', 'Add the upper loop or hook at top'],
+  'জ': ['Vertical bar down', 'Horizontal top bar left', 'Curved lower body rightward'],
+  'ঝ': ['Draw জ first', 'Add the extra loop on the right'],
+  'ঞ': ['Draw the upper loop', 'Add descending curves and the lower hook'],
+  'ট': ['Draw a short curve top-right', 'Connect downward with a right-facing foot'],
+  'ঠ': ['Draw ট shape', 'Add the top horizontal bar extending left'],
+  'ড': ['Vertical stroke with upper right-facing curve', 'Lower hook extending left'],
+  'ঢ': ['Draw ড shape', 'Add the extra upper extension'],
+  'ণ': ['Draw the upper loop', 'Vertical stroke down', 'Lower right-facing foot'],
+  'ত': ['Horizontal bar at top', 'Two downward strokes forming the base'],
+  'থ': ['Draw ত first', 'Add the upper looping extension'],
+  'দ': ['Upper arc top-right', 'Downward stroke with left foot curve'],
+  'ধ': ['Draw দ shape', 'Add the upper vertical bar on left'],
+  'ন': ['Curved body stroke', 'Left descending foot', 'Right upper hook'],
+  'প': ['Vertical stroke down', 'Left arch at top', 'Right small foot'],
+  'ফ': ['Draw প shape', 'Add the upper loop or cross'],
+  'ব': ['Left vertical curve', 'Close the right side', 'Lower arc'],
+  'ভ': ['Draw ব shape', 'Add the upper diagonal arm extending right'],
+  'ম': ['Left downstroke', 'Right downstroke', 'Connecting arch at top', 'Lower connecting foot'],
+  'য': ['Upper loop arc', 'Vertical descent', 'Lower right foot curve'],
+  'র': ['Short upper hook right', 'Descending curve to foot'],
+  'ল': ['Vertical stroke down', 'Left foot extending', 'Upper right hook'],
+  'শ': ['Three vertical strokes', 'Connected by top bar', 'Bottom curve connecting all'],
+  'ষ': ['Similar to শ with minor retroflex form differences'],
+  'স': ['Top bar left', 'Right curve', 'Bottom left foot'],
+  'হ': ['Left descending stroke', 'Right arm curving up', 'Lower connecting base'],
+  'ড়': ['Draw ড first', 'Add the nukta dot below'],
+  'ঢ়': ['Draw ঢ first', 'Add the nukta dot below'],
+  'য়': ['Draw য first', 'Add the nukta dot below'],
+  'ৎ': ['Short sharp downstroke', 'Curved base flick to right'],
+  'ং': ['Small circle or loop on top', 'Bindu dot'],
+  'ঃ': ['Two small dots stacked vertically'],
+  'ঁ': ['Small crescent shape with a dot above'],
+};
+
+// ════════════════════════════════════════
 //  MODULES
 // ════════════════════════════════════════
 const MODULES = [
@@ -221,6 +315,7 @@ const MODULES = [
   { id:'consonants-6', title:'Consonants VI (য–হ)', desc:'Semivowels, liquids & sibilants', icon:'🔊', letters: CONSONANTS_OTHER.map(c=>({...c,type:'consonant'})), color: var_consonant },
   { id:'special', title:'Special Characters', desc:'Modifiers & extra letters (ড়, ং, ঃ…)', icon:'✨', letters: CONSONANTS_SPECIAL.map(c=>({...c,type:'consonant'})), color: var_special },
   { id:'matra', title:'Matra Drills (া–ৌ)', desc:'45 consonant+vowel-sign combos — see the glyph, type its sound', icon:'🔡', letters: MATRA_COMBOS, color: () => '#4caf6e' },
+  { id:'conjuncts', title:'Conjunct Consonants', desc:'যুক্তবর্ণ — 32 compound letter combinations', icon:'🔗', letters: CONJUNCTS, color: () => 'var(--special)' },
   { id:'chart', title:'Full Alphabet Chart', desc:'Review all 50 letters at a glance', icon:'📊', isChart: true },
 ];
 
@@ -228,10 +323,11 @@ const MODULES = [
 //  NUMBER MODULES (Numbers tab)
 // ════════════════════════════════════════
 const NUMBER_MODULES = [
-  { id:'numeral-glyphs', title:'Numeral Glyphs (০–৯)', desc:'The 10 Bengali script digits — ০ through ৯', icon:'🔢', letters: BENGALI_NUMERALS, color: () => 'var(--accent)' },
-  { id:'ones-teens',     title:'Ones & Teens (০–১৯)',  desc:'Bengali words for zero through nineteen',    icon:'1️⃣', letters: BENGALI_NUMBER_NAMES.slice(0, 20),  color: () => 'var(--accent)' },
-  { id:'tens',           title:'Tens (২০–৯০)',          desc:'Bengali words for twenty through ninety',    icon:'🔟', letters: BENGALI_NUMBER_NAMES.slice(20, 28), color: () => 'var(--accent)' },
-  { id:'large-numbers',  title:'Large Numbers',         desc:'Hundreds, thousands, and lakhs',             icon:'💯', letters: BENGALI_NUMBER_NAMES.slice(28),    color: () => 'var(--accent)' },
+  { id:'numeral-glyphs',    title:'Numeral Glyphs (০–৯)', desc:'The 10 Bengali script digits — ০ through ৯', icon:'🔢', letters: BENGALI_NUMERALS, color: () => 'var(--accent)' },
+  { id:'ones-teens',        title:'Ones & Teens (০–১৯)',  desc:'Bengali words for zero through nineteen',    icon:'1️⃣', letters: BENGALI_NUMBER_NAMES.slice(0, 20),  color: () => 'var(--accent)' },
+  { id:'tens',              title:'Tens (২০–৯০)',          desc:'Bengali words for twenty through ninety',    icon:'🔟', letters: BENGALI_NUMBER_NAMES.slice(20, 28), color: () => 'var(--accent)' },
+  { id:'large-numbers',     title:'Large Numbers',         desc:'Hundreds, thousands, and lakhs',             icon:'💯', letters: BENGALI_NUMBER_NAMES.slice(28),    color: () => 'var(--accent)' },
+  { id:'numbers-arithmetic',title:'Number Recognition',   desc:'Read Bengali numerals & number words',        icon:'➕', isArithmetic: true,                          color: () => 'var(--accent)' },
 ];
 
 // ════════════════════════════════════════
@@ -634,19 +730,144 @@ function renderNumbersHome() {
   NUMBER_MODULES.forEach(mod => {
     const card = document.createElement('div');
     card.className = 'module-card';
-    const prog = getModuleProgress(mod);
-    const progressHTML = `
-      <div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:${mod.color()}"></div></div>
-      <div class="progress-label">${prog.mastered}/${prog.total} mastered</div>`;
+    let progressHTML = '';
+    if (!mod.isArithmetic) {
+      const prog = getModuleProgress(mod);
+      progressHTML = `
+        <div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:${mod.color()}"></div></div>
+        <div class="progress-label">${prog.mastered}/${prog.total} mastered</div>`;
+    }
     card.innerHTML = `
       <div class="module-icon">${mod.icon}</div>
       <h3>${mod.title}</h3>
       <p>${mod.desc}</p>
       ${progressHTML}
     `;
-    card.onclick = () => startLearn(mod);
+    card.onclick = () => mod.isArithmetic ? startArithmeticQuiz() : startLearn(mod);
     grid.appendChild(card);
   });
+}
+
+// ════════════════════════════════════════
+//  ARITHMETIC QUIZ (Numbers tab)
+// ════════════════════════════════════════
+let _arithmeticQuestions = [];
+let _arithmeticIndex = 0;
+let _arithmeticCorrect = 0;
+let _arithmeticAnswered = false;
+
+function _bn2ar(s) {
+  return parseInt(String(s).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d)), 10);
+}
+
+function _arTobn(n) {
+  return String(n).split('').map(d => '০১২৩৪৫৬৭৮৯'[parseInt(d)] || d).join('');
+}
+
+function startArithmeticQuiz() {
+  _arithmeticQuestions = _buildArithmeticQuestions(15);
+  _arithmeticIndex = 0;
+  _arithmeticCorrect = 0;
+  _arithmeticAnswered = false;
+  _moduleHomeScreen = 'numbers-home';
+  showScreen('quiz');
+  document.getElementById('quiz-title').textContent = 'Number Recognition';
+  renderArithmeticQuestion();
+}
+
+function _buildArithmeticQuestions(n) {
+  const pool = [...BENGALI_NUMERALS, ...BENGALI_NUMBER_NAMES.slice(0, 20)];
+  const qs = [];
+  for (let i = 0; i < n; i++) {
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    const val = parseInt(item.ipa.replace(/,/g,''), 10);
+    if (isNaN(val)) continue;
+    const type = Math.random() < 0.5 ? 'glyph-to-num' : 'num-to-glyph';
+    if (type === 'glyph-to-num') {
+      qs.push({ prompt: 'What number is this?', display: item.letter, correct: String(val), answer: String(val), type: 'arith-fib', _val: val });
+    } else {
+      // MC: pick 3 distractors from pool
+      const distractors = pool.filter(p => p !== item && !isNaN(parseInt(p.ipa.replace(/,/g,''), 10)))
+        .sort(() => Math.random() - 0.5).slice(0, 3).map(p => p.letter);
+      const options = [item.letter, ...distractors].sort(() => Math.random() - 0.5);
+      qs.push({ prompt: 'Select the Bengali for: ' + val, display: String(val), correct: item.letter, options, type: 'arith-mc', _val: val });
+    }
+  }
+  return qs;
+}
+
+function renderArithmeticQuestion() {
+  if (_arithmeticIndex >= _arithmeticQuestions.length) {
+    showArithmeticResults(); return;
+  }
+  _arithmeticAnswered = false;
+  const q = _arithmeticQuestions[_arithmeticIndex];
+  document.getElementById('quiz-score').textContent = _arithmeticCorrect + ' / ' + _arithmeticIndex;
+  const fill = (_arithmeticIndex / _arithmeticQuestions.length) * 100;
+  document.getElementById('quiz-progress-fill').style.width = fill + '%';
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn';
+
+  const qa = document.getElementById('quiz-question-area');
+  qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div><div class="quiz-letter">${q.display}</div>`;
+  const aa = document.getElementById('quiz-answer-area');
+  if (q.type === 'arith-fib') {
+    aa.innerHTML = `<div class="fib-area"><input type="number" class="fib-input" id="arith-input" placeholder="Enter number…" style="width:120px;text-align:center"><button class="btn-primary fib-submit" data-action="answer-arith-fib">Check</button></div>`;
+    setTimeout(() => document.getElementById('arith-input')?.focus(), 100);
+  } else {
+    aa.innerHTML = '<div class="mc-options">' +
+      q.options.map((opt, i) => `<button class="mc-btn" data-answer="${escapeStr(opt)}" data-action="answer-arith-mc">${opt}<span class="mc-key-hint">[${i+1}]</span></button>`).join('') + '</div>';
+    attachQuizKeyHandler('quiz');
+  }
+}
+
+function answerArithMC(btn, chosen) {
+  if (_arithmeticAnswered) return;
+  _arithmeticAnswered = true;
+  const q = _arithmeticQuestions[_arithmeticIndex];
+  const correct = chosen === q.correct;
+  document.querySelectorAll('#quiz-answer-area .mc-btn').forEach(b => { b.classList.add('disabled'); if (b.dataset.answer === q.correct) b.classList.add('reveal-correct'); });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? '✓ Correct!' : '✗ Correct: ' + q.correct;
+  if (correct) { _arithmeticCorrect++; addXP(10); setTimeout(() => { const nb = document.getElementById('quiz-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700); }
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function answerArithFIB() {
+  if (_arithmeticAnswered) return;
+  const input = document.getElementById('arith-input');
+  if (!input || !input.value.trim()) return;
+  _arithmeticAnswered = true;
+  const q = _arithmeticQuestions[_arithmeticIndex];
+  const userVal = parseInt(input.value.trim(), 10);
+  const correct = userVal === q._val;
+  input.classList.add(correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? '✓ Correct!' : '✗ Correct: ' + q.correct;
+  if (correct) { _arithmeticCorrect++; addXP(15); }
+  document.getElementById('quiz-next-btn').className = 'btn-primary quiz-next-btn show';
+}
+
+function nextArithmeticQuestion() {
+  _arithmeticIndex++;
+  renderArithmeticQuestion();
+}
+
+function showArithmeticResults() {
+  const total = _arithmeticQuestions.length;
+  const pct = total ? Math.round((_arithmeticCorrect / total) * 100) : 0;
+  showScreen('results');
+  document.getElementById('results-title').textContent = pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  document.getElementById('results-sub').textContent = 'You scored ' + _arithmeticCorrect + '/' + total;
+  setTimeout(() => {
+    const offset = 452.4 * (1 - pct / 100);
+    document.getElementById('results-ring').style.strokeDashoffset = offset;
+    document.getElementById('results-pct').textContent = pct + '%';
+  }, 100);
 }
 
 // ════════════════════════════════════════
@@ -715,6 +936,10 @@ function toggleSlowAudio(btn) {
     b.classList.toggle('active', _audioSlowMode);
     b.title = _audioSlowMode ? 'Slow mode on — click to restore normal speed' : 'Play at half speed';
   });
+  const statusEl = document.getElementById('slow-audio-status');
+  if (statusEl) statusEl.textContent = _audioSlowMode ? 'On' : 'Off';
+  const settingsBtn = document.getElementById('settings-slow-audio-btn');
+  if (settingsBtn) settingsBtn.classList.toggle('active', _audioSlowMode);
 }
 
 function speakCurrentLetter() {
@@ -726,6 +951,7 @@ function speakCurrentLetter() {
 //  CANVAS WRITING PRACTICE
 // ════════════════════════════════════════
 let _canvasDrawing = false, _canvasLastX = 0, _canvasLastY = 0;
+let _canvasKeyHandler = null;
 
 function _drawCanvasBg(ctx, canvas, letter) {
   ctx.save();
@@ -749,10 +975,23 @@ function openCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   _drawCanvasBg(ctx, canvas, letter);
   _setupCanvasListeners(canvas);
+
+  // Populate stroke hints
+  const hintsEl = document.getElementById('stroke-hints');
+  if (hintsEl) {
+    const tips = STROKE_HINTS[letter] || ['Trace the character shape carefully', 'Follow the natural stroke direction'];
+    hintsEl.innerHTML = tips.map((tip, i) =>
+      `<div class="stroke-hint-item"><span class="stroke-hint-num">${i + 1}.</span> ${escapeStr(tip)}</div>`
+    ).join('');
+  }
 }
 
 function closeCanvas() {
   document.getElementById('canvas-overlay').style.display = 'none';
+  if (_canvasKeyHandler) {
+    document.removeEventListener('keydown', _canvasKeyHandler);
+    _canvasKeyHandler = null;
+  }
 }
 
 function clearCanvas() {
@@ -808,6 +1047,17 @@ function _setupCanvasListeners(canvas) {
   c.addEventListener('touchstart', start, { passive: false });
   c.addEventListener('touchmove', draw, { passive: false });
   c.addEventListener('touchend', stop);
+
+  // Keyboard shortcuts
+  if (_canvasKeyHandler) document.removeEventListener('keydown', _canvasKeyHandler);
+  _canvasKeyHandler = (e) => {
+    if (e.key === 'c' || e.key === 'C' || e.key === 'Delete' || e.key === 'Backspace') {
+      clearCanvas();
+    } else if (e.key === 'Escape') {
+      closeCanvas();
+    }
+  };
+  document.addEventListener('keydown', _canvasKeyHandler);
 }
 
 function speakCurrentVocab() {
@@ -924,6 +1174,7 @@ function generateStringPair(pool) {
 }
 
 function generateQuiz(letters, forceMode) {
+  _arithmeticQuestions = []; // exit arithmetic mode
   quizQuestions = [];
   const shuffled = [...letters].sort(() => Math.random() - 0.5);
 
@@ -1249,7 +1500,7 @@ function renderQuestion() {
 }
 
 function escapeStr(s) {
-  return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function answerMC(btn, chosen) {
@@ -1271,6 +1522,7 @@ function answerMC(btn, chosen) {
     btn.classList.add('wrong');
     showFeedback(false, q.fullAnswer || q.correct);
     _recordMiss(quizMissed, q);
+    _trackMistake(q.letter, 'alphabet');
   }
   addMastery(q.letter, correct);
   _trackLastSeen(q.letter);
@@ -1324,6 +1576,7 @@ function answerSpell() {
     showFeedback(false, q.correct);
     _showInlineAnswer('quiz-answer-area', q.correct);
     _recordMiss(quizMissed, q);
+    _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
   }
   q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
   checkAchievements();
@@ -1350,6 +1603,7 @@ function answerFIB() {
     showFeedback(false, q.answer);
     _showInlineAnswer('quiz-answer-area', q.answer);
     _recordMiss(quizMissed, q);
+    _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
   }
   if (q.letters) {
     q.letters.forEach(l => { addMastery(l.letter, correct); _trackLastSeen(l.letter); });
@@ -1410,6 +1664,13 @@ function _recordMiss(arr, q) {
   arr.push({ bengali, answer: ans, _q: q });
 }
 
+function _trackMistake(key, type) {
+  if (!progress.recentMistakes) progress.recentMistakes = [];
+  progress.recentMistakes.push({ key, type, ts: Date.now() });
+  if (progress.recentMistakes.length > 100)
+    progress.recentMistakes.splice(0, progress.recentMistakes.length - 100);
+}
+
 // Normalize Bengali romanization diacritics so US keyboard users can omit them.
 // Applied to BOTH sides of the comparison, so only the correct plain-ASCII
 // equivalent of the expected answer is accepted — not arbitrary wrong letters.
@@ -1468,6 +1729,7 @@ function dontKnowQuiz() {
     _showInlineAnswer('quiz-answer-area', q.answer);
   }
   _recordMiss(quizMissed, q);
+  _trackMistake(q.letter || (q.letters && q.letters[0] && q.letters[0].letter) || '', 'alphabet');
   if (q.letters) {
     q.letters.forEach(l => { addMastery(l.letter, false); _trackLastSeen(l.letter); });
   } else {
@@ -2436,6 +2698,7 @@ function answerVocabMC(btn, chosen) {
     setTimeout(() => { const nb = document.getElementById('vq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
   } else {
     _recordMiss(vqMissed, q);
+    _trackMistake(_vocabKey(q.word), 'vocab');
   }
   addVocabMastery(q.word, correct);
   _trackLastSeen(_vocabKey(q.word));
@@ -2468,7 +2731,7 @@ function answerVocabFIB() {
   }
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { vqCorrect++; addXP(15); }
-  else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); }
+  else { _showInlineAnswer('vq-answer-area', q.answer); _recordMiss(vqMissed, q); _trackMistake(_vocabKey(q.word), 'vocab'); }
   addVocabMastery(q.word, correct);
   _trackLastSeen(_vocabKey(q.word));
   checkAchievements();
@@ -2500,6 +2763,7 @@ function dontKnowVocab() {
     _showInlineAnswer('vq-answer-area', q.answer || q.correct);
   }
   _recordMiss(vqMissed, q);
+  _trackMistake(_vocabKey(q.word), 'vocab');
   addVocabMastery(q.word, false);
   _trackLastSeen(_vocabKey(q.word));
   checkAchievements();
@@ -2863,6 +3127,9 @@ function answerGrammarMC(btn, chosen) {
     setTimeout(() => { const nb = document.getElementById('gq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
   } else {
     _recordMiss(gqMissed, q);
+    const _gLid = q._lessonId || (currentGrammarLesson && currentGrammarLesson.id) || '';
+    const _gQi = q._qIdx != null ? q._qIdx : gqIndex;
+    _trackMistake('g:' + _gLid + ':' + _gQi, 'grammar');
   }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
@@ -2891,7 +3158,7 @@ function answerGrammarFIB() {
        q.acceptable.some(a => a === rawInput));
   input.classList.add(correct ? 'correct' : 'wrong');
   if (correct) { gqCorrect++; addXP(15); }
-  else { _showInlineAnswer('gq-answer-area', q.answer); _recordMiss(gqMissed, q); }
+  else { _showInlineAnswer('gq-answer-area', q.answer); _recordMiss(gqMissed, q); const _gLid2 = q._lessonId || (currentGrammarLesson && currentGrammarLesson.id) || ''; const _gQi2 = q._qIdx != null ? q._qIdx : gqIndex; _trackMistake('g:' + _gLid2 + ':' + _gQi2, 'grammar'); }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
   addGrammarMastery(lessonId, qIdx, correct);
@@ -2950,6 +3217,9 @@ function checkWordOrder() {
   else {
     _showInlineAnswer('gq-answer-area', q.correct.join(' ') + (q.roman ? ' (' + q.roman + ')' : ''));
     _recordMiss(gqMissed, q);
+    const _gLid3 = q._lessonId || (currentGrammarLesson && currentGrammarLesson.id) || '';
+    const _gQi3 = q._qIdx != null ? q._qIdx : gqIndex;
+    _trackMistake('g:' + _gLid3 + ':' + _gQi3, 'grammar');
   }
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
@@ -2992,6 +3262,7 @@ function dontKnowGrammar() {
   _recordMiss(gqMissed, q);
   const lessonId = q._lessonId || currentGrammarLesson.id;
   const qIdx = q._qIdx != null ? q._qIdx : gqIndex;
+  _trackMistake('g:' + lessonId + ':' + qIdx, 'grammar');
   addGrammarMastery(lessonId, qIdx, false);
   _trackLastSeen('g:' + lessonId);
   checkAchievements();
@@ -3842,6 +4113,7 @@ function renderProfileList(forceShowPicker) {
         <div class="pc-stats">⭐ ${u.xp} XP &nbsp; 🔥 ${u.streak}</div>
       </div>
       <div class="pc-actions">
+        <button class="pc-action-btn" data-action="rename-profile" data-name="${safeNameJs}" title="Rename profile">✏️</button>
         <button class="pc-action-btn" data-action="export-profile" data-name="${safeNameJs}" title="Download progress as JSON">⬇</button>
         <button class="pc-action-btn" data-action="copy-profile" data-name="${safeNameJs}" title="Copy progress to clipboard">📋</button>
         <button class="pc-action-btn pc-action-delete" data-action="delete-profile" data-name="${safeNameJs}" title="Delete profile">🗑</button>
@@ -3873,6 +4145,22 @@ function showNewProfileInput() {
 
 function cancelNewProfile() {
   document.getElementById('profile-input-wrap').classList.remove('active');
+}
+
+async function renameProfile(oldName) {
+  const newName = prompt('Rename profile "' + oldName + '" to:');
+  if (!newName || !newName.trim()) return;
+  const clean = newName.trim();
+  if (!/^[\p{L}\p{N}\s\-]+$/u.test(clean)) { showAlert('Invalid name.'); return; }
+  if (clean === oldName) return;
+  if (_listUsers().some(u => u.name === clean)) { showAlert('A profile with that name already exists.'); return; }
+  const oldKey = _lsKey(oldName);
+  const data = localStorage.getItem(oldKey);
+  if (!data) return;
+  localStorage.setItem(_lsKey(clean), data);
+  localStorage.removeItem(oldKey);
+  if (currentUser === oldName) currentUser = clean;
+  renderProfileList(true);
 }
 
 function createProfile() {
@@ -3940,6 +4228,10 @@ function openSettingsPanel() {
   _updateListenModeChips();
   _updateThemeSwatches();
   renderVoiceSelector();
+  const statusEl = document.getElementById('slow-audio-status');
+  if (statusEl) statusEl.textContent = _audioSlowMode ? 'On' : 'Off';
+  const settingsBtn = document.getElementById('settings-slow-audio-btn');
+  if (settingsBtn) settingsBtn.classList.toggle('active', _audioSlowMode);
   document.getElementById('settings-overlay').classList.add('open');
   document.addEventListener('keydown', _settingsEsc);
 }
@@ -4118,21 +4410,46 @@ async function deleteProfile(name) {
 // ════════════════════════════════════════
 //  EXPORT / IMPORT
 // ════════════════════════════════════════
-function exportProgress() {
+async function exportProgress() {
   closeSettingsPanel();
   if (_saveTimer) { clearTimeout(_saveTimer); _flushSave(); }
+  const filter = await _showModal('Export Progress — select which data to include:', [
+    { label: 'All Data',       cls: 'app-modal-btn-ok',     value: 'all' },
+    { label: 'Alphabet',       cls: 'app-modal-btn-cancel', value: 'alphabet' },
+    { label: 'Vocabulary',     cls: 'app-modal-btn-cancel', value: 'vocab' },
+    { label: 'Grammar',        cls: 'app-modal-btn-cancel', value: 'grammar' },
+    { label: 'Phrases',        cls: 'app-modal-btn-cancel', value: 'phrases' },
+  ]);
+  if (!filter) return;
+  _doExportProgress(filter);
+}
+
+function _doExportProgress(filter) {
+  const allLetterKeys = new Set(ALL_LETTERS.map(l => l.letter));
+  let mastery = progress.mastery;
+  if (filter === 'alphabet') {
+    mastery = Object.fromEntries(Object.entries(progress.mastery).filter(([k]) => allLetterKeys.has(k)));
+  } else if (filter === 'vocab') {
+    mastery = Object.fromEntries(Object.entries(progress.mastery).filter(([k]) => k.startsWith('v:')));
+  } else if (filter === 'grammar') {
+    mastery = Object.fromEntries(Object.entries(progress.mastery).filter(([k]) => k.startsWith('g:')));
+  } else if (filter === 'phrases') {
+    mastery = Object.fromEntries(Object.entries(progress.mastery).filter(([k]) => k.startsWith('ph:')));
+  }
+  const filteredProgress = filter === 'all' ? progress : { ...progress, mastery };
   const data = {
     exportedBy: currentUser,
     exportedAt: new Date().toISOString(),
     version: 1,
-    progress: progress,
+    filter,
+    progress: filteredProgress,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   const dateSuffix = new Date().toISOString().slice(0, 10);
   a.href = url;
-  a.download = 'bengali-progress-' + currentUser.replace(/\s+/g, '-') + '-' + dateSuffix + '.json';
+  a.download = 'bengali-progress-' + currentUser.replace(/\s+/g, '-') + '-' + filter + '-' + dateSuffix + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -4541,10 +4858,18 @@ function renderStatsPanel() {
   const letterPct = Math.round((masteredLetters / totalLetters) * 100);
   const vocabPct = Math.round((masteredVocab / totalVocab) * 100);
   const grammarPct = Math.round((masteredLessons / totalLessons) * 100);
+  const totalPhrases = PHRASES_DATA.length;
+  const masteredPhrases = PHRASES_DATA.filter(p => getPhraseMastery(p.id) >= 3).length;
+  const phrasesPct = totalPhrases ? Math.round((masteredPhrases / totalPhrases) * 100) : 0;
+  const totalConjuncts = CONJUNCTS.length;
+  const masteredConjuncts = CONJUNCTS.filter(c => getMastery(c.letter) >= 3).length;
+  const conjunctsPct = totalConjuncts ? Math.round((masteredConjuncts / totalConjuncts) * 100) : 0;
   html += `<div class="stats-section-title" style="margin-top:20px">Mastery Breakdown</div>
   <div class="mastery-bar-row"><span class="mastery-bar-lbl">🔤 Alphabet</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${letterPct}%"></div></div><span class="mastery-bar-pct">${letterPct}%</span></div>
+  <div class="mastery-bar-row"><span class="mastery-bar-lbl">🔗 Conjuncts</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${conjunctsPct}%"></div></div><span class="mastery-bar-pct">${conjunctsPct}%</span></div>
   <div class="mastery-bar-row"><span class="mastery-bar-lbl">📖 Vocabulary</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${vocabPct}%"></div></div><span class="mastery-bar-pct">${vocabPct}%</span></div>
-  <div class="mastery-bar-row"><span class="mastery-bar-lbl">📝 Grammar</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${grammarPct}%"></div></div><span class="mastery-bar-pct">${grammarPct}%</span></div>`;
+  <div class="mastery-bar-row"><span class="mastery-bar-lbl">📝 Grammar</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${grammarPct}%"></div></div><span class="mastery-bar-pct">${grammarPct}%</span></div>
+  <div class="mastery-bar-row"><span class="mastery-bar-lbl">💬 Phrases</span><div class="mastery-bar-track"><div class="mastery-bar-fill" style="width:${phrasesPct}%"></div></div><span class="mastery-bar-pct">${phrasesPct}%</span></div>`;
 
   // Strongest/weakest vocab category
   const cats = [...new Set(VOCAB_DATA.map(w => w.category))];
@@ -4666,6 +4991,13 @@ function _buildHeatmap() {
 
 // ════════════════════════════════════════
 //  TODAY SCREEN
+function getLessonOfDay() {
+  return GRAMMAR_LESSONS.find(l => {
+    const p = getLessonProgress(l);
+    return p.pct < 100;
+  }) || null;
+}
+
 // ════════════════════════════════════════
 function renderTodayScreen() {
   const body = document.getElementById('today-body');
@@ -4688,6 +5020,18 @@ function renderTodayScreen() {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   let html = `<div class="today-date">${today}</div>`;
+
+  // ── Lesson of the Day ──
+  const lessonOfDay = getLessonOfDay();
+  if (lessonOfDay) {
+    const firstExample = lessonOfDay.examples && lessonOfDay.examples[0];
+    html += `<div class="today-lesson-card">
+      <div class="tlc-badge">📚 Lesson of the Day</div>
+      <div class="tlc-title">Lesson ${lessonOfDay.number}: ${escHtml(lessonOfDay.title)}</div>
+      ${firstExample ? `<div class="tlc-example"><span class="tlc-bn">${escHtml(firstExample.bengali)}</span><span class="tlc-en">${escHtml(firstExample.english)}</span></div>` : ''}
+      <button class="btn-primary today-action-btn" data-action="open-grammar-lesson" data-id="${lessonOfDay.id}">Start Lesson →</button>
+    </div>`;
+  }
 
   // ── Reviews ──
   if (dueCount > 0) {
@@ -4759,6 +5103,21 @@ function renderTodayScreen() {
     <button class="btn-secondary today-action-btn" data-action="switch-tab" data-tab="phrases">Go to Phrases →</button>
   </div>`;
 
+  // ── Mistake Review ──
+  const mistakeCount = (progress.recentMistakes || []).length;
+  if (mistakeCount > 0) {
+    html += `<div class="today-section">
+      <div class="today-section-hdr">
+        <span class="today-section-icon">🔁</span>
+        <div>
+          <div class="today-section-title">Mistake Review</div>
+          <div class="today-section-sub">${mistakeCount} recent mistake${mistakeCount !== 1 ? 's' : ''} to revisit</div>
+        </div>
+      </div>
+      <button class="btn-secondary today-action-btn" data-action="start-mistake-review">Review →</button>
+    </div>`;
+  }
+
   // ── Streak / XP summary ──
   const xpToday = (progress.practiceLog || {})[new Date().toISOString().slice(0,10)] || 0;
   html += `<div class="today-xp-bar">
@@ -4768,6 +5127,32 @@ function renderTodayScreen() {
   </div>`;
 
   body.innerHTML = html;
+}
+
+function startMistakeReview() {
+  const mistakes = (progress.recentMistakes || []).slice(-50);
+  if (mistakes.length === 0) { showAlert('No mistakes to review yet!'); return; }
+
+  // Deduplicate by key, keeping most recent
+  const seen = new Set();
+  const unique = [];
+  for (let i = mistakes.length - 1; i >= 0; i--) {
+    if (!seen.has(mistakes[i].key)) { seen.add(mistakes[i].key); unique.push(mistakes[i]); }
+  }
+
+  // Separate by type
+  const alphaKeys = unique.filter(m => m.type === 'alphabet').map(m => m.key);
+  const alphaLetters = alphaKeys.map(k => ALL_LETTERS.find(l => l.letter === k)).filter(Boolean);
+
+  if (alphaLetters.length > 0) {
+    // Use existing alphabet quiz flow
+    switchTab('alphabet');
+    currentModule = { id:'mistake-review', title:'Mistake Review', letters: alphaLetters, color: () => 'var(--wrong)' };
+    generateQuiz(alphaLetters);
+    showScreen('quiz');
+  } else {
+    showAlert('Mistake review for vocab/grammar/phrases: go to the relevant tab and start a quiz.');
+  }
 }
 
 // ════════════════════════════════════════
@@ -5546,6 +5931,7 @@ function answerPhrasesMC(btn, chosen) {
     setTimeout(() => { const nb = document.getElementById('phq-next-btn'); if (nb && nb.classList.contains('show')) nb.click(); }, 700);
   } else {
     _recordMiss(phqMissed, q);
+    _trackMistake('ph:' + q._phraseId, 'phrases');
   }
   addPhraseMastery(q._phraseId, correct);
   _trackLastSeen('ph:' + q._phraseId);
@@ -5576,6 +5962,7 @@ function answerPhrasesFIB() {
   } else {
     _showInlineAnswer('phq-answer-area', q.answer);
     _recordMiss(phqMissed, q);
+    _trackMistake('ph:' + q._phraseId, 'phrases');
   }
   addPhraseMastery(q._phraseId, correct);
   _trackLastSeen('ph:' + q._phraseId);
@@ -5603,6 +5990,7 @@ function dontKnowPhrases() {
     showPhrasesFeedback(false, fbAnswer);
   }
   _recordMiss(phqMissed, q);
+  _trackMistake('ph:' + q._phraseId, 'phrases');
   addPhraseMastery(q._phraseId, false);
   _trackLastSeen('ph:' + q._phraseId);
   checkAchievements();
@@ -5711,7 +6099,9 @@ document.addEventListener('click', function(e) {
     case 'select-spell': selectSpellTile(el); break;
     case 'answer-spell': answerSpell(); break;
     case 'answer-fib': answerFIB(); break;
-    case 'next-question': nextQuestion(); break;
+    case 'answer-arith-mc': answerArithMC(el, a.answer); break;
+    case 'answer-arith-fib': answerArithFIB(); break;
+    case 'next-question': if (_arithmeticQuestions.length > 0 && _arithmeticAnswered) { nextArithmeticQuestion(); } else { nextQuestion(); } break;
     case 'retry-quiz': retryQuiz(); break;
     case 'retry-missed-quiz': retryMissedQuiz(); break;
     case 'start-quiz': startQuiz(); break;
@@ -5789,6 +6179,7 @@ document.addEventListener('click', function(e) {
     case 'review-and-alphabet': startReviewSession(); switchTab('alphabet'); break;
     case 'vocab-practice': switchTab('vocabulary'); startMixedVocabPractice(); break;
     case 'open-grammar-lesson': switchTab('grammar'); openGrammarLesson(a.id); break;
+    case 'start-mistake-review': startMistakeReview(); break;
     case 'run-next-review': _runNextReviewItem(); break;
     // Settings / UI
     case 'open-settings': openSettingsPanel(); break;
@@ -5828,6 +6219,7 @@ document.addEventListener('click', function(e) {
     case 'reset-phrases-situation': resetPhrasesSituation(a.slug); break;
     // Profiles
     case 'select-profile': selectProfile(a.name); break;
+    case 'rename-profile': renameProfile(a.name); break;
     case 'export-profile': exportProfileData(a.name); break;
     case 'copy-profile': copyProfileDataToClipboard(a.name); break;
     case 'delete-profile': deleteProfile(a.name); break;

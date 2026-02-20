@@ -474,6 +474,23 @@
 </td>
               <td>The next grammar lesson you haven't yet mastered, with an <em>Open Lesson</em> button.</td>
             </tr>
+            <tr>
+              <td>📚 <strong>Lesson of the Day</strong>
+</td>
+              <td>
+                A highlighted card at the top of the Today screen showing the first grammar lesson you haven't yet completed — its title, the first
+                example sentence in Bengali, and a <em>Start Lesson →</em> button. Only appears when an incomplete lesson exists.
+              </td>
+            </tr>
+            <tr>
+              <td>🔁 <strong>Mistake Review</strong>
+</td>
+              <td>
+                Appears once you've accumulated wrong answers. Shows how many items are in your mistake history and offers a <em>Review Mistakes →</em>
+                button that launches a targeted quiz on the items you've most recently answered incorrectly (up to 50 unique items, capped at 100 in
+                history). Covers alphabet letters; more item types are included as the feature grows.
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -547,12 +564,85 @@
           These run standalone quizzes on just those letters.
         </p>
 
+        <h3>Conjunct Consonants (যুক্তবর্ণ)</h3>
+        <p>
+          The <strong>🔗 Conjunct Consonants</strong> module covers 32 compound letter combinations — two consonants fused together into a single
+          glyph. These appear constantly in everyday Bengali text and are essential for fluent reading. Examples:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Glyph</th>
+              <th>Components</th>
+              <th>Romanized</th>
+              <th>Example word</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="bn" style="font-size:1.3rem">ক্ত</td>
+              <td>ক + ত</td>
+              <td><code>kto</code></td>
+              <td>
+<span class="bn">রক্ত</span> — blood</td>
+            </tr>
+            <tr>
+              <td class="bn" style="font-size:1.3rem">ক্ষ</td>
+              <td>ক + ষ</td>
+              <td><code>ksha</code></td>
+              <td>
+<span class="bn">ক্ষমা</span> — forgiveness</td>
+            </tr>
+            <tr>
+              <td class="bn" style="font-size:1.3rem">জ্ঞ</td>
+              <td>জ + ঞ</td>
+              <td><code>gyo</code></td>
+              <td>
+<span class="bn">জ্ঞান</span> — knowledge</td>
+            </tr>
+            <tr>
+              <td class="bn" style="font-size:1.3rem">শ্র</td>
+              <td>শ + র</td>
+              <td><code>shro</code></td>
+              <td>
+<span class="bn">শ্রম</span> — labor</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          The module uses the same quiz types as base consonants (name MC, sound MC, name FIB, romanized FIB) and integrates with the mastery and
+          spaced-repetition system. Grammar Lesson 16 covers conjunct consonants in depth — study that lesson alongside this module for the best results.
+        </p>
+
         <h3>Writing Practice (canvas)</h3>
         <p>
           On any letter flashcard inside a learn module, tap the <strong>✏️ Practice</strong> button to open the writing canvas. The Bengali character
-          is shown faded in the background; draw over it freehand with your mouse or finger to practice the stroke shape. Tap <strong>Clear</strong>
-          to wipe the canvas and try again. There is no stroke-order checking — the canvas is a free-form scratchpad for building muscle memory.
+          is shown faded in the background; draw over it freehand with your mouse or finger to practice the stroke shape. Below the canvas, numbered
+          <strong>stroke hints</strong> appear with short tips describing how to draw each part of the character — useful when you're not sure where
+          to start. Tap <strong>Clear</strong> to wipe the canvas and try again. There is no stroke-order checking — the canvas is a free-form
+          scratchpad for building muscle memory.
         </p>
+        <p>Keyboard shortcuts work while the canvas is open:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+<kbd>c</kbd> / <kbd>C</kbd> / <kbd>Delete</kbd> / <kbd>Backspace</kbd>
+</td>
+              <td>Clear the canvas</td>
+            </tr>
+            <tr>
+              <td><kbd>Esc</kbd></td>
+              <td>Close the canvas and return to the flashcard</td>
+            </tr>
+          </tbody>
+        </table>
 
         <h3>Matra Drills (া–ৌ)</h3>
         <p>
@@ -976,6 +1066,15 @@
               </td>
               <td>5</td>
             </tr>
+            <tr>
+              <td>➕ Number Recognition</td>
+              <td>
+                Mixed reading drill — see a Bengali numeral string (e.g. <span class="bn">৩৭</span>) and type the Arabic integer, or see an Arabic
+                integer and choose the Bengali numeral from four options. Also includes Bengali number-word recognition. 15 randomized questions per
+                session.
+              </td>
+              <td>—</td>
+            </tr>
           </tbody>
         </table>
 
@@ -1383,6 +1482,13 @@
           If you don't hear audio, your device may not have a Bengali voice installed; check your system's language/speech settings.
         </p>
 
+        <h3>Advanced</h3>
+        <p>
+          The <strong>Advanced</strong> section in Settings contains the <strong>🐢 Slow Audio</strong> toggle. When enabled, all TTS playback uses
+          half-speed (0.5×) instead of the default 0.85×. This is a persistent, app-wide setting — unlike the per-question 🐢 button on individual
+          listening cards, this toggle keeps slow audio on for the entire session and across restarts until you turn it off again.
+        </p>
+
         <h3>Themes</h3>
         <p>
           11 color palettes inspired by Bengali culture and geography, each available in light and dark mode. Switch light/dark with the ☀️ button.
@@ -1414,6 +1520,12 @@
         </p>
         <p>Switch profiles or create a new one from <strong>Settings → Switch Profile</strong>.</p>
 
+        <h3>Renaming a profile</h3>
+        <p>
+          Each profile card in the profile picker has a <strong>✏️</strong> rename button. Tap it, enter a new name, and confirm. The profile name
+          must contain only letters, numbers, spaces, or hyphens.
+        </p>
+
         <h3>Statistics</h3>
         <p>Tap <strong>📈 Statistics</strong> in Settings to see a detailed breakdown of your progress:</p>
         <ul style="padding-left: 1.4em; margin: 8px 0 12px">
@@ -1422,7 +1534,8 @@
           <li style="margin-bottom: 5px">
 <strong>Activity heatmap:</strong> 13 weeks of daily XP history</li>
           <li style="margin-bottom: 5px">
-<strong>Mastery breakdown:</strong> Progress bars for Alphabet, Vocabulary, and Grammar</li>
+            <strong>Mastery breakdown:</strong> Progress bars for Alphabet, Vocabulary, Grammar, Phrases, and Conjunct Consonants
+          </li>
           <li style="margin-bottom: 5px">
 <strong>Vocabulary by category:</strong> See which topic areas you're strongest and weakest in</li>
           <li style="margin-bottom: 5px">
@@ -1439,6 +1552,11 @@
           <li>
 <strong>📋 Copy to clipboard</strong> — copies the same JSON to your clipboard, useful for pasting into a note or email.</li>
         </ul>
+        <p>
+          When you tap Download, a filter dialog lets you choose what to include in the export: <strong>All</strong> data, or just one module —
+          <strong>Alphabet</strong>, <strong>Vocabulary</strong>, <strong>Grammar</strong>, or <strong>Phrases</strong>. This is useful for sharing
+          just your vocabulary progress without exporting everything.
+        </p>
         <p>
           To restore on another device or browser, use <strong>Import Progress</strong> in Settings. This is the recommended way to move your data
           between devices.
@@ -1537,6 +1655,7 @@
         <h2>
 <span class="icon">⌨️</span> Keyboard Shortcuts</h2>
 
+        <h3>Quiz shortcuts</h3>
         <table>
           <thead>
             <tr>
@@ -1570,6 +1689,29 @@
           Key hints are shown on multiple-choice buttons in the app (e.g. <code>[1]</code>, <code>[2]</code>) so you can always see which key maps to
           which option.
         </p>
+
+        <h3>Writing canvas shortcuts</h3>
+        <p>These keys are active whenever the writing practice canvas is open:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+<kbd>c</kbd> / <kbd>C</kbd> / <kbd>Delete</kbd> / <kbd>Backspace</kbd>
+</td>
+              <td>Clear the canvas</td>
+            </tr>
+            <tr>
+              <td><kbd>Esc</kbd></td>
+              <td>Close the canvas and return to the flashcard</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- ═══════════════════════════════════════════ -->
