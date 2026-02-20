@@ -230,6 +230,13 @@ nav h1 span { color: var(--accent); }
   cursor: pointer; transition: all 0.2s; width: 100%;
 }
 .wm-study-btn:hover { background: rgba(62,201,122,0.22); }
+.wm-conj-btn {
+  background: rgba(255,255,255,0.08); color: var(--text);
+  border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px;
+  padding: 8px 20px; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; width: 100%;
+}
+.wm-conj-btn:hover { background: rgba(255,255,255,0.16); }
 .card-sound-btn {
   margin-top: 1rem;
   background: rgba(255,255,255,0.08);
@@ -764,6 +771,12 @@ nav h1 span { color: var(--accent); }
 .conj-toggle-arrow { transition: transform 0.2s; }
 .conj-table-toggle[aria-expanded="true"] .conj-toggle-arrow { transform: rotate(90deg); }
 .conj-table-wrap { padding: 12px 0 4px; }
+.conj-controls { display: flex; gap: 10px; align-items: center; margin: 0 0 10px; }
+.conj-label { color: var(--text-dim); font-size: 0.82rem; font-weight: 600; }
+.conj-select {
+  background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 8px; padding: 7px 10px; font-size: 0.86rem; min-width: 180px;
+}
 .conj-table-note { font-size: 0.82rem; color: var(--text-dim); margin: 0 0 10px; }
 .conj-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .conj-table {
@@ -1827,3 +1840,10 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 }
 .settings-toggle-btn:hover { background: rgba(255,255,255,0.1); }
 .settings-toggle-btn.active { border-color: var(--accent); color: var(--accent); }
+
+
+@media (max-width: 640px) {
+  .conj-controls { flex-direction: column; align-items: stretch; }
+  .conj-select { width: 100%; }
+  .conj-table { min-width: 560px; }
+}
