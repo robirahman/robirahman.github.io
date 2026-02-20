@@ -5287,6 +5287,10 @@ const REVIEW_INTERVALS_MS = {
   3: 7 * 24*60*60*1000,    // mastered: after 7 days
   4: 30 * 24*60*60*1000,   // well-known: after 30 days
 };
+const MAX_REVIEW_LETTERS = 10;
+const MAX_REVIEW_VOCAB = 10;
+const MAX_REVIEW_GRAMMAR = 3;
+const MAX_REVIEW_PHRASES = 3;
 
 // ════════════════════════════════════════
 //  FSRS-4.5 SPACED REPETITION
@@ -5523,13 +5527,75 @@ function updateReviewDueBadge() {
 
 let _reviewQueue = [];
 
+function _grammarOverdueDays(lesson) {
+  const lessonKey = 'g:' + lesson.id;
+  let totalS = 0;
+  let n = 0;
+  lesson.quiz.forEach((_, i) => {
+    const qKey = 'g:' + lesson.id + ':' + i;
+    const card = progress.fsrs && progress.fsrs[qKey];
+    if (card) {
+      totalS += card.s;
+      n++;
+    }
+  });
+
+  let targetDays;
+  if (n === 0) {
+    const rawSum = lesson.quiz.reduce((sum, _, i) => sum + getGrammarMastery(lesson.id, i), 0);
+    const avgMastery = Math.min(4, Math.max(1, Math.round(rawSum / lesson.quiz.length)));
+    targetDays = REVIEW_INTERVALS_MS[avgMastery] / 86400000;
+  } else {
+    targetDays = totalS / n;
+  }
+
+  return _elapsedDays(lessonKey) - targetDays;
+}
+
+function _phraseSituationOverdueDays(slug) {
+  const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+  const seenPhrases = phrases.filter(p => getPhraseMastery(p.id) > 0);
+  const sitKey = 'ph-sit:' + slug;
+  let totalS = 0;
+  let n = 0;
+  seenPhrases.forEach(p => {
+    const card = progress.fsrs && progress.fsrs['ph:' + p.id];
+    if (card) {
+      totalS += card.s;
+      n++;
+    }
+  });
+
+  let targetDays;
+  if (n === 0) {
+    const avgMastery = Math.round(seenPhrases.reduce((sum, p) => sum + getPhraseMastery(p.id), 0) / seenPhrases.length);
+    const clampedMastery = Math.max(1, Math.min(4, avgMastery));
+    targetDays = REVIEW_INTERVALS_MS[clampedMastery] / 86400000;
+  } else {
+    targetDays = totalS / n;
+  }
+
+  return _elapsedDays(sitKey) - targetDays;
+}
+
 function startReviewSession() {
   const due = getDueItems();
   _reviewQueue = [];
-  if (due.letters.length > 0) _reviewQueue.push({ type: 'letters', data: due.letters.slice(0, 10) });
-  if (due.vocab.length > 0) _reviewQueue.push({ type: 'vocab', data: due.vocab.slice(0, 10) });
-  due.grammar.forEach(lesson => _reviewQueue.push({ type: 'grammar', lesson }));
-  due.phrases.forEach(situation => _reviewQueue.push({ type: 'phrases', situation }));
+  if (due.letters.length > 0) _reviewQueue.push({ type: 'letters', data: due.letters.slice(0, MAX_REVIEW_LETTERS) });
+  if (due.vocab.length > 0) _reviewQueue.push({ type: 'vocab', data: due.vocab.slice(0, MAX_REVIEW_VOCAB) });
+
+  const grammarToReview = due.grammar
+    .slice()
+    .sort((a, b) => _grammarOverdueDays(b) - _grammarOverdueDays(a))
+    .slice(0, MAX_REVIEW_GRAMMAR);
+  grammarToReview.forEach(lesson => _reviewQueue.push({ type: 'grammar', lesson }));
+
+  const phrasesToReview = due.phrases
+    .slice()
+    .sort((a, b) => _phraseSituationOverdueDays(b.slug) - _phraseSituationOverdueDays(a.slug))
+    .slice(0, MAX_REVIEW_PHRASES);
+  phrasesToReview.forEach(situation => _reviewQueue.push({ type: 'phrases', situation }));
+
   _runNextReviewItem();
 }
 
