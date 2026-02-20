@@ -1743,11 +1743,14 @@ function _recordMiss(arr, q) {
   arr.push({ bengali, answer: ans, _q: q });
 }
 
+const MAX_RECENT_MISTAKES = 100;
+const MISTAKE_REVIEW_WINDOW = 100;
+
 function _trackMistake(key, type) {
   if (!progress.recentMistakes) progress.recentMistakes = [];
   progress.recentMistakes.push({ key, type, ts: Date.now() });
-  if (progress.recentMistakes.length > 100)
-    progress.recentMistakes.splice(0, progress.recentMistakes.length - 100);
+  if (progress.recentMistakes.length > MAX_RECENT_MISTAKES)
+    progress.recentMistakes.splice(0, progress.recentMistakes.length - MAX_RECENT_MISTAKES);
 }
 
 // Normalize Bengali romanization diacritics so US keyboard users can omit them.
@@ -5305,8 +5308,8 @@ function renderTodayScreen() {
   body.innerHTML = html;
 }
 
-function getResolvableUnresolvedMistakes() {
-  const mistakes = (progress.recentMistakes || []).slice(-50);
+function getResolvableUnresolvedMistakes(limit = MISTAKE_REVIEW_WINDOW) {
+  const mistakes = (progress.recentMistakes || []).slice(-limit);
 
   // Deduplicate by {type,key}, keeping most recent (matches review flow)
   const seen = new Set();
@@ -5350,7 +5353,7 @@ function getResolvableUnresolvedMistakes() {
 }
 
 function startMistakeReview() {
-  const mistakes = getResolvableUnresolvedMistakes();
+  const mistakes = getResolvableUnresolvedMistakes(MISTAKE_REVIEW_WINDOW);
   if (mistakes.length === 0) { showAlert('No mistakes to review yet!'); return; }
 
   // Group by type and enqueue each resolvable group
