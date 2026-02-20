@@ -61,7 +61,7 @@ const CONSONANTS_OTHER = [
   { letter:"ল", name:"Lô", romanized:"l / lô", ipa:"/l/", sound:'Like "l" in "lamp"', example:"লাল (lal) — red" },
   { letter:"শ", name:"Shô (Talobbo Shô)", romanized:"sh / shô", ipa:"/ʃ/", sound:'Like "sh" in "ship"', example:"শিক্ষা (shikkha) — education" },
   { letter:"ষ", name:"Shô (Murdhonyo Shô)", romanized:"ṣh / ṣhô", ipa:"/ʃ/", sound:'Like "sh" (retroflex, same as শ in modern)', example:"ষাঁড় (shaṛ) — bull" },
-  { letter:"স", name:"Sô (Dontyo Sô)", romanized:"s / sô", ipa:"/s/", sound:'Like "s" in "sun"', example:"সূর্য (shurjo) — sun" },
+  { letter:"স", name:"Sô (Dontyo Sô)", romanized:"s / sô", ipa:"/s/", sound:'Like "s" in "sun"', example:"সাথে (sathe) — with" },
   { letter:"হ", name:"Hô", romanized:"h / hô", ipa:"/h/", sound:'Like "h" in "hat"', example:"হাত (hat) — hand" },
 ];
 
