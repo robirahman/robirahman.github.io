@@ -5410,11 +5410,36 @@ function _fsrsIsDue(key, fallbackMastery) {
 
 function getDueItems() {
   const due = { letters: [], vocab: [], grammar: [], phrases: [] };
-  // Letters
-  ALL_LETTERS.forEach(l => {
-    const key = l.letter;
+  // Script items (letters, conjuncts, matra drills, numerals, number names)
+  const reviewPools = [
+    { items: ALL_LETTERS, category: 'letter' },
+    { items: CONJUNCTS, category: 'conjunct' },
+    { items: MATRA_COMBOS, category: 'matra' },
+    { items: BENGALI_NUMERALS, category: 'numeral' },
+    { items: BENGALI_NUMBER_NAMES, category: 'number-name' },
+  ];
+  const scriptItems = [];
+  reviewPools.forEach(({ items, category }) => {
+    items.forEach(item => {
+      if (!item || !item.letter) return;
+      scriptItems.push({
+        ...item,
+        letter: item.letter,
+        type: item.type || category,
+        reviewCategory: category,
+      });
+    });
+  });
+  const dedupedScriptItems = Array.from(
+    scriptItems.reduce((map, item) => {
+      if (!map.has(item.letter)) map.set(item.letter, item);
+      return map;
+    }, new Map()).values()
+  );
+  dedupedScriptItems.forEach(item => {
+    const key = item.letter;
     if (getMastery(key) === 0) return; // never seen
-    if (_fsrsIsDue(key, getMastery(key))) due.letters.push(l);
+    if (_fsrsIsDue(key, getMastery(key))) due.letters.push(item);
   });
   // Vocab
   VOCAB_DATA.forEach(w => {
