@@ -1653,6 +1653,56 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
 .today-review-alert .tra-icon { font-size: 1.5rem; }
 .today-review-alert .tra-count { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
 .today-review-alert .tra-label { font-size: 0.85rem; color: var(--text-dim); }
+
+.today-forecast {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.03);
+}
+.today-forecast-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.today-forecast-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+.today-forecast-row strong {
+  color: var(--text);
+  font-size: 1rem;
+}
+.today-forecast-calendar {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
+}
+.today-forecast-day {
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.today-forecast-day span {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+.today-forecast-day strong {
+  font-size: 0.82rem;
+}
+.today-forecast-day.is-today {
+  border: 1px solid var(--accent);
+  background: rgba(62,201,122,0.12);
+}
 /* ─── CANVAS PRACTICE OVERLAY ─── */
 .canvas-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200;
   display:flex; align-items:center; justify-content:center; }
