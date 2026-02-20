@@ -136,7 +136,7 @@ const BENGALI_NUMBER_NAMES = [
   { letter:'ত্রিশ',name:'ত্রিশ (trish) — thirty',         romanized:'trish',       ipa:'30',        sound:'thirty',          example:'ত্রিশ মিনিট। — Thirty minutes.',                              type:'number-name', _isNumberName:true },
   { letter:'চল্লিশ',name:'চল্লিশ (chollish) — forty',    romanized:'chollish',    ipa:'40',        sound:'forty',           example:'চল্লিশ কিলোমিটার। — Forty kilometres.',                       type:'number-name', _isNumberName:true },
   { letter:'পঞ্চাশ',name:'পঞ্চাশ (ponchas) — fifty',     romanized:'ponchas',     ipa:'50',        sound:'fifty',           example:'পঞ্চাশ টাকা। — Fifty taka.',                                  type:'number-name', _isNumberName:true },
-  { letter:'ষাট',  name:'ষাট (shat) — sixty',            romanized:'shat',        ipa:'60',        sound:'sixty',           example:'ষাট সেকেন্ড। — Sixty seconds.',                               type:'number-name', _isNumberName:true },
+  { letter:'ষাট',  name:'ষাট (shaṭ) — sixty',            romanized:'shaṭ',        ipa:'60',        sound:'sixty',           example:'ষাট সেকেন্ড। — Sixty seconds.',                               type:'number-name', _isNumberName:true },
   { letter:'সত্তর',name:'সত্তর (shottor) — seventy',      romanized:'shottor',     ipa:'70',        sound:'seventy',         example:'সত্তর বছর বয়স। — Seventy years old.',                         type:'number-name', _isNumberName:true },
   { letter:'আশি',  name:'আশি (ashi) — eighty',           romanized:'ashi',        ipa:'80',        sound:'eighty',          example:'আশি কিলো। — Eighty kilos.',                                   type:'number-name', _isNumberName:true },
   { letter:'নব্বই',name:'নব্বই (nobboi) — ninety',        romanized:'nobboi',      ipa:'90',        sound:'ninety',          example:'নব্বই পার্সেন্ট। — Ninety percent.',                           type:'number-name', _isNumberName:true },
@@ -445,7 +445,7 @@ function getMastery(letter) {
 function addMastery(letter, correct) {
   const cur = getMastery(letter);
   if (correct) {
-    progress.mastery[letter] = Math.min(3, cur + 1);
+    progress.mastery[letter] = Math.min(4, cur + 1);
   } else {
     progress.mastery[letter] = Math.max(1, cur - 1);
   }
@@ -500,6 +500,45 @@ function updateNav() {
 }
 
 // ════════════════════════════════════════
+//  MODAL DIALOG (replaces native alert/confirm)
+// ════════════════════════════════════════
+function _showModal(msg, buttons) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('app-modal');
+    const msgEl = document.getElementById('app-modal-msg');
+    const btnsEl = document.getElementById('app-modal-btns');
+    if (!overlay) { resolve(buttons[0].value); return; }
+    msgEl.textContent = msg;
+    btnsEl.innerHTML = '';
+    const close = (val) => {
+      overlay.style.display = 'none';
+      document.removeEventListener('keydown', escHandler);
+      resolve(val);
+    };
+    const escHandler = (e) => { if (e.key === 'Escape') close(false); };
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'app-modal-btn ' + b.cls;
+      btn.textContent = b.label;
+      btn.onclick = () => close(b.value);
+      btnsEl.appendChild(btn);
+    });
+    document.addEventListener('keydown', escHandler);
+    overlay.style.display = 'flex';
+    btnsEl.lastChild.focus();
+  });
+}
+function showAlert(msg) {
+  return _showModal(msg, [{ label: 'OK', cls: 'app-modal-btn-ok', value: true }]);
+}
+function showConfirm(msg) {
+  return _showModal(msg, [
+    { label: 'Cancel', cls: 'app-modal-btn-cancel', value: false },
+    { label: 'OK', cls: 'app-modal-btn-ok', value: true }
+  ]);
+}
+
+// ════════════════════════════════════════
 //  SCREEN MANAGEMENT
 // ════════════════════════════════════════
 function showScreen(id) {
@@ -507,6 +546,12 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   if (id === 'home') renderHome();
   if (id === 'chart') renderChart();
+  if (id === 'numbers-home') renderNumbersHome();
+  if (id === 'vocab-home') renderVocabHome();
+  if (id === 'grammar-home') renderGrammarHome();
+  if (id === 'phrases-home') renderPhrasesHome();
+  if (id === 'today-screen') renderTodayScreen();
+  if (id === 'placement-results') renderPlacementResultsUI();
 }
 
 // ════════════════════════════════════════
@@ -1194,7 +1239,7 @@ function renderQuestion() {
       ? `<button class="bng-kbd-toggle" data-action="show-kbd" data-input="fib-input">বাং ▲</button>` : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="fib-input" placeholder="Type your answer…"
-        onkeydown="if(event.key==='Enter')answerFIB()" autocomplete="off" autocapitalize="off">
+        autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" data-action="answer-fib">Check</button>
       ${hintHtml}${kbdHtml}
     </div>
@@ -1344,10 +1389,12 @@ function reportProblem(quizType) {
     userAnswer,
     timestamp: new Date().toISOString()
   };
+  const feedbackIds = { alphabet: 'quiz-feedback', vocab: 'vq-feedback', grammar: 'gq-feedback', phrases: 'phq-feedback' };
+  const fbId = feedbackIds[quizType];
   navigator.clipboard.writeText(JSON.stringify(report, null, 2)).then(() => {
-    const btn = document.querySelector('.report-problem-btn.active-quiz-' + quizType);
+    const btn = fbId && document.querySelector('#' + fbId + ' .report-problem-btn');
     if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = '⚑ Report'; }, 2000); }
-  }).catch(() => alert('Could not copy to clipboard.'));
+  }).catch(() => showAlert('Could not copy to clipboard.'));
 }
 
 function showFeedback(correct, answer) {
@@ -1381,19 +1428,7 @@ function _normRoman(s) {
     .replace(/[ṣṢ]/g, 'sh')
     .replace(/[ṛṚ]/g, 'r')
     .replace(/ñ/g, 'ny')
-    .replace(/ô/g, 'o')
-    // Aspirate consonant folding: kh≈k, gh≈g, ch≈c, jh≈j, th≈t, dh≈d, ph≈f≈p, bh≈b
-    // chh must precede ch to avoid double-replacement
-    .replace(/chh/g, 'c')
-    .replace(/ch/g, 'c')
-    .replace(/kh/g, 'k')
-    .replace(/gh/g, 'g')
-    .replace(/jh/g, 'j')
-    .replace(/th/g, 't')
-    .replace(/dh/g, 'd')
-    .replace(/ph/g, 'p')
-    .replace(/bh/g, 'b')
-    .replace(/f/g, 'p');
+    .replace(/ô/g, 'o');
 }
 
 function showHint(btn) {
@@ -1563,7 +1598,7 @@ function showChartDetail(el) {
   const detail = document.createElement('div');
   detail.className = 'chart-detail';
   detail.style.cssText = `position:absolute;left:50%;top:100%;transform:translateX(-50%);
-    background:#442a24;border-radius:10px;padding:12px;z-index:10;min-width:200px;
+    background:var(--card);border-radius:10px;padding:12px;z-index:10;min-width:200px;
     box-shadow:0 8px 32px rgba(0,0,0,0.5);margin-top:8px;font-size:0.8rem;text-align:left;`;
   const safeL = (d.letter || '').replace(/'/g, "\\'");
   detail.innerHTML = `
@@ -1595,14 +1630,8 @@ const phrasesScreens = ['phrases-home','phrases-situation','phrases-quiz','phras
 
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-    btn.classList.toggle('active',
-      (i === 0 && tab === 'today') ||
-      (i === 1 && tab === 'alphabet') ||
-      (i === 2 && tab === 'vocabulary') ||
-      (i === 3 && tab === 'grammar') ||
-      (i === 4 && tab === 'numbers') ||
-      (i === 5 && tab === 'phrases'));
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
   });
   if (tab === 'today') {
     showScreen('today-screen');
@@ -1620,21 +1649,6 @@ function switchTab(tab) {
     showScreen('grammar-home');
   }
 }
-
-// Override showScreen to handle tab visibility
-const _origShowScreen = showScreen;
-showScreen = function(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if (id === 'home') renderHome();
-  if (id === 'chart') renderChart();
-  if (id === 'numbers-home') renderNumbersHome();
-  if (id === 'vocab-home') renderVocabHome();
-  if (id === 'grammar-home') renderGrammarHome();
-  if (id === 'phrases-home') renderPhrasesHome();
-  if (id === 'today-screen') renderTodayScreen();
-  if (id === 'placement-results') renderPlacementResultsUI();
-};
 
 // ════════════════════════════════════════
 //  VOCAB PROGRESS
@@ -1654,7 +1668,7 @@ function addVocabMastery(w, correct) {
   const key = _vocabKey(w);
   const cur = progress.mastery[key] || 0;
   if (correct) {
-    progress.mastery[key] = Math.min(3, cur + 1);
+    progress.mastery[key] = Math.min(4, cur + 1);
   } else {
     progress.mastery[key] = Math.max(1, cur - 1);
   }
@@ -2258,11 +2272,11 @@ function generateVocabQuiz(words, forceMode) {
       const distractors = words.filter(x => x.lemma !== w.lemma).map(x => x.english);
       const allPool = VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.english);
       const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
-      const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
+      const picks = shuffle([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
       vqQuestions.push({
         type: 'mc', bengali: w.lemma, roman: w.roman,
         prompt: 'What does this word mean?',
-        correct, options: shuffleArr([correct, ...picks]), word: w,
+        correct, options: shuffle([correct, ...picks]), word: w,
       });
     } else if (qtype === 'mc-bn') {
       // Show English, pick Bengali — exclude synonyms (same English gloss) from distractors
@@ -2271,11 +2285,11 @@ function generateVocabQuiz(words, forceMode) {
       const distractors = words.filter(notSynonym).map(x => x.lemma);
       const allPool = VOCAB_DATA.filter(notSynonym).map(x => x.lemma);
       const pool = distractors.length >= 3 ? distractors : [...distractors, ...allPool];
-      const picks = shuffleArr([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
+      const picks = shuffle([...new Set(pool)].filter(x => x !== correct)).slice(0, 3);
       vqQuestions.push({
         type: 'mc-reverse', english: w.english,
         prompt: 'Which Bengali word means "' + w.english + '"?',
-        correct, options: shuffleArr([correct, ...picks]), word: w,
+        correct, options: shuffle([correct, ...picks]), word: w,
       });
     } else if (qtype === 'fib-en') {
       // Show Bengali, type English
@@ -2308,14 +2322,14 @@ function generateVocabQuiz(words, forceMode) {
     } else if (qtype === 'listening-mc') {
       // Play word; pick English meaning
       const correct = w.english;
-      const pool = shuffleArr(VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.english)
+      const pool = shuffle(VOCAB_DATA.filter(x => x.lemma !== w.lemma).map(x => x.english)
         .filter(v => v !== correct));
       const picks = pool.slice(0, 3);
       vqQuestions.push({
         type: 'listening-mc', audio: w.lemma,
         bengali: w.lemma, roman: w.roman,
         prompt: 'What does this word mean?',
-        correct, options: shuffleArr([correct, ...picks]), word: w,
+        correct, options: shuffle([correct, ...picks]), word: w,
       });
     } else {
       // listening-fib: play word; type Bengali (script or romanized depending on fibMode)
@@ -2335,15 +2349,6 @@ function generateVocabQuiz(words, forceMode) {
       });
     }
   });
-}
-
-function shuffleArr(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 // Returns true if two English glosses share a primary meaning token (e.g. "water" and "water (formal)").
@@ -2407,7 +2412,7 @@ function renderVocabQuestion() {
       ? `<button class="bng-kbd-toggle" data-action="show-kbd" data-input="vq-fib-input">বাং ▲</button>` : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="vq-fib-input" placeholder="Type your answer…"
-        onkeydown="if(event.key==='Enter')answerVocabFIB()" autocomplete="off" autocapitalize="off">
+        autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" data-action="answer-vocab-fib">Check</button>
       ${vqHintHtml}${vqKbdHtml}
     </div>
@@ -2576,7 +2581,7 @@ function addGrammarMastery(lessonId, questionIdx, correct) {
   const key = 'g:' + lessonId + ':' + questionIdx;
   const cur = progress.mastery[key] || 0;
   if (correct) {
-    progress.mastery[key] = Math.min(3, cur + 1);
+    progress.mastery[key] = Math.min(4, cur + 1);
   } else {
     progress.mastery[key] = Math.max(1, cur - 1);
   }
@@ -2649,7 +2654,12 @@ function renderGrammarHome() {
       <div class="module-progress"><div class="module-progress-fill" style="width:${prog.pct}%;background:var(--accent)"></div></div>
       <div class="progress-label">${prog.mastered}/${prog.total} mastered</div>
     `;
-    card.onclick = () => openGrammarLesson(lesson.id);
+    if (!locked) {
+      card.onclick = () => openGrammarLesson(lesson.id);
+    } else {
+      card.style.cursor = 'not-allowed';
+      card.style.opacity = '0.6';
+    }
     grid.appendChild(card);
   });
 }
@@ -2805,7 +2815,7 @@ function renderGrammarQuestion() {
       ? `<button class="bng-kbd-toggle" data-action="show-kbd" data-input="gq-fib-input">বাং ▲</button>` : '';
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="gq-fib-input" placeholder="Type your answer…"
-        onkeydown="if(event.key==='Enter')answerGrammarFIB()" autocomplete="off" autocapitalize="off">
+        autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" data-action="answer-grammar-fib">Check</button>
       ${gqKbdHtml}
     </div>
@@ -2817,7 +2827,7 @@ function renderGrammarQuestion() {
       <div class="quiz-prompt">${q.prompt}</div>
       ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
     `;
-    const shuffled = shuffleArr([...q.words]);
+    const shuffled = shuffle([...q.words]);
     aa.innerHTML = `<div class="word-order-area">
       <div class="answer-area-wo" id="gq-answer-wo"></div>
       <div class="word-tiles" id="gq-word-tiles">
@@ -3210,13 +3220,13 @@ function buildPlacementQuestions() {
     const w1 = waveWords[Math.floor(Math.random() * waveWords.length)];
     const correctEn = w1.english;
     const vocabDistractors = VOCAB_DATA.filter(x => x.lemma !== w1.lemma).map(x => x.english);
-    const picks1 = shuffleArr([...new Set(vocabDistractors)].filter(x => x !== correctEn)).slice(0, 3);
+    const picks1 = shuffle([...new Set(vocabDistractors)].filter(x => x !== correctEn)).slice(0, 3);
     questions.push({
       stage: 'vocabulary', wave: waveIdx, type: 'mc',
       bengali: w1.lemma, roman: w1.roman,
       prompt: 'What does this word mean?',
       correct: correctEn,
-      options: shuffleArr([correctEn, ...picks1]),
+      options: shuffle([correctEn, ...picks1]),
       word: w1,
     });
 
@@ -3241,7 +3251,7 @@ function buildPlacementQuestions() {
     const lesson = GRAMMAR_LESSONS[lessonIdx];
     if (!lesson) return;
     const quizPool = [...lesson.quiz];
-    const shuffledQ = shuffleArr(quizPool);
+    const shuffledQ = shuffle(quizPool);
 
     for (let i = 0; i < 2 && i < shuffledQ.length; i++) {
       const q = { ...shuffledQ[i] };
@@ -3262,7 +3272,7 @@ function buildPlacementQuestions() {
       .filter(p => p.situation !== slug)
       .map(p => p.english)
       .filter((v, i, arr) => arr.indexOf(v) === i && v !== phrase.english);
-    const picks = shuffleArr(distractorEnglish).slice(0, 3);
+    const picks = shuffle(distractorEnglish).slice(0, 3);
     questions.push({
       stage: 'phrases',
       wave: PHRASES_WAVE_ORDER.indexOf(slug),
@@ -3271,7 +3281,7 @@ function buildPlacementQuestions() {
       roman: phrase.roman,
       prompt: 'What does this phrase mean?',
       correct: phrase.english,
-      options: shuffleArr([phrase.english, ...picks]),
+      options: shuffle([phrase.english, ...picks]),
       _phraseId: phrase.id,
       _situationSlug: slug,
     });
@@ -3334,8 +3344,8 @@ async function beginPlacementQuiz() {
   renderPlacementQuestion();
 }
 
-function confirmQuitPlacement() {
-  if (confirm('Quit the placement test? Your progress will be lost.')) {
+async function confirmQuitPlacement() {
+  if (await showConfirm('Quit the placement test? Your progress will be lost.')) {
     document.getElementById('tab-bar').style.display = '';
     switchTab(currentTab);
   }
@@ -3393,7 +3403,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
         : '';
       aa.innerHTML = `<div class="fib-area">
         <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
-          onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
+          autocomplete="off" autocapitalize="off">
         <button class="btn-primary fib-submit" data-action="answer-pt-fib">Check</button>
         ${ptAlphaHint}
       </div>`;
@@ -3421,7 +3431,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
         : '';
       aa.innerHTML = `<div class="fib-area">
         <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
-          onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
+          autocomplete="off" autocapitalize="off">
         <button class="btn-primary fib-submit" data-action="answer-pt-fib">Check</button>
         ${ptVocabHint}
       </div>`;
@@ -3471,7 +3481,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
     `;
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="pt-fib-input" placeholder="Type your answer…"
-        onkeydown="if(event.key==='Enter')answerPlacementFIB()" autocomplete="off" autocapitalize="off">
+        autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" data-action="answer-pt-fib">Check</button>
     </div>`;
     setTimeout(() => document.getElementById('pt-fib-input')?.focus(), 100);
@@ -3481,7 +3491,7 @@ function renderPlacementQuestionByType(q, qa, aa) {
       <div class="quiz-prompt">${q.prompt}</div>
       ${q.english ? '<div class="vq-hint">' + q.english + '</div>' : ''}
     `;
-    const shuffled = shuffleArr([...q.words]);
+    const shuffled = shuffle([...q.words]);
     aa.innerHTML = `<div class="word-order-area">
       <div class="answer-area-wo" id="pt-answer-wo"></div>
       <div class="word-tiles" id="pt-word-tiles">
@@ -3869,8 +3879,8 @@ function createProfile() {
   const input = document.getElementById('profile-name-input');
   const name = input.value.trim();
   if (!name) { input.focus(); return; }
-  if (!/^[\w\s\-]+$/u.test(name)) {
-    alert('Name can only contain letters, numbers, spaces, and hyphens.');
+  if (!/^[\p{L}\p{N}\s\-]+$/u.test(name)) {
+    showAlert('Name can only contain letters, numbers, spaces, and hyphens.');
     return;
   }
   currentUser = name;
@@ -3951,7 +3961,7 @@ function _helpEsc(e) { if (e.key === 'Escape') closeHelpPanel(); }
 
 // ── Debug: Unlock All & Mark Mastered ───────────────────────────────
 async function unlockAllContent(btn) {
-  if (!confirm('This will mark all 50 letters and all 4,399+ words as fully mastered. This cannot be undone.\n\nContinue?')) return;
+  if (!await showConfirm('This will mark all 50 letters and all 4,399+ words as fully mastered. This cannot be undone.\n\nContinue?')) return;
   btn.disabled = true;
   btn.textContent = 'Loading packs…';
   await Promise.all([1, 2, 3].map(n => loadVocabPack(n)));
@@ -4062,9 +4072,9 @@ function switchProfile() {
   showProfileScreen(true);
 }
 
-function deleteCurrentProfile() {
+async function deleteCurrentProfile() {
   closeSettingsPanel();
-  if (!confirm('Delete profile "' + currentUser + '"? All progress will be lost.')) return;
+  if (!await showConfirm('Delete profile "' + currentUser + '"? All progress will be lost.')) return;
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
   _deleteProgressLS(currentUser);
   currentUser = null;
@@ -4090,12 +4100,12 @@ function copyProfileDataToClipboard(name) {
   const envelope = { exportedBy: name, exportedAt: new Date().toISOString(), version: 1, progress: data };
   const json = JSON.stringify(envelope, null, 2);
   navigator.clipboard.writeText(json).then(() => {
-    alert('Progress for "' + name + '" copied to clipboard.');
-  }).catch(() => alert('Could not copy to clipboard.'));
+    showAlert('Progress for "' + name + '" copied to clipboard.');
+  }).catch(() => showAlert('Could not copy to clipboard.'));
 }
 
-function deleteProfile(name) {
-  if (!confirm('Delete profile "' + name + '"? All progress will be lost.')) return;
+async function deleteProfile(name) {
+  if (!await showConfirm('Delete profile "' + name + '"? All progress will be lost.')) return;
   _deleteProgressLS(name);
   if (name === currentUser) {
     if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
@@ -4138,23 +4148,23 @@ function importProgress() {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       try {
         const parsed = JSON.parse(ev.target.result);
         // Accept either a raw progress object or an exported envelope
         const data = parsed.version === 1 && parsed.progress ? parsed.progress : parsed;
         if (!data || typeof data.mastery !== 'object') {
-          alert('Invalid progress file.');
+          showAlert('Invalid progress file.');
           return;
         }
-        if (!confirm('Import this progress data? It will overwrite your current progress for "' + currentUser + '".')) return;
+        if (!await showConfirm('Import this progress data? It will overwrite your current progress for "' + currentUser + '".')) return;
         progress = data;
         _flushSave();
         updateNav();
         renderHome();
-        alert('Progress imported successfully!');
+        showAlert('Progress imported successfully!');
       } catch(err) {
-        alert('Could not read file: ' + err.message);
+        showAlert('Could not read file: ' + err.message);
       }
     };
     reader.readAsText(file);
@@ -4208,13 +4218,13 @@ function toggleProgGroup(id) {
 
 function cycleLetterMastery(letter) {
   const cur = getMastery(letter);
-  progress.mastery[letter] = (cur + 1) % 4;
+  progress.mastery[letter] = (cur + 1) % 5;
   saveProgress();
   renderProgressPanel();
 }
 function cycleVocabChipMastery(bengali) {
   const cur = getVocabMastery(bengali);
-  progress.mastery['v:' + bengali] = (cur + 1) % 4;
+  progress.mastery[_vocabKey(bengali)] = (cur + 1) % 5;
   saveProgress();
   renderProgressPanel();
 }
@@ -4225,10 +4235,17 @@ function setGrammarLessonLevel(lessonId, level) {
   saveProgress();
   renderProgressPanel();
 }
+function resetPhrasesSituation(slug) {
+  PHRASES_DATA.filter(p => p.situation === slug).forEach(p => {
+    delete progress.mastery['ph:' + p.id];
+  });
+  saveProgress();
+  renderProgressPanel();
+}
 
 function renderProgressPanel() {
   document.getElementById('progress-body').innerHTML =
-    _buildAlphabetSection() + _buildVocabSection() + _buildGrammarSection();
+    _buildAlphabetSection() + _buildVocabSection() + _buildGrammarSection() + _buildPhrasesSection();
 }
 
 function _buildAlphabetSection() {
@@ -4358,6 +4375,43 @@ function _buildGrammarSection() {
         <div class="prog-grammar-btns">
           <button class="prog-grammar-btn" data-action="set-lesson-level" data-id="${safeId}" data-level="0">Reset</button>
           <button class="prog-grammar-btn done" data-action="set-lesson-level" data-id="${safeId}" data-level="3">Done ✓</button>
+        </div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+function _buildPhrasesSection() {
+  const totalPhrases = PHRASES_DATA.length;
+  const masteredPhrases = PHRASES_DATA.filter(p => getPhraseMastery(p.id) >= 3).length;
+  const isOpen = _progOpenSections.has('phrases');
+  const arrowCls = isOpen ? 'open' : '';
+
+  let html = `<div class="prog-section">
+    <div class="prog-section-hdr" data-action="toggle-prog-section" data-section="phrases">
+      <span class="prog-section-icon">💬</span>
+      <span class="prog-section-label">Phrases</span>
+      <span class="prog-section-summary">${masteredPhrases}/${totalPhrases} mastered</span>
+      <span class="prog-section-arrow ${arrowCls}">▼</span>
+    </div>`;
+
+  if (isOpen) {
+    PHRASES_WAVE_ORDER.forEach(slug => {
+      const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+      if (!sit) return;
+      const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+      const mastered = phrases.filter(p => getPhraseMastery(p.id) >= 3).length;
+      const pct = phrases.length ? Math.round((mastered / phrases.length) * 100) : 0;
+      html += `<div class="prog-grammar-row">
+        <div class="prog-grammar-info">
+          <div class="prog-grammar-title">${sit.title}</div>
+          <div class="prog-grammar-desc">${mastered}/${phrases.length} mastered</div>
+        </div>
+        <div class="prog-grammar-bar"><div class="prog-grammar-bar-fill" style="width:${pct}%"></div></div>
+        <div class="prog-grammar-btns">
+          <button class="prog-grammar-btn" data-action="reset-phrases-situation" data-slug="${slug}">Reset</button>
         </div>
       </div>`;
     });
@@ -4525,7 +4579,7 @@ function renderStatsPanel() {
   Object.entries(VOCAB_CATEGORIES).forEach(([key, cat]) => {
     const words = VOCAB_DATA.filter(w => w.category === key);
     if (!words.length) return;
-    const mastered = words.filter(w => getVocabMastery(w) >= 2).length;
+    const mastered = words.filter(w => getVocabMastery(w) >= 3).length;
     const pct = Math.round((mastered / words.length) * 100);
     html += `<div class="stats-cat-row">
       <span class="stats-cat-icon">${cat.icon}</span>
@@ -4618,7 +4672,7 @@ function renderTodayScreen() {
   if (!body) return;
 
   const due = getDueItems();
-  const dueCount = due.letters.length + due.vocab.length + due.grammar.length;
+  const dueCount = due.letters.length + due.vocab.length + due.grammar.length + due.phrases.length;
 
   // Next unseen vocab words
   const unlocked = getVocabMixedUnlockedCount();
@@ -4690,6 +4744,21 @@ function renderTodayScreen() {
     ${nextGrammar ? `<button class="btn-secondary today-action-btn" data-action="open-grammar-lesson" data-id="${nextGrammar.id}">Open Lesson →</button>` : '<div class="today-done-badge">✓ Done</div>'}
   </div>`;
 
+  // ── Phrases ──
+  const unlockedSituations = PHRASES_WAVE_ORDER.slice(0, getPhrasesUnlockedSituationCount());
+  const phrasesPool = PHRASES_DATA.filter(p => unlockedSituations.includes(p.situation));
+  const phrasesToReview = phrasesPool.filter(p => getPhraseMastery(p.id) === 0).slice(0, 5);
+  html += `<div class="today-section">
+    <div class="today-section-hdr">
+      <span class="today-section-icon">💬</span>
+      <div>
+        <div class="today-section-title">Phrases</div>
+        <div class="today-section-sub">${phrasesToReview.length > 0 ? phrasesToReview.length + ' new phrase' + (phrasesToReview.length !== 1 ? 's' : '') + ' to learn' : 'Keep practicing!'}</div>
+      </div>
+    </div>
+    <button class="btn-secondary today-action-btn" data-action="switch-tab" data-tab="phrases">Go to Phrases →</button>
+  </div>`;
+
   // ── Streak / XP summary ──
   const xpToday = (progress.practiceLog || {})[new Date().toISOString().slice(0,10)] || 0;
   html += `<div class="today-xp-bar">
@@ -4709,12 +4778,13 @@ const REVIEW_INTERVALS_MS = {
   1: 1 * 24*60*60*1000,    // seen: after 1 day
   2: 3 * 24*60*60*1000,    // learning: after 3 days
   3: 7 * 24*60*60*1000,    // mastered: after 7 days
+  4: 30 * 24*60*60*1000,   // well-known: after 30 days
 };
 
 function getDueItems() {
   const now = Date.now();
   const lastSeen = progress.lastSeen || {};
-  const due = { letters: [], vocab: [], grammar: [] };
+  const due = { letters: [], vocab: [], grammar: [], phrases: [] };
   // Letters
   ALL_LETTERS.forEach(l => {
     const key = l.letter;
@@ -4731,15 +4801,30 @@ function getDueItems() {
     const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
     if (now - ls >= REVIEW_INTERVALS_MS[mastery]) due.vocab.push(w);
   });
-  // Grammar (per-lesson level: average mastery of questions)
+  // Grammar (per-lesson level: average raw mastery across all quiz questions)
   GRAMMAR_LESSONS.forEach(lesson => {
     const prog = getLessonProgress(lesson);
     if (prog.seen === 0) return;
     const key = 'g:' + lesson.id;
-    const avgMastery = Math.round(prog.mastered / prog.total * 3);
+    const rawSum = lesson.quiz.reduce((s, _, i) => s + getGrammarMastery(lesson.id, i), 0);
+    const avgMastery = Math.min(4, Math.max(1, Math.round(rawSum / lesson.quiz.length)));
     const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
-    const interval = REVIEW_INTERVALS_MS[Math.max(1, avgMastery)];
+    const interval = REVIEW_INTERVALS_MS[avgMastery];
     if (now - ls >= interval) due.grammar.push(lesson);
+  });
+  // Phrases (per-situation level: average mastery of phrases)
+  PHRASES_WAVE_ORDER.forEach(slug => {
+    const phrases = PHRASES_DATA.filter(p => p.situation === slug);
+    const seenPhrases = phrases.filter(p => getPhraseMastery(p.id) > 0);
+    if (seenPhrases.length === 0) return;
+    const key = 'ph-sit:' + slug;
+    const avgMastery = Math.round(seenPhrases.reduce((s, p) => s + getPhraseMastery(p.id), 0) / seenPhrases.length);
+    const ls = lastSeen[key] ? new Date(lastSeen[key]).getTime() : 0;
+    const interval = REVIEW_INTERVALS_MS[Math.max(1, Math.min(4, avgMastery))];
+    if (now - ls >= interval) {
+      const sit = PHRASES_SITUATIONS.find(s => s.slug === slug);
+      if (sit) due.phrases.push(sit);
+    }
   });
   return due;
 }
@@ -4747,7 +4832,7 @@ function getDueItems() {
 function updateReviewDueBadge() {
   if (!currentUser) return; // not logged in yet
   const due = getDueItems();
-  const count = due.letters.length + due.vocab.length + due.grammar.length;
+  const count = due.letters.length + due.vocab.length + due.grammar.length + due.phrases.length;
   const btn = document.getElementById('review-due-btn');
   const cntEl = document.getElementById('review-due-count');
   if (!btn) return;
@@ -4773,6 +4858,7 @@ function startReviewSession() {
   if (due.letters.length > 0) _reviewQueue.push({ type: 'letters', data: due.letters.slice(0, 10) });
   if (due.vocab.length > 0) _reviewQueue.push({ type: 'vocab', data: due.vocab.slice(0, 10) });
   due.grammar.forEach(lesson => _reviewQueue.push({ type: 'grammar', lesson }));
+  due.phrases.forEach(situation => _reviewQueue.push({ type: 'phrases', situation }));
   _runNextReviewItem();
 }
 
@@ -4798,7 +4884,11 @@ function _runNextReviewItem() {
     showScreen('vocab-quiz');
     renderVocabQuestion();
   } else if (item.type === 'grammar') {
-    openGrammarLesson(item.lesson.id);
+    currentGrammarLesson = item.lesson;
+    startGrammarQuiz();
+  } else if (item.type === 'phrases') {
+    currentPhrasesSituation = item.situation.slug;
+    startPhrasesQuiz();
   }
 }
 
@@ -5049,7 +5139,7 @@ function addPhraseMastery(phraseId, correct) {
   const key = 'ph:' + phraseId;
   const cur = progress.mastery[key] || 0;
   if (correct) {
-    progress.mastery[key] = Math.min(3, cur + 1);
+    progress.mastery[key] = Math.min(4, cur + 1);
   } else {
     progress.mastery[key] = Math.max(1, cur - 1);
   }
@@ -5231,7 +5321,7 @@ function buildPhrasesQuizQuestions(phrases) {
   phrases.forEach(p => {
     const m = getPhraseMastery(p.id);
     // Build a pool of distractor phrases (anything except this phrase)
-    const distractorPool = shuffleArr(PHRASES_DATA.filter(x => x.id !== p.id));
+    const distractorPool = shuffle(PHRASES_DATA.filter(x => x.id !== p.id));
 
     // Determine which question types are appropriate for this phrase's mastery level
     const types = ['phrases-mc'];
@@ -5242,7 +5332,7 @@ function buildPhrasesQuizQuestions(phrases) {
     if (p.reply) types.push('phrases-dialogue');
 
     // Pick 1–2 question types per phrase, weighted toward unseen/low-mastery
-    const shuffledTypes = shuffleArr([...types]);
+    const shuffledTypes = shuffle([...types]);
     const numQ = m >= 2 ? 2 : 1;
 
     shuffledTypes.slice(0, numQ).forEach(type => {
@@ -5254,7 +5344,7 @@ function buildPhrasesQuizQuestions(phrases) {
           bengali: p.bengali,
           roman: p.roman,
           correct: p.english,
-          options: shuffleArr([p.english, ...picks]),
+          options: shuffle([p.english, ...picks]),
           _phraseId: p.id,
         });
 
@@ -5265,7 +5355,7 @@ function buildPhrasesQuizQuestions(phrases) {
           prompt: 'How do you say this in Bengali?',
           english: p.english,
           correct: p.bengali,
-          options: shuffleArr([p.bengali, ...picks]),
+          options: shuffle([p.bengali, ...picks]),
           _phraseId: p.id,
         });
 
@@ -5276,7 +5366,7 @@ function buildPhrasesQuizQuestions(phrases) {
           prompt: 'Listen and choose the correct meaning:',
           audio: p.bengali,
           correct: p.english,
-          options: shuffleArr([p.english, ...picks]),
+          options: shuffle([p.english, ...picks]),
           _phraseId: p.id,
         });
 
@@ -5300,14 +5390,14 @@ function buildPhrasesQuizQuestions(phrases) {
           speakerEnglish: p.english,
           correct: p.reply.bengali,
           correctEnglish: p.reply.english,
-          options: shuffleArr([p.reply.bengali, ...picks]),
+          options: shuffle([p.reply.bengali, ...picks]),
           _phraseId: p.id,
         });
       }
     });
   });
 
-  return shuffleArr(questions);
+  return shuffle(questions);
 }
 
 function startPhrasesQuiz() {
@@ -5419,7 +5509,7 @@ function renderPhrasesQuestion() {
     `;
     aa.innerHTML = `<div class="fib-area">
       <input type="text" class="fib-input" id="phq-fib-input" placeholder="Type romanization…"
-        onkeydown="if(event.key==='Enter')answerPhrasesFIB()" autocomplete="off" autocapitalize="off">
+        autocomplete="off" autocapitalize="off">
       <button class="btn-primary fib-submit" data-action="answer-phrases-fib">Check</button>
     </div>
     <button class="idk-btn" data-action="dont-know-phrases">I don't know</button>`;
@@ -5735,6 +5825,7 @@ document.addEventListener('click', function(e) {
     case 'cycle-letter-mastery': cycleLetterMastery(a.letter); break;
     case 'cycle-vocab-mastery': cycleVocabChipMastery(a.lemma); break;
     case 'set-lesson-level': setGrammarLessonLevel(a.id, +a.level); break;
+    case 'reset-phrases-situation': resetPhrasesSituation(a.slug); break;
     // Profiles
     case 'select-profile': selectProfile(a.name); break;
     case 'export-profile': exportProfileData(a.name); break;
@@ -5761,6 +5852,18 @@ document.addEventListener('click', function(e) {
     case 'toggle-bng-kbd': toggleBengaliKbd(); break;
     case 'append-char': appendBengaliChar(a.char); break;
   }
+});
+
+// Delegated Enter-key handler for all fill-in-blank quiz inputs
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const id = document.activeElement && document.activeElement.id;
+  if (!id) return;
+  if (id === 'fib-input') answerFIB();
+  else if (id === 'vq-fib-input') answerVocabFIB();
+  else if (id === 'gq-fib-input') answerGrammarFIB();
+  else if (id === 'pt-fib-input') answerPlacementFIB();
+  else if (id === 'phq-fib-input') answerPhrasesFIB();
 });
 
 // Overlay backdrop close (fires only when clicking the backdrop itself, not children)
