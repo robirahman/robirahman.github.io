@@ -327,7 +327,9 @@ const NUMBER_MODULES = [
   { id:'ones-teens',        title:'Ones & Teens (০–১৯)',  desc:'Bengali words for zero through nineteen',    icon:'1️⃣', letters: BENGALI_NUMBER_NAMES.slice(0, 20),  color: () => 'var(--accent)' },
   { id:'tens',              title:'Tens (২০–৯০)',          desc:'Bengali words for twenty through ninety',    icon:'🔟', letters: BENGALI_NUMBER_NAMES.slice(20, 28), color: () => 'var(--accent)' },
   { id:'large-numbers',     title:'Large Numbers',         desc:'Hundreds, thousands, and lakhs',             icon:'💯', letters: BENGALI_NUMBER_NAMES.slice(28),    color: () => 'var(--accent)' },
-  { id:'numbers-arithmetic',title:'Number Recognition',   desc:'Read Bengali numerals & number words',        icon:'➕', isArithmetic: true,                          color: () => 'var(--accent)' },
+  { id:'numbers-arithmetic',title:'Number Recognition',    desc:'Bengali numeral-first arithmetic recognition', icon:'➕', isArithmetic: true, quizMode: 'arithmetic',   color: () => 'var(--accent)' },
+  { id:'numbers-audio',     title:'Counting by Ear',       desc:'Listen to a number and pick numeral/word',    icon:'🎧', isArithmetic: true, quizMode: 'audio-counting', color: () => 'var(--accent)' },
+  { id:'numbers-calendar',  title:'Dates & Calendar',      desc:'Read Bengali date strings in MCQ/FIB',        icon:'📅', isArithmetic: true, quizMode: 'calendar-dates', color: () => 'var(--accent)' },
 ];
 
 // ════════════════════════════════════════
@@ -854,7 +856,7 @@ function renderNumbersHome() {
       <p>${mod.desc}</p>
       ${progressHTML}
     `;
-    card.onclick = () => mod.isArithmetic ? startArithmeticQuiz() : startLearn(mod);
+    card.onclick = () => mod.isArithmetic ? startArithmeticQuiz(mod.quizMode) : startLearn(mod);
     grid.appendChild(card);
   });
 }
@@ -875,33 +877,136 @@ function _arTobn(n) {
   return String(n).split('').map(d => '০১২৩৪৫৬৭৮৯'[parseInt(d)] || d).join('');
 }
 
-function startArithmeticQuiz() {
-  _arithmeticQuestions = _buildArithmeticQuestions(15);
+function _normalizeToArabicDigits(s) {
+  return String(s || '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
+}
+
+function _numberNameByValue(v) {
+  return BENGALI_NUMBER_NAMES.find(n => parseInt(String(n.ipa).replace(/,/g, ''), 10) === v)?.letter || _arTobn(v);
+}
+
+function _sampleNumberValues(limit = 20) {
+  const vals = [];
+  for (let i = 0; i <= limit; i++) vals.push(i);
+  return vals;
+}
+
+function _randomDistractors(correctVal, count, values) {
+  return values
+    .filter(v => v !== correctVal)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, count);
+}
+
+function startArithmeticQuiz(mode = 'arithmetic') {
+  _arithmeticQuestions = _buildArithmeticQuestions(15, mode);
   _arithmeticIndex = 0;
   _arithmeticCorrect = 0;
   _arithmeticAnswered = false;
   _moduleHomeScreen = 'numbers-home';
   showScreen('quiz');
-  document.getElementById('quiz-title').textContent = 'Number Recognition';
+  const titles = {
+    arithmetic: 'Number Recognition',
+    'audio-counting': 'Counting by Ear',
+    'calendar-dates': 'Dates & Calendar',
+  };
+  document.getElementById('quiz-title').textContent = titles[mode] || 'Number Recognition';
   renderArithmeticQuestion();
 }
 
-function _buildArithmeticQuestions(n) {
-  const pool = [...BENGALI_NUMERALS, ...BENGALI_NUMBER_NAMES.slice(0, 20)];
+function _buildArithmeticQuestions(n, mode = 'arithmetic') {
+  if (mode === 'audio-counting') return _buildAudioCountingQuestions(n);
+  if (mode === 'calendar-dates') return _buildCalendarDateQuestions(n);
+
+  const values = _sampleNumberValues(20);
   const qs = [];
   for (let i = 0; i < n; i++) {
-    const item = pool[Math.floor(Math.random() * pool.length)];
-    const val = parseInt(item.ipa.replace(/,/g,''), 10);
-    if (isNaN(val)) continue;
-    const type = Math.random() < 0.5 ? 'glyph-to-num' : 'num-to-glyph';
-    if (type === 'glyph-to-num') {
-      qs.push({ prompt: 'What number is this?', display: item.letter, correct: String(val), answer: String(val), type: 'arith-fib', _val: val });
+    const val = values[Math.floor(Math.random() * values.length)];
+    const distractors = _randomDistractors(val, 3, values);
+    const type = Math.random() < 0.55 ? 'glyph-to-name' : 'name-to-glyph';
+
+    if (type === 'glyph-to-name') {
+      const options = [val, ...distractors]
+        .map(v => _numberNameByValue(v))
+        .sort(() => Math.random() - 0.5);
+      qs.push({
+        prompt: 'এই বাংলা সংখ্যাটির নাম কোনটি?',
+        display: _arTobn(val),
+        correct: _numberNameByValue(val),
+        options,
+        type: 'arith-mc',
+        _val: val,
+      });
     } else {
-      // MC: pick 3 distractors from pool
-      const distractors = pool.filter(p => p !== item && !isNaN(parseInt(p.ipa.replace(/,/g,''), 10)))
-        .sort(() => Math.random() - 0.5).slice(0, 3).map(p => p.letter);
-      const options = [item.letter, ...distractors].sort(() => Math.random() - 0.5);
-      qs.push({ prompt: 'Select the Bengali for: ' + val, display: String(val), correct: item.letter, options, type: 'arith-mc', _val: val });
+      const options = [val, ...distractors]
+        .map(v => _arTobn(v))
+        .sort(() => Math.random() - 0.5);
+      qs.push({
+        prompt: 'শব্দটি দেখে বাংলা অঙ্ক বেছে নাও',
+        display: _numberNameByValue(val),
+        correct: _arTobn(val),
+        options,
+        type: 'arith-mc',
+        _val: val,
+      });
+    }
+
+    if (Math.random() < 0.2) {
+      qs.push({
+        prompt: 'বাংলা অঙ্কে লিখো:',
+        display: _numberNameByValue(val),
+        correct: _arTobn(val),
+        answer: _arTobn(val),
+        type: 'arith-fib',
+        _val: val,
+      });
+    }
+  }
+  return qs.slice(0, n);
+}
+
+function _buildAudioCountingQuestions(n) {
+  const values = _sampleNumberValues(20);
+  const qs = [];
+  for (let i = 0; i < n; i++) {
+    const val = values[Math.floor(Math.random() * values.length)];
+    const distractors = _randomDistractors(val, 3, values);
+    const pickNumeral = Math.random() < 0.5;
+    const options = [val, ...distractors]
+      .map(v => pickNumeral ? _arTobn(v) : _numberNameByValue(v))
+      .sort(() => Math.random() - 0.5);
+
+    qs.push({
+      prompt: pickNumeral ? 'শুনে সঠিক বাংলা অঙ্ক বেছে নাও' : 'শুনে সঠিক বাংলা সংখ্যার নাম বেছে নাও',
+      display: '🔊',
+      audio: _numberNameByValue(val),
+      correct: pickNumeral ? _arTobn(val) : _numberNameByValue(val),
+      options,
+      type: 'arith-mc',
+      _val: val,
+    });
+  }
+  return qs;
+}
+
+function _buildCalendarDateQuestions(n) {
+  const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+  const qs = [];
+  for (let i = 0; i < n; i++) {
+    const day = 1 + Math.floor(Math.random() * 28);
+    const month = Math.floor(Math.random() * 12);
+    const year = 1952 + Math.floor(Math.random() * 75);
+    const dateBn = `${_arTobn(day)} ${months[month]} ${_arTobn(year)}`;
+    const typePick = Math.random();
+
+    if (typePick < 0.34) {
+      const dayVals = [day, ..._randomDistractors(day, 3, _sampleNumberValues(31))].sort(() => Math.random() - 0.5);
+      qs.push({ prompt: `তারিখটি পড়ো: ${dateBn} — দিন কত?`, display: dateBn, correct: _arTobn(day), options: dayVals.map(v => _arTobn(v)), type: 'arith-mc', _val: day });
+    } else if (typePick < 0.67) {
+      const monthOptions = [months[month], ...months.filter((_, idx) => idx !== month).sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+      qs.push({ prompt: `তারিখটি পড়ো: ${dateBn} — মাস কোনটি?`, display: dateBn, correct: months[month], options: monthOptions, type: 'arith-mc', _val: month + 1 });
+    } else {
+      qs.push({ prompt: `তারিখটি পড়ো: ${dateBn} — বছরটি বাংলা অঙ্কে লিখো`, display: dateBn, correct: _arTobn(year), answer: _arTobn(year), type: 'arith-fib', _val: year });
     }
   }
   return qs;
@@ -923,10 +1028,14 @@ function renderArithmeticQuestion() {
   _pendingRating = null;
 
   const qa = document.getElementById('quiz-question-area');
-  qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div><div class="quiz-letter">${q.display}</div>`;
+  const audioHtml = q.audio
+    ? `<div class="listening-play-wrap" style="margin-top:8px"><button class="listening-play-btn" data-action="speak" data-text="${escapeStr(q.audio)}" aria-label="Play number">▶</button><div style="font-size:0.8rem;color:var(--muted);margin-top:4px">শুনতে ট্যাপ করো</div></div>`
+    : '';
+  qa.innerHTML = `<div class="quiz-prompt">${q.prompt}</div><div class="quiz-letter">${q.display}</div>${audioHtml}`;
+  if (q.audio) setTimeout(() => speakBengali(q.audio, 0.75), 250);
   const aa = document.getElementById('quiz-answer-area');
   if (q.type === 'arith-fib') {
-    aa.innerHTML = `<div class="fib-area"><input type="number" class="fib-input" id="arith-input" placeholder="Enter number…" style="width:120px;text-align:center"><button class="btn-primary fib-submit" data-action="answer-arith-fib">Check</button></div>`;
+    aa.innerHTML = `<div class="fib-area"><input type="text" class="fib-input" id="arith-input" placeholder="বাংলা অঙ্কে লিখো…" style="width:180px;text-align:center"><button class="btn-primary fib-submit" data-action="answer-arith-fib">Check</button></div>`;
     setTimeout(() => document.getElementById('arith-input')?.focus(), 100);
   } else {
     aa.innerHTML = '<div class="mc-options">' +
@@ -955,8 +1064,9 @@ function answerArithFIB() {
   if (!input || !input.value.trim()) return;
   _arithmeticAnswered = true;
   const q = _arithmeticQuestions[_arithmeticIndex];
-  const userVal = parseInt(input.value.trim(), 10);
-  const correct = userVal === q._val;
+  const userVal = _normalizeToArabicDigits(input.value);
+  const answerVal = _normalizeToArabicDigits(q.answer || q.correct);
+  const correct = userVal === answerVal;
   input.classList.add(correct ? 'correct' : 'wrong');
   const fb = document.getElementById('quiz-feedback');
   fb.className = 'quiz-feedback show ' + (correct ? 'correct-fb' : 'wrong-fb');
