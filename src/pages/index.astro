@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+---
+
+<BaseLayout>
+  <div class="about">
+    <div class="about__text">
+      <h1>Robi Rahman</h1>
+      <p style="color: var(--color-muted); margin-bottom: 1.5rem;">
+        Data scientist &amp; AI governance researcher
+      </p>
+      <p>
+        Hi, I'm Robi Rahman. I work on AI governance at
+        <a href="https://techgov.intelligence.org/" target="_blank" rel="noopener">MIRI TGT</a>.
+        Previously, I was a data scientist at
+        <a href="https://epoch.ai/" target="_blank" rel="noopener">Epoch AI</a>, where I
+        researched trends in AI development. I studied at
+        <a href="https://www.harvard.edu/" target="_blank" rel="noopener">Harvard University</a> and the
+        <a href="https://www.wm.edu/" target="_blank" rel="noopener">College of William &amp; Mary</a>.
+      </p>
+      <p>
+        The best way to reach me is by email. You can also contact me using
+        <a href="/contact/">this Google Form</a> or anonymously
+        <a href="https://admonymous.co/robirahman" target="_blank" rel="noopener">here</a>.
+      </p>
+      <SocialLinks />
+    </div>
+    <div class="about__photo">
+      <img src="/assets/img/avatar.jpg" alt="Robi Rahman" />
+    </div>
+  </div>
+</BaseLayout>

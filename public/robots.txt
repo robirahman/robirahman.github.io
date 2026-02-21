@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://robirahman.com/sitemap-index.xml

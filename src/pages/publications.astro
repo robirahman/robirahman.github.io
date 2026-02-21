@@ -1,0 +1,35 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import BibSearch from "../components/BibSearch.astro";
+import PublicationEntry from "../components/PublicationEntry.astro";
+import { loadPublications } from "../lib/bibtex";
+
+const pubs = loadPublications();
+
+// Group by year
+const byYear = new Map<number, typeof pubs>();
+for (const pub of pubs) {
+  const group = byYear.get(pub.year) || [];
+  group.push(pub);
+  byYear.set(pub.year, group);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<PageLayout
+  title="Publications"
+  description='For a full list, see my <a href="https://scholar.google.com/citations?user=qc6CJjYAAAAJ" target="_blank" rel="noopener">Google Scholar</a> or <a href="https://www.semanticscholar.org/author/2290775609" target="_blank" rel="noopener">Semantic Scholar</a> profile.'
+>
+  <BibSearch />
+
+  {years.map((year) => (
+    <>
+      <h2 class="pub-year-heading">{year}</h2>
+      <ul class="pub-list">
+        {byYear.get(year)!.map((pub) => (
+          <PublicationEntry pub={pub} />
+        ))}
+      </ul>
+    </>
+  ))}
+</PageLayout>

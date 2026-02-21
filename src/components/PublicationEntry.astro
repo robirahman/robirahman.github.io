@@ -1,0 +1,52 @@
+---
+import type { Publication } from "../lib/bibtex";
+import { generateBibtex } from "../lib/bibtex";
+
+interface Props {
+  pub: Publication;
+}
+
+const { pub } = Astro.props;
+const bibtex = generateBibtex(pub);
+const venue = pub.booktitle || pub.journal || "";
+const id = `bib-${pub.key}`;
+---
+
+<li class="pub-entry" data-pub>
+  {pub.abbr && <span class="pub-badge">{pub.abbr}</span>}
+  <div class="pub-details">
+    <div class="pub-title">{pub.title}</div>
+    <div class="pub-authors">
+      {pub.authors.map((author, i) => (
+        <>
+          {i > 0 && ", "}
+          {author.includes("Rahman") ? (
+            <span class="highlight-author">{author}</span>
+          ) : (
+            author
+          )}
+        </>
+      ))}
+    </div>
+    {venue && <div class="pub-venue">{venue}, {pub.year}</div>}
+    <div class="pub-links">
+      {pub.arxiv && (
+        <a href={`https://arxiv.org/abs/${pub.arxiv}`} target="_blank" rel="noopener">
+          arXiv
+        </a>
+      )}
+      {pub.doi && (
+        <a href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener">
+          DOI
+        </a>
+      )}
+      <button
+        type="button"
+        onclick={`document.getElementById('${id}').classList.toggle('open')`}
+      >
+        BibTeX
+      </button>
+    </div>
+    <pre id={id} class="pub-bibtex">{bibtex}</pre>
+  </div>
+</li>

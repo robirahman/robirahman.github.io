@@ -1,0 +1,36 @@
+title: Robi Rahman
+first_name: Robi
+last_name: Rahman
+email: robirahman94@gmail.com
+description: "Personal website of Robi Rahman — data scientist, AI researcher, and language learning enthusiast."
+url: https://robirahman.com
+og_image: /assets/img/avatar.jpg
+
+social:
+  github: robirahman
+  linkedin: robirahman
+  scholar: qc6CJjYAAAAJ
+  semantic_scholar: 2290775609
+  orcid: 0009-0007-8462-2841
+  x: robi_rahman
+  instagram: robirahman94
+  facebook: robi.rahman
+  youtube: robirahman
+  research_gate: Robi-Rahman-3
+  acm: robirahman
+
+nav:
+  - label: About
+    href: /
+  - label: Publications
+    href: /publications/
+  - label: CV
+    href: /cv/
+  - label: Projects
+    href: /projects/
+  - label: Travel
+    href: /travel/
+  - label: Contact
+    href: /contact/
+  - label: Tournaments
+    href: /tournaments/

@@ -1,0 +1,15 @@
+---
+interface Props {
+  title: string;
+  imagePath: string;
+  content: string;
+}
+
+const { title, imagePath, content } = Astro.props;
+---
+
+<div class="card">
+  <img class="card__image" src={imagePath} alt={title} loading="lazy" />
+  <h3 class="card__title">{title}</h3>
+  <p class="card__desc" set:html={content} />
+</div>

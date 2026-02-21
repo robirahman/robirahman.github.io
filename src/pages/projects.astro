@@ -1,0 +1,41 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import HobbyCard from "../components/HobbyCard.astro";
+---
+
+<PageLayout title="Projects">
+  <div class="card-grid">
+    <ProjectCard
+      title="Learn Bengali"
+      description="An interactive, offline-first Bengali language learning app covering the full alphabet, 1000+ vocabulary words, and 20 structured grammar lessons — with adaptive quizzes, a placement test, spaced repetition review, achievement badges, and per-user progress tracking."
+      href="/banla-sikhuna/"
+    />
+    <ProjectCard
+      title="Learn Data Science"
+      description="An interactive, offline-first data science learning app covering core DS concepts, machine learning algorithms, and statistics — with spaced-repetition flashcards, adaptive quizzes, XP and streak tracking, and a glossary of 80+ terms."
+      href="/data_science/"
+    />
+  </div>
+
+  <hr />
+
+  <h2>Hobbies</h2>
+  <div class="card-grid">
+    <HobbyCard
+      title="Chess"
+      imagePath="/assets/img/Chess_Board.png"
+      content='I am a competitive chess player rated about 1900 USCF. In 2016 I placed second in the Virginia college state championship. If you&apos;d like to play, <a href="https://lichess.org/@/Aeilnrst" target="_blank" rel="noopener">send me a challenge!</a>'
+    />
+    <HobbyCard
+      title="Ultimate frisbee"
+      imagePath="/assets/img/Frisbee_Dog.png"
+      content="Exercise is never fun, except when someone throws a plastic disc and you&apos;re supposed to run and catch it. Sometimes people tell me to play real sports instead, like golf."
+    />
+    <HobbyCard
+      title="Music"
+      imagePath="/assets/img/Piano.png"
+      content='I play keyboard instruments and <a href="https://musescore.com/user/14818971" target="_blank" rel="noopener">arrange music sometimes.</a> Eventually I&apos;ll post a video of myself here, but for now, here&apos;s <a href="https://www.youtube.com/watch?v=iGk8fC8Evx0" target="_blank" rel="noopener">some guy from youtube.</a>'
+    />
+  </div>
+</PageLayout>

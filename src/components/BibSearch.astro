@@ -1,0 +1,24 @@
+---
+---
+
+<div class="bib-search">
+  <input
+    type="search"
+    id="bib-search-input"
+    placeholder="Search publications..."
+    aria-label="Search publications"
+  />
+</div>
+
+<script>
+  const input = document.getElementById("bib-search-input") as HTMLInputElement;
+  if (input) {
+    input.addEventListener("input", () => {
+      const query = input.value.toLowerCase();
+      document.querySelectorAll("[data-pub]").forEach((el) => {
+        const text = (el as HTMLElement).textContent?.toLowerCase() || "";
+        (el as HTMLElement).style.display = text.includes(query) ? "" : "none";
+      });
+    });
+  }
+</script>

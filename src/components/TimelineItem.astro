@@ -1,0 +1,13 @@
+---
+interface Props {
+  year: string;
+  content: string;
+}
+
+const { year, content } = Astro.props;
+---
+
+<li>
+  <span class="badge">{year}</span>
+  <Fragment set:html={content} />
+</li>

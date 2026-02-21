@@ -1,0 +1,116 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { label: "About", href: "/" },
+  { label: "Publications", href: "/publications/" },
+  { label: "CV", href: "/cv/" },
+  { label: "Projects", href: "/projects/" },
+  { label: "Travel", href: "/travel/" },
+  { label: "Contact", href: "/contact/" },
+  { label: "Tournaments", href: "/tournaments/" },
+];
+
+function isActive(href: string): boolean {
+  if (href === "/") return currentPath === "/";
+  return currentPath.startsWith(href);
+}
+---
+
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar__inner">
+    <a class="navbar__brand" href="/">Robi Rahman</a>
+
+    <button
+      class="navbar__toggle"
+      aria-label="Toggle navigation"
+      aria-expanded="false"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </button>
+
+    <ul class="navbar__links" id="nav-links">
+      {navItems.map((item) => (
+        <li>
+          <a href={item.href} class:list={[{ active: isActive(item.href) }]}>
+            {item.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <button class="navbar__search-btn" id="search-trigger" aria-label="Search">
+          Search
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div id="pagefind-container" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.5); padding:2rem;">
+  <div style="max-width:600px; margin:4rem auto; background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <strong>Search</strong>
+      <button id="search-close" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+    </div>
+    <div id="pagefind-search"></div>
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", function () {
+    var toggle = document.querySelector(".navbar__toggle");
+    var links = document.getElementById("nav-links");
+    if (toggle && links) {
+      toggle.addEventListener("click", function () {
+        var open = links.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", String(open));
+      });
+    }
+
+    var searchTrigger = document.getElementById("search-trigger");
+    var searchContainer = document.getElementById("pagefind-container");
+    var searchClose = document.getElementById("search-close");
+    var pagefindLoaded = false;
+
+    function openSearch() {
+      if (searchContainer) searchContainer.style.display = "block";
+      if (!pagefindLoaded) {
+        pagefindLoaded = true;
+        import("/pagefind/pagefind-ui.js")
+          .then(function (pg) {
+            new pg.PagefindUI({
+              element: "#pagefind-search",
+              showSubResults: true,
+            });
+          })
+          .catch(function () {
+            var el = document.getElementById("pagefind-search");
+            if (el) el.innerHTML = "<p>Search is available after building the site.</p>";
+          });
+      }
+      setTimeout(function () {
+        var input = document.querySelector("#pagefind-search input");
+        if (input) input.focus();
+      }, 100);
+    }
+
+    function closeSearch() {
+      if (searchContainer) searchContainer.style.display = "none";
+    }
+
+    if (searchTrigger) searchTrigger.addEventListener("click", openSearch);
+    if (searchClose) searchClose.addEventListener("click", closeSearch);
+    if (searchContainer) {
+      searchContainer.addEventListener("click", function (e) {
+        if (e.target === searchContainer) closeSearch();
+      });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeSearch();
+    });
+  });
+</script>
+
+<link is:inline rel="stylesheet" href="/pagefind/pagefind-ui.css" />
