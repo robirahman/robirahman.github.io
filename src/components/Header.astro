@@ -7,11 +7,17 @@ const navItems = [
   { label: "CV", href: "/cv/" },
   { label: "Projects", href: "/projects/" },
   { label: "Travel", href: "/travel/" },
-  { label: "Contact", href: "/contact/" },
   { label: "Tournaments", href: "/tournaments/" },
+  { label: "Learn Bengali", href: "https://www.robirahman.com/banla-sikhuna/" },
+  { label: "Contact", href: "/contact/" },
 ];
 
+function isExternal(href: string): boolean {
+  return href.startsWith("http");
+}
+
 function isActive(href: string): boolean {
+  if (isExternal(href)) return false;
   if (href === "/") return currentPath === "/";
   return currentPath.startsWith(href);
 }
@@ -34,7 +40,11 @@ function isActive(href: string): boolean {
     <ul class="navbar__links" id="nav-links">
       {navItems.map((item) => (
         <li>
-          <a href={item.href} class:list={[{ active: isActive(item.href) }]}>
+          <a
+            href={item.href}
+            class:list={[{ active: isActive(item.href) }]}
+            {...(isExternal(item.href) ? { target: "_blank", rel: "noopener" } : {})}
+          >
             {item.label}
           </a>
         </li>

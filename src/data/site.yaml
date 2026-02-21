@@ -30,7 +30,9 @@ nav:
     href: /projects/
   - label: Travel
     href: /travel/
-  - label: Contact
-    href: /contact/
   - label: Tournaments
     href: /tournaments/
+  - label: Learn Bengali
+    href: https://www.robirahman.com/banla-sikhuna/
+  - label: Contact
+    href: /contact/
