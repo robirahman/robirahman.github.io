@@ -52,9 +52,9 @@ nav h1 span { color: var(--accent); }
 .screen.active { display:block; }
 
 /* ─── HOME ─── */
-#home .hero, #vocab-home .hero, #grammar-home .hero, #phrases-home .hero, #numbers-home .hero, #today-screen .hero, #reading-screen .hero { text-align:center; padding: 40px 0 30px; }
-#home .hero h2, #vocab-home .hero h2, #grammar-home .hero h2, #phrases-home .hero h2, #numbers-home .hero h2, #today-screen .hero h2, #reading-screen .hero h2 { font-size: 2rem; margin-bottom: 8px; }
-#home .hero p, #vocab-home .hero p, #grammar-home .hero p, #phrases-home .hero p, #numbers-home .hero p, #today-screen .hero p, #reading-screen .hero p { color: var(--text-dim); font-size: 1.05rem; }
+#home .hero, #vocab-home .hero, #grammar-home .hero, #phrases-home .hero, #numbers-home .hero, #today-screen .hero, #reading-screen .hero, #trivia-home .hero { text-align:center; padding: 40px 0 30px; }
+#home .hero h2, #vocab-home .hero h2, #grammar-home .hero h2, #phrases-home .hero h2, #numbers-home .hero h2, #today-screen .hero h2, #reading-screen .hero h2, #trivia-home .hero h2 { font-size: 2rem; margin-bottom: 8px; }
+#home .hero p, #vocab-home .hero p, #grammar-home .hero p, #phrases-home .hero p, #numbers-home .hero p, #today-screen .hero p, #reading-screen .hero p, #trivia-home .hero p { color: var(--text-dim); font-size: 1.05rem; }
 .ge-notes { font-size: 0.82rem; color: var(--text-dim); margin-top: 8px; font-style: italic; line-height: 1.4; }
 /* ─── TODAY SCREEN ─── */
 .today-date { color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-bottom: 16px; }
@@ -980,6 +980,7 @@ nav h1 span { color: var(--accent); }
   outline: none; width: 260px;
 }
 .profile-input:focus { border-color: var(--accent); }
+.profile-pw-inline { margin-top: 8px; width: 100%; }
 .profile-input-actions { display: flex; gap: 10px; }
 .profile-input-actions .btn-primary { padding: 10px 24px; font-size: 0.9rem; }
 .profile-input-actions .btn-cancel {
@@ -1919,4 +1920,16 @@ details[open] > .settings-collapsible-hdr::after { transform: rotate(90deg); }
   .conj-controls { flex-direction: column; align-items: stretch; }
   .conj-select { width: 100%; }
   .conj-table { min-width: 560px; }
+}
+
+/* ─── TRIVIA ─── */
+.trivia-explanation {
+  margin: 0 1rem 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: rgba(255,255,255,0.05);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.5;
 }
