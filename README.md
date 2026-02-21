@@ -11,7 +11,7 @@ Personal website of Robi Rahman, built with [Astro](https://astro.build/) and de
 - **Travel** — password-protected travel maps
 - **Contact** — Google Form embed
 - **Tournaments** — tournament bracket manager
-- **[Learn Bengali](https://www.robirahman.com/banla-sikhuna/)** — interactive offline-first Bengali learning app
+- **[Learn Bengali](https://www.robirahman.com/bangla-sikhuna/)** — interactive offline-first Bengali learning app
 - **[Data Science](https://www.robirahman.com/data_science/)** — statistics and ML reference app
 
 ## Development
