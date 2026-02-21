@@ -6,6 +6,7 @@ import { escapeStr, escapeHTML, escHtml } from './ui-utils.js';
 import { PHRASES_SITUATIONS, PHRASES_WAVE_ORDER, PHRASES_DATA } from './phrases.js';
 import { GRAMMAR_LESSONS } from './grammar.js';
 import { VOCAB_DATA, VOCAB_CATEGORIES, VOCAB_TOTAL_WORDS } from './vocab.js';
+import { TRIVIA_CATEGORIES, TRIVIA_QUESTIONS } from './trivia.js';
 
 function getMixedUnlockedCount() {
   let unlocked = MIXED_WAVE_SIZE; // first wave is always available
@@ -405,6 +406,52 @@ function showConfirm(msg) {
     { label: 'OK', cls: 'app-modal-btn-ok', value: true }
   ]);
 }
+function showPrompt(msg, placeholder) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById('app-modal');
+    const msgEl = document.getElementById('app-modal-msg');
+    const btnsEl = document.getElementById('app-modal-btns');
+    if (!overlay) { resolve(null); return; }
+    msgEl.textContent = msg;
+    btnsEl.innerHTML = '';
+    const inp = document.createElement('input');
+    inp.type = 'password';
+    inp.placeholder = placeholder || '';
+    inp.className = 'profile-input';
+    inp.style.cssText = 'display:block;width:100%;margin-bottom:10px;box-sizing:border-box';
+    msgEl.after(inp);
+    const close = (val) => {
+      overlay.style.display = 'none';
+      inp.remove();
+      document.removeEventListener('keydown', escHandler);
+      resolve(val);
+    };
+    const escHandler = (e) => { if (e.key === 'Escape') close(null); };
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'app-modal-btn app-modal-btn-cancel';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.onclick = () => close(null);
+    const okBtn = document.createElement('button');
+    okBtn.className = 'app-modal-btn app-modal-btn-ok';
+    okBtn.textContent = 'OK';
+    okBtn.onclick = () => close(inp.value);
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') close(inp.value); });
+    btnsEl.appendChild(cancelBtn);
+    btnsEl.appendChild(okBtn);
+    document.addEventListener('keydown', escHandler);
+    overlay.style.display = 'flex';
+    setTimeout(() => inp.focus(), 50);
+  });
+}
+
+// ════════════════════════════════════════
+//  PROFILE PASSWORDS (casual lock)
+// ════════════════════════════════════════
+function _pwKey(name) { return 'bengali_pw_' + name; }
+function _profileHasPw(name) { return !!localStorage.getItem(_pwKey(name)); }
+function _checkPw(name, input) { return localStorage.getItem(_pwKey(name)) === btoa(input); }
+function _setPw(name, pw) { localStorage.setItem(_pwKey(name), btoa(pw)); }
+function _removePw(name) { localStorage.removeItem(_pwKey(name)); }
 
 // ════════════════════════════════════════
 //  SCREEN MANAGEMENT
@@ -421,6 +468,7 @@ function showScreen(id) {
   if (id === 'phrases-home') renderPhrasesHome();
   if (id === 'reading-screen') renderReadingScreen();
   if (id === 'today-screen') renderTodayScreen();
+  if (id === 'trivia-home') renderTriviaHome();
   if (id === 'placement-results') renderPlacementResultsUI();
 }
 
@@ -1727,6 +1775,8 @@ function switchTab(tab) {
     showScreen('phrases-home');
   } else if (tab === 'reading') {
     showScreen('reading-screen');
+  } else if (tab === 'trivia') {
+    showScreen('trivia-home');
   } else {
     showScreen('grammar-home');
   }
@@ -4203,9 +4253,12 @@ function renderProfileList(forceShowPicker) {
     card.className = 'profile-card';
     const safeName = escapeHTML(u.name);
     const safeNameJs = u.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const locked = _profileHasPw(u.name);
+    const lockIcon = locked ? ' 🔒' : '';
+    const selectAction = locked ? 'unlock-profile' : 'select-profile';
     card.innerHTML = `
-      <div class="pc-select" data-action="select-profile" data-name="${safeNameJs}">
-        <div class="pc-name">${safeName}</div>
+      <div class="pc-select" data-action="${selectAction}" data-name="${safeNameJs}">
+        <div class="pc-name">${safeName}${lockIcon}</div>
         <div class="pc-stats">⭐ ${u.xp} XP &nbsp; 🔥 ${u.streak}</div>
       </div>
       <div class="pc-actions">
@@ -4230,11 +4283,15 @@ function showNewProfileInput() {
   document.getElementById('profile-input-wrap').classList.add('active');
   document.getElementById('profile-cancel-btn').style.display = '';
   document.getElementById('profile-name-input').value = '';
+  const pwInput = document.getElementById('profile-pw-input');
+  if (pwInput) pwInput.value = '';
   document.getElementById('profile-name-input').focus();
 }
 
 function cancelNewProfile() {
   document.getElementById('profile-input-wrap').classList.remove('active');
+  const pwInput = document.getElementById('profile-pw-input');
+  if (pwInput) pwInput.value = '';
   if (!currentUser) {
     document.getElementById('profile-screen').classList.remove('active');
     document.getElementById('main-nav').style.display = '';
@@ -4266,9 +4323,12 @@ function createProfile() {
     showAlert('Name can only contain letters, numbers, spaces, and hyphens.');
     return;
   }
+  const pwInput = document.getElementById('profile-pw-input');
+  const pw = pwInput ? pwInput.value : '';
   currentUser = name;
   progress = _newProgressState();
   saveProgress();
+  if (pw) _setPw(name, pw);
   enterApp();
 }
 
@@ -4276,6 +4336,49 @@ function selectProfile(name) {
   currentUser = name;
   progress = loadProgress();
   enterApp();
+}
+
+function showProfileUnlock(name) {
+  // Find the pc-select div for this profile and replace with inline unlock form
+  const list = document.getElementById('profile-list');
+  const cards = list ? list.querySelectorAll('.profile-card') : [];
+  for (const card of cards) {
+    const sel = card.querySelector('.pc-select');
+    if (!sel) continue;
+    if (sel.dataset.name !== name) continue;
+    const safeName = escapeHTML(name);
+    const safeId = 'inline-pw-' + name.replace(/[^a-zA-Z0-9]/g, '_');
+    sel.innerHTML = `
+      <input type="password" id="${safeId}" class="profile-input profile-pw-inline"
+             placeholder="Enter password…" autocomplete="current-password">
+      <div class="profile-input-actions" style="margin-top:8px">
+        <button class="btn-primary" data-action="submit-profile-pw" data-name="${safeName}">Unlock</button>
+        <span class="profile-pw-err" style="display:none;color:var(--wrong);font-size:0.85rem">Wrong password</span>
+      </div>
+    `;
+    const inp = document.getElementById(safeId);
+    if (inp) {
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitProfilePw(name); });
+      setTimeout(() => inp.focus(), 50);
+    }
+    break;
+  }
+}
+
+function submitProfilePw(name) {
+  const safeId = 'inline-pw-' + name.replace(/[^a-zA-Z0-9]/g, '_');
+  const inp = document.getElementById(safeId);
+  if (!inp) return;
+  if (_checkPw(name, inp.value)) {
+    selectProfile(name);
+  } else {
+    const errEl = inp.closest('.pc-select')
+      ? inp.closest('.pc-select').querySelector('.profile-pw-err')
+      : null;
+    if (errEl) errEl.style.display = '';
+    inp.value = '';
+    inp.focus();
+  }
 }
 
 function enterAppAsGuest() {
@@ -4332,6 +4435,40 @@ function toggleReadingSection(btn, targetId) {
     : btn.textContent.replace('▲', '▼').replace('Hide', 'Show');
 }
 
+function _updatePwBtnLabel() {
+  const el = document.getElementById('pw-btn-label');
+  if (el && currentUser) el.textContent = _profileHasPw(currentUser) ? 'Change / Remove Password' : 'Set Password';
+}
+async function manageProfilePassword() {
+  if (!currentUser) return;
+  if (!_profileHasPw(currentUser)) {
+    const pw = await showPrompt('Set a password for this profile:', 'New password');
+    if (pw === null) return;
+    if (!pw) { await showAlert('Password cannot be empty.'); return; }
+    _setPw(currentUser, pw);
+    _updatePwBtnLabel();
+    await showAlert('Password set.');
+  } else {
+    const choice = await _showModal('Profile password options:', [
+      { label: 'Cancel',          cls: 'app-modal-btn-cancel', value: 'cancel' },
+      { label: 'Remove Password', cls: 'app-modal-btn-cancel', value: 'remove' },
+      { label: 'Change Password', cls: 'app-modal-btn-ok',     value: 'change' },
+    ]);
+    if (choice === 'change') {
+      const pw = await showPrompt('Enter a new password:', 'New password');
+      if (pw === null) return;
+      if (!pw) { await showAlert('Password cannot be empty.'); return; }
+      _setPw(currentUser, pw);
+      _updatePwBtnLabel();
+      await showAlert('Password updated.');
+    } else if (choice === 'remove') {
+      if (!await showConfirm('Remove password from this profile?')) return;
+      _removePw(currentUser);
+      _updatePwBtnLabel();
+      await showAlert('Password removed.');
+    }
+  }
+}
 function openSettingsPanel() {
   updateProfileMenuHeader();
   _updateFibModeChips();
@@ -4342,6 +4479,7 @@ function openSettingsPanel() {
   if (statusEl) statusEl.textContent = _audioSlowMode ? 'On' : 'Off';
   const settingsBtn = document.getElementById('settings-slow-audio-btn');
   if (settingsBtn) settingsBtn.classList.toggle('active', _audioSlowMode);
+  _updatePwBtnLabel();
   document.getElementById('settings-overlay').classList.add('open');
   document.addEventListener('keydown', _settingsEsc);
 }
@@ -4537,6 +4675,7 @@ function copyProfileDataToClipboard(name) {
 async function deleteProfile(name) {
   if (!await showConfirm('Delete profile "' + name + '"? All progress will be lost.')) return;
   _deleteProgressLS(name);
+  _removePw(name);
   if (name === currentUser) {
     if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
     currentUser = null;
@@ -6695,6 +6834,275 @@ function retryMissedPhrases() {
   renderPhrasesQuestion();
 }
 
+// ════════════════════════════════════════
+//  TRIVIA
+// ════════════════════════════════════════
+let triviaCurrentCategory = null;
+let triviaQuestions = [];
+let triviaIndex = 0;
+let triviaCorrect = 0;
+let triviaAnswered = false;
+let triviaMissed = [];
+let _triviaStartTime = null;
+
+function renderTriviaHome() {
+  const grid = document.getElementById('trivia-category-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  // Count total non-FIB questions for progress denominator
+  const totalMc = TRIVIA_QUESTIONS.filter(q => q.type === 'mc').length;
+  let masteredMc = 0;
+  TRIVIA_QUESTIONS.forEach(q => {
+    if (q.type === 'mc' && (progress.mastery['tq:' + q.id] || 0) >= 1) masteredMc++;
+  });
+
+  TRIVIA_CATEGORIES.forEach(cat => {
+    const card = document.createElement('div');
+    card.className = 'module-card';
+
+    let pct, masteredCount, total;
+    if (cat.id === 'mixed') {
+      total = totalMc;
+      masteredCount = masteredMc;
+    } else {
+      const catMc = TRIVIA_QUESTIONS.filter(q => q.category === cat.id && q.type === 'mc');
+      total = catMc.length;
+      masteredCount = catMc.filter(q => (progress.mastery['tq:' + q.id] || 0) >= 1).length;
+    }
+    pct = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
+
+    const bestKey = 'trivia:' + cat.id;
+    const best = progress.quizHistory && progress.quizHistory[bestKey] ? progress.quizHistory[bestKey].best : -1;
+    const bestLabel = best >= 0 ? ` · Best: ${best}%` : '';
+
+    card.innerHTML = `
+      <div class="module-icon">${cat.icon}</div>
+      <h3>${cat.title}</h3>
+      <p>${cat.desc}</p>
+      <div class="module-progress"><div class="module-progress-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+      <div class="progress-label">${masteredCount}/${total} answered${bestLabel}</div>
+    `;
+    card.onclick = () => startTriviaQuiz(cat.id);
+    grid.appendChild(card);
+  });
+}
+
+function buildTriviaPool(catId) {
+  let pool;
+  if (catId === 'mixed') {
+    pool = TRIVIA_QUESTIONS.slice();
+  } else {
+    pool = TRIVIA_QUESTIONS.filter(q => q.category === catId);
+  }
+  // Apply FIB gate: only include FIB questions if the corresponding MC question was answered
+  // at least once. FIB IDs follow the pattern "<mc-id>-fib", so strip the suffix to find the MC key.
+  pool = pool.filter(q => {
+    if (q.type !== 'fib') return true;
+    const mcId = q.id.replace(/-fib$/, '');
+    return (progress.mastery['tq:' + mcId] || 0) >= 1;
+  });
+  return pool;
+}
+
+function startTriviaQuiz(catId) {
+  triviaCurrentCategory = catId;
+  const pool = buildTriviaPool(catId);
+  const maxQ = catId === 'mixed' ? 10 : Math.min(pool.length, 8);
+  triviaQuestions = shuffle(pool.slice()).slice(0, maxQ);
+  triviaIndex = 0;
+  triviaCorrect = 0;
+  triviaAnswered = false;
+  triviaMissed = [];
+  _triviaStartTime = Date.now();
+  const cat = TRIVIA_CATEGORIES.find(c => c.id === catId);
+  document.getElementById('tq-title').textContent = (cat ? cat.title : 'Trivia') + ' Quiz';
+  showScreen('trivia-quiz');
+  renderTriviaQuestion();
+}
+
+function renderTriviaQuestion() {
+  const q = triviaQuestions[triviaIndex];
+  if (!q) return;
+  triviaAnswered = false;
+
+  const total = triviaQuestions.length;
+  const pct = Math.round((triviaIndex / total) * 100);
+  document.getElementById('tq-progress-bar').style.width = pct + '%';
+  document.getElementById('tq-progress-label').textContent = (triviaIndex + 1) + ' / ' + total;
+  document.getElementById('tq-feedback').innerHTML = '';
+  document.getElementById('tq-explanation').style.display = 'none';
+  document.getElementById('tq-explanation').textContent = '';
+  document.getElementById('tq-next-btn').style.display = 'none';
+
+  const area = document.getElementById('tq-question-area');
+  if (q.type === 'mc') {
+    let html = '<div class="quiz-question-text" style="font-size:1.05rem;margin-bottom:1rem;line-height:1.5">' + escHtml(q.prompt) + '</div>';
+    html += '<div class="quiz-options">';
+    q.options.forEach((opt, i) => {
+      html += `<button class="option-btn" data-action="trivia-mc" data-idx="${i}">${escHtml(opt)}</button>`;
+    });
+    html += '</div>';
+    area.innerHTML = html;
+  } else {
+    // FIB
+    const parts = q.prompt.split('_____');
+    let html = '<div class="quiz-question-text" style="font-size:1.05rem;margin-bottom:1rem;line-height:1.5">' +
+      parts.map(p => escHtml(p)).join('<span style="color:var(--accent)">_____</span>') + '</div>';
+    html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:0.5rem">' +
+      '<input id="tq-fib-input" class="fib-input" type="text" autocomplete="off" placeholder="Type your answer…" style="flex:1">' +
+      '<button class="btn-primary" data-action="trivia-submit-fib" style="padding:8px 16px">Submit</button>' +
+      '</div>';
+    area.innerHTML = html;
+    const inp = document.getElementById('tq-fib-input');
+    if (inp) setTimeout(() => inp.focus(), 50);
+  }
+}
+
+function answerTriviaMC(btn, chosen) {
+  if (triviaAnswered) return;
+  triviaAnswered = true;
+  const q = triviaQuestions[triviaIndex];
+  if (!q) return;
+
+  const btns = document.querySelectorAll('#tq-question-area .option-btn');
+  btns.forEach(b => { b.disabled = true; });
+
+  const correct = (chosen === q.correct);
+  if (correct) {
+    btn.style.background = 'rgba(62,201,122,0.25)';
+    btn.style.borderColor = 'var(--accent)';
+    btn.style.color = 'var(--accent)';
+    document.getElementById('tq-feedback').innerHTML = '<span style="color:var(--accent);font-weight:600">✓ Correct! +2 XP</span>';
+    addXP(2);
+    triviaCorrect++;
+  } else {
+    btn.style.background = 'rgba(232,80,80,0.2)';
+    btn.style.borderColor = 'var(--wrong)';
+    btn.style.color = 'var(--wrong)';
+    // Highlight correct answer
+    btns.forEach((b, i) => {
+      if (i === q.correct) {
+        b.style.background = 'rgba(62,201,122,0.25)';
+        b.style.borderColor = 'var(--accent)';
+        b.style.color = 'var(--accent)';
+      }
+    });
+    document.getElementById('tq-feedback').innerHTML = '<span style="color:var(--wrong);font-weight:600">✗ Incorrect</span>';
+    triviaMissed.push({ answer: q.options[q.correct], bengali: null });
+  }
+
+  // Update mastery
+  const masteryKey = 'tq:' + q.id;
+  if (!progress.mastery[masteryKey]) progress.mastery[masteryKey] = 0;
+  if (correct) {
+    progress.mastery[masteryKey] = Math.min(2, (progress.mastery[masteryKey] || 0) + 1);
+  }
+
+  // Show explanation
+  if (q.explanation) {
+    const expEl = document.getElementById('tq-explanation');
+    expEl.textContent = q.explanation;
+    expEl.style.display = 'block';
+  }
+
+  saveProgress();
+  checkAchievements();
+  document.getElementById('tq-next-btn').style.display = 'inline-block';
+}
+
+function answerTriviaFIB() {
+  if (triviaAnswered) return;
+  const q = triviaQuestions[triviaIndex];
+  if (!q || q.type !== 'fib') return;
+  const inp = document.getElementById('tq-fib-input');
+  if (!inp) return;
+  triviaAnswered = true;
+
+  const raw = inp.value.trim();
+  const norm = raw.toLowerCase();
+  const correct = q.answer.some(a => a.toLowerCase() === norm);
+
+  inp.disabled = true;
+  if (correct) {
+    inp.style.borderColor = 'var(--accent)';
+    document.getElementById('tq-feedback').innerHTML = '<span style="color:var(--accent);font-weight:600">✓ Correct! +3 XP</span>';
+    addXP(3);
+    triviaCorrect++;
+    const masteryKey = 'tq:' + q.id;
+    progress.mastery[masteryKey] = Math.min(2, (progress.mastery[masteryKey] || 0) + 1);
+  } else {
+    inp.style.borderColor = 'var(--wrong)';
+    document.getElementById('tq-feedback').innerHTML =
+      '<span style="color:var(--wrong);font-weight:600">✗ Incorrect — answer: ' + escHtml(q.answer[0]) + '</span>';
+    triviaMissed.push({ answer: q.answer[0], bengali: null });
+  }
+
+  if (q.explanation) {
+    const expEl = document.getElementById('tq-explanation');
+    expEl.textContent = q.explanation;
+    expEl.style.display = 'block';
+  }
+
+  saveProgress();
+  checkAchievements();
+  document.getElementById('tq-next-btn').style.display = 'inline-block';
+}
+
+function triviaNext() {
+  triviaIndex++;
+  if (triviaIndex >= triviaQuestions.length) {
+    showTriviaResults();
+  } else {
+    triviaAnswered = false;
+    renderTriviaQuestion();
+  }
+}
+
+function showTriviaResults() {
+  showScreen('trivia-results');
+  const total = triviaQuestions.length;
+  const pct = total > 0 ? Math.round((triviaCorrect / total) * 100) : 0;
+
+  setTimeout(() => {
+    const offset = 452.4 * (1 - pct / 100);
+    const ring = document.getElementById('tr-ring');
+    if (ring) ring.style.strokeDashoffset = offset;
+  }, 100);
+
+  document.getElementById('tr-pct').textContent = pct + '%';
+
+  const title = pct === 100 ? 'Perfect! 🌟' : pct >= 80 ? 'Great job!' : pct >= 50 ? 'Good effort!' : 'Keep practicing!';
+  document.getElementById('tr-title').textContent = title;
+
+  const bestKey = 'trivia:' + triviaCurrentCategory;
+  const hist = progress.quizHistory || (progress.quizHistory = {});
+  const prev = hist[bestKey] || { best: -1 };
+  if (pct > prev.best) { hist[bestKey] = { best: pct }; saveProgress(); }
+
+  const subParts = ['You scored ' + triviaCorrect + '/' + total];
+  if (_triviaStartTime) subParts.push('⏱ ' + _formatElapsed(Date.now() - _triviaStartTime));
+  if (pct > prev.best && prev.best >= 0) subParts.push('🌟 New best!');
+  else if (prev.best >= 0 && prev.best > pct) subParts.push('Best: ' + prev.best + '%');
+  document.getElementById('tr-sub').textContent = subParts.join(' · ');
+
+  addXP(1);
+  updateNav();
+  checkAchievements();
+
+  // Render missed items
+  const missedEl = document.getElementById('tr-missed');
+  if (missedEl) {
+    if (triviaMissed.length === 0) {
+      missedEl.innerHTML = '';
+    } else {
+      missedEl.innerHTML = '<div class="missed-section"><div class="missed-title">Review these</div>' +
+        triviaMissed.map(m => `<div class="missed-item"><span class="missed-answer">${escHtml(m.answer)}</span></div>`).join('') +
+        '</div>';
+    }
+  }
+}
+
 // Register service worker for offline/PWA support
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -6851,11 +7259,14 @@ document.addEventListener('click', function(e) {
     case 'set-lesson-level': setGrammarLessonLevel(a.id, +a.level); break;
     case 'reset-phrases-situation': resetPhrasesSituation(a.slug); break;
     // Profiles
-    case 'select-profile': selectProfile(a.name); break;
-    case 'rename-profile': renameProfile(a.name); break;
-    case 'export-profile': exportProfileData(a.name); break;
-    case 'copy-profile': copyProfileDataToClipboard(a.name); break;
-    case 'delete-profile': deleteProfile(a.name); break;
+    case 'select-profile':    selectProfile(a.name); break;
+    case 'unlock-profile':    showProfileUnlock(a.name); break;
+    case 'submit-profile-pw': submitProfilePw(a.name); break;
+    case 'rename-profile':    renameProfile(a.name); break;
+    case 'export-profile':    exportProfileData(a.name); break;
+    case 'copy-profile':      copyProfileDataToClipboard(a.name); break;
+    case 'delete-profile':    deleteProfile(a.name); break;
+    case 'manage-profile-pw': manageProfilePassword(); break;
     // Search
     case 'open-letter-result': openLetterResult(a.letter); closeSearch(); break;
     case 'search-add-to-study': e.stopPropagation(); searchAddToStudy(JSON.parse(a.lemma), el); break;
@@ -6877,6 +7288,12 @@ document.addEventListener('click', function(e) {
     // Bengali keyboard
     case 'toggle-bng-kbd': toggleBengaliKbd(); break;
     case 'append-char': appendBengaliChar(a.char); break;
+    // Trivia
+    case 'trivia-mc':         answerTriviaMC(el, +a.idx); break;
+    case 'trivia-submit-fib': answerTriviaFIB(); break;
+    case 'trivia-next':       triviaNext(); break;
+    case 'trivia-quiz-back':  showScreen('trivia-home'); break;
+    case 'trivia-play-again': startTriviaQuiz(triviaCurrentCategory); break;
   }
 });
 
@@ -6890,6 +7307,7 @@ document.addEventListener('keydown', function(e) {
   else if (id === 'gq-fib-input') answerGrammarFIB();
   else if (id === 'pt-fib-input') answerPlacementFIB();
   else if (id === 'phq-fib-input') answerPhrasesFIB();
+  else if (id === 'tq-fib-input') answerTriviaFIB();
 });
 
 // Overlay backdrop close (fires only when clicking the backdrop itself, not children)
