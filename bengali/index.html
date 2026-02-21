@@ -26,6 +26,7 @@ permalink: /bengali/
   <div class="profile-list" id="profile-list"></div>
   <div class="profile-input-wrap" id="profile-input-wrap">
     <input class="profile-input" id="profile-name-input" type="text" placeholder="Enter your name" maxlength="30" autocomplete="off">
+    <input class="profile-input" id="profile-pw-input" type="password" placeholder="Set a password (optional)" maxlength="50" autocomplete="new-password">
     <div class="profile-input-actions">
       <button class="btn-primary" id="profile-create-btn" data-action="create-profile">Start</button>
       <button class="btn-cancel" id="profile-cancel-btn" data-action="cancel-new-profile">Cancel</button>
@@ -58,6 +59,7 @@ permalink: /bengali/
   <button class="tab-btn" data-action="switch-tab" data-tab="grammar">Grammar</button>
   <button class="tab-btn" data-action="switch-tab" data-tab="numbers">Numbers</button>
   <button class="tab-btn" data-action="switch-tab" data-tab="phrases">Phrases</button>
+  <button class="tab-btn" data-action="switch-tab" data-tab="trivia">Trivia</button>
   <button class="pt-retake-btn" id="pt-retake-btn" style="display:none" data-action="start-placement-test">Retake Placement</button>
   <button class="review-due-btn" id="review-due-btn" style="display:none" data-action="start-review-session">🔔 Review Due (<span id="review-due-count">0</span>)</button>
 </div>
@@ -125,6 +127,7 @@ permalink: /bengali/
     <details class="settings-collapsible">
       <summary class="settings-section-label settings-collapsible-hdr">Advanced</summary>
       <button class="settings-toggle-btn" data-action="toggle-slow-audio" id="settings-slow-audio-btn">🐢 Slow Audio: <span id="slow-audio-status">Off</span></button>
+      <button data-action="manage-profile-pw"><span class="pm-icon">🔒</span><span id="pw-btn-label">Set Password</span></button>
       <button data-action="import-progress"><span class="pm-icon">⬆</span>Import Progress</button>
       <button data-action="export-progress"><span class="pm-icon">⬇</span>Export Progress</button>
       <div class="settings-divider"></div>
@@ -652,6 +655,51 @@ permalink: /bengali/
     <button class="btn-primary" id="phr-continue-review" data-action="run-next-review" style="display:none">Continue →</button>
   </div>
   <div id="phr-missed"></div>
+</div>
+
+<!-- TRIVIA HOME -->
+<div class="screen" id="trivia-home">
+  <div class="hero">
+    <h2>বাংলা তথ্য</h2>
+    <p>Test your knowledge of Bengali culture, history, and more</p>
+  </div>
+  <div class="module-grid" id="trivia-category-grid"></div>
+</div>
+
+<!-- TRIVIA QUIZ -->
+<div class="screen" id="trivia-quiz">
+  <div class="learn-header">
+    <button class="back-btn" data-action="trivia-quiz-back">← Back</button>
+    <h2 id="tq-title">Trivia</h2>
+    <div id="tq-progress-label" class="progress-label"></div>
+  </div>
+  <div class="quiz-progress-bar" style="margin:0 0 1rem">
+    <div class="quiz-progress-fill" id="tq-progress-bar" style="width:0%"></div>
+  </div>
+  <div id="tq-question-area" style="padding:0 1rem 1rem"></div>
+  <div id="tq-feedback" style="padding:0 1rem;min-height:2rem"></div>
+  <div id="tq-explanation" class="trivia-explanation" style="display:none"></div>
+  <button class="btn-primary quiz-next-btn" id="tq-next-btn"
+          data-action="trivia-next" style="display:none">Next →</button>
+</div>
+
+<!-- TRIVIA RESULTS -->
+<div class="screen" id="trivia-results">
+  <div class="results-circle" id="tr-circle">
+    <svg viewBox="0 0 160 160">
+      <circle class="bg-ring" cx="80" cy="80" r="72"/>
+      <circle class="fg-ring" id="tr-ring" cx="80" cy="80" r="72"
+        stroke-dasharray="452.4" stroke-dashoffset="452.4"/>
+    </svg>
+    <span id="tr-pct">0%</span>
+  </div>
+  <div class="results-title" id="tr-title">Great job!</div>
+  <div class="results-sub" id="tr-sub">You scored 8/10</div>
+  <div class="results-actions">
+    <button class="btn-primary" data-action="trivia-play-again">Try Again</button>
+    <button class="nav-btn" data-action="trivia-quiz-back">Home</button>
+  </div>
+  <div id="tr-missed"></div>
 </div>
 
 <script type="module" src="app.js"></script>
