@@ -57,11 +57,11 @@ function isActive(href: string): boolean {
   </div>
 </nav>
 
-<div id="pagefind-container" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.5); padding:2rem;">
-  <div style="max-width:600px; margin:4rem auto; background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+<div id="pagefind-container" class="search-modal-overlay">
+  <div class="search-modal-box">
+    <div class="search-modal-header">
       <strong>Search</strong>
-      <button id="search-close" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      <button id="search-close" class="search-modal-close" aria-label="Close search">&times;</button>
     </div>
     <div id="pagefind-search"></div>
   </div>

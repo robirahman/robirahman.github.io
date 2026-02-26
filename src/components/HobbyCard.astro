@@ -9,7 +9,10 @@ const { title, imagePath, content } = Astro.props;
 ---
 
 <div class="card">
-  <img class="card__image" src={imagePath} alt={title} loading="lazy" />
+  <picture>
+    <source srcset={imagePath.replace(/\.(png|jpe?g)$/i, ".webp")} type="image/webp" />
+    <img class="card__image" src={imagePath} alt={title} loading="lazy" width="600" />
+  </picture>
   <h3 class="card__title">{title}</h3>
   <p class="card__desc" set:html={content} />
 </div>

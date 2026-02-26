@@ -14,6 +14,9 @@ const id = `bib-${pub.key}`;
 
 <li class="pub-entry" data-pub>
   {pub.abbr && <span class="pub-badge">{pub.abbr}</span>}
+  {pub.thumbnail && (
+    <img class="pub-thumbnail" src={pub.thumbnail} alt={`${pub.title} thumbnail`} loading="lazy" />
+  )}
   <div class="pub-details">
     <div class="pub-title">{pub.title}</div>
     <div class="pub-authors">

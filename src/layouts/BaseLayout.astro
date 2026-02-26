@@ -17,6 +17,23 @@ const rawDescription =
 const pageDescription = rawDescription.replace(/<[^>]*>/g, "");
 const ogImage = new URL("/assets/img/avatar.jpg", Astro.site).href;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Robi Rahman",
+  url: "https://robirahman.com",
+  email: "robirahman94@gmail.com",
+  jobTitle: "Data Scientist & AI Researcher",
+  sameAs: [
+    "https://github.com/robirahman",
+    "https://www.linkedin.com/in/robirahman",
+    "https://scholar.google.com/citations?user=qc6CJjYAAAAJ",
+    "https://www.semanticscholar.org/author/2290775609",
+    "https://orcid.org/0009-0007-8462-2841",
+    "https://twitter.com/robi_rahman",
+  ],
+};
 ---
 
 <!doctype html>
@@ -42,6 +59,12 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImage} />
 
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Analytics -->
+    <script defer data-domain="robirahman.com" src="https://plausible.io/js/script.js"></script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -51,8 +74,9 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
     />
   </head>
   <body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
     <Header />
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <Footer />

@@ -14,6 +14,7 @@ export interface Publication {
   arxiv?: string;
   html?: string;
   website?: string;
+  thumbnail?: string;
   abbr?: string;
   selected?: boolean;
 }
@@ -51,6 +52,7 @@ export function loadPublications(): Publication[] {
         arxiv: fields.arxiv,
         html: fields.html,
         website: fields.website,
+        thumbnail: fields.thumbnail,
         abbr: fields.abbr,
         selected: fields.selected === "true",
       };
