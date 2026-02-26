@@ -12,6 +12,8 @@ export interface Publication {
   booktitle?: string;
   doi?: string;
   arxiv?: string;
+  html?: string;
+  website?: string;
   abbr?: string;
   selected?: boolean;
 }
@@ -47,6 +49,8 @@ export function loadPublications(): Publication[] {
         booktitle: fields.booktitle,
         doi: fields.doi,
         arxiv: fields.arxiv,
+        html: fields.html,
+        website: fields.website,
         abbr: fields.abbr,
         selected: fields.selected === "true",
       };

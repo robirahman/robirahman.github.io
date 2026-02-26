@@ -30,9 +30,19 @@ const id = `bib-${pub.key}`;
     </div>
     {venue && <div class="pub-venue">{venue}, {pub.year}</div>}
     <div class="pub-links">
+      {pub.html && (
+        <a href={pub.html} target="_blank" rel="noopener">
+          Paper
+        </a>
+      )}
       {pub.arxiv && (
         <a href={`https://arxiv.org/abs/${pub.arxiv}`} target="_blank" rel="noopener">
           arXiv
+        </a>
+      )}
+      {pub.website && (
+        <a href={pub.website} target="_blank" rel="noopener">
+          Website
         </a>
       )}
       {pub.doi && (
