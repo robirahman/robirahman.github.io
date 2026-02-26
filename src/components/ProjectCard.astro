@@ -6,14 +6,16 @@ interface Props {
 }
 
 const { title, description, href } = Astro.props;
+const isExternal = href.startsWith("http");
+const linkProps = isExternal ? { target: "_blank", rel: "noopener" } : {};
 ---
 
 <div class="card">
   <h3 class="card__title">
-    <a href={href}>{title}</a>
+    <a href={href} {...linkProps}>{title}</a>
   </h3>
   <p class="card__desc">{description}</p>
   <div class="card__links">
-    <a href={href}>Open app</a>
+    <a href={href} {...linkProps}>Open app</a>
   </div>
 </div>
