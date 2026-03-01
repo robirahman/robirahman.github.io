@@ -155,7 +155,7 @@
  *
  */
   /* Highlight selected countries */
-  .ca, .us, .bs, .mx, .cr, .cl, .ar, .is, .ie, .gb, .fr, .ad, .es, .pt, .it, .va, .ch, .cz, .de, .be, .nl, .dk, .se, .no, .ma, .tr, .qa, .bh, .ae, .in, .bd, .pr {
+  .ca, .us, .bs, .mx, .cr, .co, .cl, .ar, .is, .ie, .gb, .fr, .ad, .es, .pt, .it, .va, .ch, .cz, .de, .be, .nl, .dk, .se, .no, .ma, .tr, .qa, .bh, .ae, .in, .bd, .pr {
     fill: #4287f5;
     opacity: 1;
   }
