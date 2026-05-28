@@ -43,6 +43,11 @@ const id = `bib-${pub.key}`;
           arXiv
         </a>
       )}
+      {pub.pdf && (
+        <a href={pub.pdf} target="_blank" rel="noopener">
+          PDF
+        </a>
+      )}
       {pub.website && (
         <a href={pub.website} target="_blank" rel="noopener">
           Website
