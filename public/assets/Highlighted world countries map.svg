@@ -166,6 +166,13 @@
     opacity: 1;
   }
 
+  /* Overseas territories of visited countries that I have not been to.
+     Placed after the highlight rule so it overrides the inherited
+     parent-country fill (equal specificity, later rule wins). */
+  .gf, .gp, .mq, .re, .yt, .bq {
+    fill: #c0c0c0;
+  }
+
 
 
   </style>
