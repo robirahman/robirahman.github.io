@@ -17,8 +17,14 @@ Place this code in the empty space below. */
 
 
   /* Highlight selected states */
-  .hi, .ca, .or, .wa, .nv, .co, .tx, .mn, .wi, .il, .fl, .ga, .sc, .nc, .va, .wv, .dc, .md, .de, .pa, .nj, .ny, .ct, .ri, .ma, .nh, .me {
+  .hi, .ca, .or, .nv, .co, .tx, .mn, .il, .fl, .nc, .va, .wv, .dc, .md, .de, .pa, .nj, .ny, .ct, .ma, .me {
     fill: #4287f5;
+    opacity: 1;
+  }
+
+  /* States only passed through in transit */
+  .wa, .az, .mo, .wi, .ga, .sc, .ri, .nh {
+    fill: #a8caf5;
     opacity: 1;
   }
 
