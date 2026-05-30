@@ -155,8 +155,14 @@
  *
  */
   /* Highlight selected countries */
-  .ca, .us, .bs, .mx, .cr, .co, .cl, .ar, .is, .ie, .gb, .fr, .ad, .es, .pt, .it, .va, .ch, .cz, .de, .be, .nl, .dk, .se, .no, .ma, .tr, .qa, .bh, .ae, .in, .bd, .pr {
+  .ca, .us, .bs, .mx, .cr, .co, .cl, .ar, .ie, .gb, .fr, .ad, .es, .pt, .it, .va, .ch, .cz, .de, .be, .nl, .dk, .se, .no, .ma, .tr, .bd, .pr {
     fill: #4287f5;
+    opacity: 1;
+  }
+
+  /* Countries only passed through in transit */
+  .is, .ae, .bh, .qa, .in {
+    fill: #a8caf5;
     opacity: 1;
   }
 
