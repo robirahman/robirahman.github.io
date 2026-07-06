@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /assets/papers/rahman2026telemetry.pdf
 
 Sitemap: https://robirahman.com/sitemap-index.xml
