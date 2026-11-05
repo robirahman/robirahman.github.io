@@ -1,15 +1,24 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import HobbyCard from "../components/HobbyCard.astro";
 ---
 
 <PageLayout title="Projects">
   <div class="card-grid">
     <ProjectCard
+      title="Decentralized Training Simulator"
+      description="An interactive simulator for estimating how long it would take to train an LLM across many small, bandwidth-constrained nodes over the internet, comparing DiLoCo, DDP, and pipeline parallelism. It models gradient compression, GPU failures, stragglers, and failure-mitigation strategies. Built for a MIRI study of whether decentralized training could evade an international compute treaty."
+      href="/miri-decentralized-training-report/"
+    />
+    <ProjectCard
       title="Learn Bengali"
       description="An offline-first Bengali learning app covering the full alphabet, 1000+ vocabulary words, 20 grammar lessons, verb conjugation, reading passages, and listening practice. Features FSRS-4.5 spaced repetition, a placement test, multiple quiz types, XP and streak tracking, and per-user progress profiles."
       href="/bangla-sikhuna/"
+    />
+    <ProjectCard
+      title="Lección Diaria"
+      description="A Spanish learning app covering A1 through C2: an adaptive IRT placement test, FSRS-4.5 spaced repetition, 28,000+ vocabulary words, 67 grammar lessons, a conjugation engine for 252 verbs across 19 tenses, branching dialogues, reading and listening practice, and pronunciation drills. Works offline with no backend."
+      href="/leccion-diaria/"
     />
     <ProjectCard
       title="Learn Data Science"
@@ -17,35 +26,40 @@ import HobbyCard from "../components/HobbyCard.astro";
       href="/data_science/"
     />
     <ProjectCard
+      title="Sigil Online"
+      description="A browser version of the board game Sigil, with local and online multiplayer, game clocks, offline play, game review, and AI opponents at four difficulty levels running on JavaScript and Rust search engines."
+      href="/sigil/"
+    />
+    <ProjectCard
       title="Wild Reckoning"
       description="A turn-based wildlife survival simulator. Play as one of 10 species — polar bear, monarch butterfly, octopus, fig wasp, and more — managing nine biological stress stats across predation, disease, injury, starvation, and aging. Genetic mutations accumulate across generations, so your score is your inclusive fitness."
       href="https://www.robirahman.com/wild-reckoning/"
+    />
+    <ProjectCard
+      title="Flightdroid"
+      description="A map of every flight you've taken, built from the confirmation emails in your Gmail. Parses airline booking markup and email text, draws your routes on a map, and tracks stats like distance flown and airports visited. Runs entirely in the browser as an installable mobile web app, with no server."
+      href="/flightdroid/"
+    />
+    <ProjectCard
+      title="Dog Breed Ranker"
+      description="A lifestyle quiz that ranks every AKC dog breed (plus popular doodle crosses) by how well it fits you, and explains each reason a breed does or doesn't match your answers."
+      href="/dog-picker/"
+    />
+    <ProjectCard
+      title="Workout Tracker"
+      description="A free, offline-first strength and running tracker with 5×5 barbell programming, automatic progression and deloads, a plate calculator, rest timer, progress charts, and a guided Couch to 5K interval player."
+      href="/workout-tracker/"
     />
     <ProjectCard
       title="Tournaments"
       description="A tournament bracket management web app for running single-elimination and double-elimination tournaments, with bracket generation, match scheduling, and live results tracking."
       href="/tournaments/"
     />
-  </div>
-
-  <hr />
-
-  <h2>Hobbies</h2>
-  <div class="card-grid">
-    <HobbyCard
-      title="Chess"
-      imagePath="/assets/img/Chess_Board.png"
-      content='I am a competitive chess player rated about 1900 USCF. In 2016 I placed second in the Virginia college state championship. If you&apos;d like to play, <a href="https://lichess.org/@/Aeilnrst" target="_blank" rel="noopener">send me a challenge!</a>'
-    />
-    <HobbyCard
-      title="Ultimate frisbee"
-      imagePath="/assets/img/Frisbee_Dog.png"
-      content="Exercise is never fun, except when someone throws a plastic disc and you&apos;re supposed to run and catch it. Sometimes people tell me to play real sports instead, like golf."
-    />
-    <HobbyCard
-      title="Music"
-      imagePath="/assets/img/Piano.png"
-      content='I play keyboard instruments and <a href="https://musescore.com/user/14818971" target="_blank" rel="noopener">arrange music sometimes.</a> Eventually I&apos;ll post a video of myself here, but for now, here&apos;s <a href="https://www.youtube.com/watch?v=iGk8fC8Evx0" target="_blank" rel="noopener">some guy from youtube.</a>'
+    <ProjectCard
+      title="Broadway Lottery Prefiller"
+      description="A script that opens every Broadway ticket lottery currently accepting entries with your details pre-filled, and keeps track of which ones you've already entered. You still solve the CAPTCHA and submit each entry yourself."
+      href="https://github.com/robirahman/broadway-lottery"
+      linkLabel="View on GitHub"
     />
   </div>
 </PageLayout>

@@ -629,12 +629,6 @@ main {
   font-size: 0.93rem;
 }
 
-.card__image {
-  width: 100%;
-  border-radius: var(--radius);
-  margin-bottom: 1rem;
-}
-
 .card__links {
   margin-top: 0.75rem;
   display: flex;

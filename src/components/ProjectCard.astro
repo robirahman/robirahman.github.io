@@ -3,9 +3,10 @@ interface Props {
   title: string;
   description: string;
   href: string;
+  linkLabel?: string;
 }
 
-const { title, description, href } = Astro.props;
+const { title, description, href, linkLabel = "Open app" } = Astro.props;
 const isExternal = href.startsWith("http");
 const linkProps = isExternal ? { target: "_blank", rel: "noopener" } : {};
 ---
@@ -16,6 +17,6 @@ const linkProps = isExternal ? { target: "_blank", rel: "noopener" } : {};
   </h3>
   <p class="card__desc">{description}</p>
   <div class="card__links">
-    <a href={href} {...linkProps}>Open app</a>
+    <a href={href} {...linkProps}>{linkLabel}</a>
   </div>
 </div>
